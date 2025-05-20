@@ -27,11 +27,11 @@
 
             <div class="grid grid-cols-1 lg:grid-cols-12 gap-8">
                 <div class="lg:col-span-5 space-y-6">
-                    <div class="relative">
-                        <img src="{{ asset('images/visi-misi-1.jpg') }}" alt="KPRI UNEJ"
-                            class="w-full h-auto rounded-lg shadow-md mb-6">
-                        <img src="{{ asset('images/visi-misi-2.jpg') }}" alt="KPRI UNEJ"
-                            class="w-full h-auto rounded-lg shadow-md">
+                    <div class="flex h-3/4 w-96">
+                        <img src="{{ asset('images/visi-misi-1.png') }}" alt="KPRI UNEJ"
+                            class="w-3/4 h-auto rounded-lg mb-6">
+                        <img src="{{ asset('images/visi-misi-2.png') }}" alt="KPRI UNEJ"
+                            class="w-full h-auto rounded-lg ">
                     </div>
                 </div>
 
