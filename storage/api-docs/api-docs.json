@@ -1,0 +1,1660 @@
+{
+    "openapi": "3.0.0",
+    "info": {
+        "title": "KPRI Profile API",
+        "description": "API Documentation for KPRI Profile Application",
+        "contact": {
+            "name": "KPRI Admin",
+            "email": "admin@kpri.com"
+        },
+        "version": "1.0.0"
+    },
+    "servers": [
+        {
+            "url": "/api",
+            "description": "API Server"
+        }
+    ],
+    "paths": {
+        "/articles": {
+            "get": {
+                "tags": [
+                    "Articles"
+                ],
+                "summary": "Get all published articles",
+                "description": "Returns list of published articles",
+                "operationId": "getArticlesList",
+                "responses": {
+                    "200": {
+                        "description": "Successful operation",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "status": {
+                                            "type": "string",
+                                            "example": "success"
+                                        },
+                                        "data": {
+                                            "type": "array",
+                                            "items": {
+                                                "properties": {
+                                                    "id": {
+                                                        "type": "integer",
+                                                        "example": 1
+                                                    },
+                                                    "title": {
+                                                        "type": "string",
+                                                        "example": "Article Title"
+                                                    },
+                                                    "excerpt": {
+                                                        "type": "string",
+                                                        "example": "This is a short excerpt of the article..."
+                                                    },
+                                                    "release_date": {
+                                                        "type": "string",
+                                                        "format": "date",
+                                                        "example": "2023-12-31"
+                                                    },
+                                                    "tags": {
+                                                        "type": "string",
+                                                        "example": "news,update"
+                                                    },
+                                                    "thumbnail": {
+                                                        "type": "string",
+                                                        "example": "https://example.com/images/article1.jpg"
+                                                    },
+                                                    "author": {
+                                                        "type": "string",
+                                                        "example": "John Doe"
+                                                    }
+                                                },
+                                                "type": "object"
+                                            }
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    },
+                    "500": {
+                        "description": "Server error"
+                    }
+                }
+            }
+        },
+        "/articles/{id}": {
+            "get": {
+                "tags": [
+                    "Article Details"
+                ],
+                "summary": "Get article details",
+                "description": "Returns a specific article with all details including comments",
+                "operationId": "getArticleDetail",
+                "parameters": [
+                    {
+                        "name": "id",
+                        "in": "path",
+                        "description": "Article ID",
+                        "required": true,
+                        "schema": {
+                            "type": "integer"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Successful operation",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "status": {
+                                            "type": "string",
+                                            "example": "success"
+                                        },
+                                        "data": {
+                                            "properties": {
+                                                "id": {
+                                                    "type": "integer",
+                                                    "example": 1
+                                                },
+                                                "title": {
+                                                    "type": "string",
+                                                    "example": "Article Title"
+                                                },
+                                                "content": {
+                                                    "type": "string",
+                                                    "example": "Full content of the article..."
+                                                },
+                                                "release_date": {
+                                                    "type": "string",
+                                                    "format": "date",
+                                                    "example": "2023-12-31"
+                                                },
+                                                "tags": {
+                                                    "type": "string",
+                                                    "example": "news,update"
+                                                },
+                                                "images": {
+                                                    "type": "array",
+                                                    "items": {
+                                                        "properties": {
+                                                            "id": {
+                                                                "type": "integer",
+                                                                "example": 1
+                                                            },
+                                                            "url": {
+                                                                "type": "string",
+                                                                "example": "https://example.com/images/article1.jpg"
+                                                            }
+                                                        },
+                                                        "type": "object"
+                                                    }
+                                                },
+                                                "author": {
+                                                    "type": "string",
+                                                    "example": "John Doe"
+                                                },
+                                                "comments": {
+                                                    "type": "array",
+                                                    "items": {
+                                                        "properties": {
+                                                            "id": {
+                                                                "type": "integer",
+                                                                "example": 1
+                                                            },
+                                                            "name": {
+                                                                "type": "string",
+                                                                "example": "Commentator Name"
+                                                            },
+                                                            "content": {
+                                                                "type": "string",
+                                                                "example": "This is a comment on the article"
+                                                            },
+                                                            "date": {
+                                                                "type": "string",
+                                                                "example": "01 Dec 2023 15:30"
+                                                            }
+                                                        },
+                                                        "type": "object"
+                                                    }
+                                                }
+                                            },
+                                            "type": "object"
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    },
+                    "404": {
+                        "description": "Article not found"
+                    },
+                    "500": {
+                        "description": "Server error"
+                    }
+                }
+            }
+        },
+        "/articles/{id}/comments": {
+            "post": {
+                "tags": [
+                    "Article Details"
+                ],
+                "summary": "Add a comment to an article",
+                "description": "Adds a new comment to a specific article",
+                "operationId": "addArticleComment",
+                "parameters": [
+                    {
+                        "name": "id",
+                        "in": "path",
+                        "description": "Article ID",
+                        "required": true,
+                        "schema": {
+                            "type": "integer"
+                        }
+                    }
+                ],
+                "requestBody": {
+                    "required": true,
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "required": [
+                                    "nama_pengomentar",
+                                    "isi_komentar"
+                                ],
+                                "properties": {
+                                    "nama_pengomentar": {
+                                        "type": "string",
+                                        "maxLength": 100,
+                                        "example": "John Doe"
+                                    },
+                                    "isi_komentar": {
+                                        "type": "string",
+                                        "maxLength": 255,
+                                        "example": "This is my comment on the article"
+                                    }
+                                },
+                                "type": "object"
+                            }
+                        }
+                    }
+                },
+                "responses": {
+                    "200": {
+                        "description": "Comment submitted successfully",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "status": {
+                                            "type": "string",
+                                            "example": "success"
+                                        },
+                                        "message": {
+                                            "type": "string",
+                                            "example": "Komentar telah dikirim dan sedang menunggu persetujuan."
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    },
+                    "404": {
+                        "description": "Article not found"
+                    },
+                    "422": {
+                        "description": "Validation error"
+                    },
+                    "500": {
+                        "description": "Server error"
+                    }
+                }
+            }
+        },
+        "/downloads": {
+            "get": {
+                "tags": [
+                    "Downloads"
+                ],
+                "summary": "Get all download items",
+                "description": "Returns list of all active download items",
+                "operationId": "getDownloadItems",
+                "responses": {
+                    "200": {
+                        "description": "Successful operation",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "success": {
+                                            "type": "boolean",
+                                            "example": true
+                                        },
+                                        "data": {
+                                            "type": "array",
+                                            "items": {
+                                                "properties": {
+                                                    "id": {
+                                                        "type": "integer",
+                                                        "example": 1
+                                                    },
+                                                    "name": {
+                                                        "type": "string",
+                                                        "example": "Financial Report 2023"
+                                                    },
+                                                    "file_url": {
+                                                        "type": "string",
+                                                        "example": "https://example.com/storage/financial_report_2023.pdf"
+                                                    },
+                                                    "file_extension": {
+                                                        "type": "string",
+                                                        "example": "pdf"
+                                                    },
+                                                    "upload_date": {
+                                                        "type": "string",
+                                                        "format": "date",
+                                                        "example": "2023-12-31"
+                                                    },
+                                                    "order": {
+                                                        "type": "integer",
+                                                        "example": 1
+                                                    }
+                                                },
+                                                "type": "object"
+                                            }
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    },
+                    "500": {
+                        "description": "Server error"
+                    }
+                }
+            }
+        },
+        "/downloads/{id}": {
+            "get": {
+                "tags": [
+                    "Downloads"
+                ],
+                "summary": "Get specific download item",
+                "description": "Returns a specific download item by ID",
+                "operationId": "getDownloadItem",
+                "parameters": [
+                    {
+                        "name": "id",
+                        "in": "path",
+                        "description": "Download Item ID",
+                        "required": true,
+                        "schema": {
+                            "type": "integer"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Successful operation",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "success": {
+                                            "type": "boolean",
+                                            "example": true
+                                        },
+                                        "data": {
+                                            "properties": {
+                                                "id": {
+                                                    "type": "integer",
+                                                    "example": 1
+                                                },
+                                                "name": {
+                                                    "type": "string",
+                                                    "example": "Financial Report 2023"
+                                                },
+                                                "file_url": {
+                                                    "type": "string",
+                                                    "example": "https://example.com/storage/financial_report_2023.pdf"
+                                                },
+                                                "file_extension": {
+                                                    "type": "string",
+                                                    "example": "pdf"
+                                                },
+                                                "upload_date": {
+                                                    "type": "string",
+                                                    "format": "date",
+                                                    "example": "2023-12-31"
+                                                },
+                                                "order": {
+                                                    "type": "integer",
+                                                    "example": 1
+                                                }
+                                            },
+                                            "type": "object"
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    },
+                    "404": {
+                        "description": "Download item not found"
+                    },
+                    "500": {
+                        "description": "Server error"
+                    }
+                }
+            }
+        },
+        "/faqs": {
+            "get": {
+                "tags": [
+                    "FAQ"
+                ],
+                "summary": "Get list of all FAQs",
+                "description": "Returns list of all frequently asked questions",
+                "operationId": "getFAQs",
+                "responses": {
+                    "200": {
+                        "description": "Successful operation",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "status": {
+                                            "type": "string",
+                                            "example": "success"
+                                        },
+                                        "data": {
+                                            "type": "array",
+                                            "items": {
+                                                "properties": {
+                                                    "id_faq": {
+                                                        "type": "integer",
+                                                        "example": 1
+                                                    },
+                                                    "judul": {
+                                                        "type": "string",
+                                                        "example": "How do I reset my password?"
+                                                    },
+                                                    "deskripsi": {
+                                                        "type": "string",
+                                                        "example": "You can reset your password by clicking on the 'Forgot Password' link on the login page."
+                                                    }
+                                                },
+                                                "type": "object"
+                                            }
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    },
+                    "404": {
+                        "description": "No FAQs found",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "status": {
+                                            "type": "string",
+                                            "example": "error"
+                                        },
+                                        "message": {
+                                            "type": "string",
+                                            "example": "No FAQs found"
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        },
+        "/faqs/{id}": {
+            "get": {
+                "tags": [
+                    "FAQ"
+                ],
+                "summary": "Get specific FAQ",
+                "description": "Returns a specific FAQ by its ID",
+                "operationId": "getFAQ",
+                "parameters": [
+                    {
+                        "name": "id",
+                        "in": "path",
+                        "description": "ID of FAQ to return",
+                        "required": true,
+                        "schema": {
+                            "type": "integer",
+                            "format": "int64"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Successful operation",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "status": {
+                                            "type": "string",
+                                            "example": "success"
+                                        },
+                                        "data": {
+                                            "properties": {
+                                                "id_faq": {
+                                                    "type": "integer",
+                                                    "example": 1
+                                                },
+                                                "judul": {
+                                                    "type": "string",
+                                                    "example": "How do I reset my password?"
+                                                },
+                                                "deskripsi": {
+                                                    "type": "string",
+                                                    "example": "You can reset your password by clicking on the 'Forgot Password' link on the login page."
+                                                }
+                                            },
+                                            "type": "object"
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    },
+                    "404": {
+                        "description": "FAQ not found",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "status": {
+                                            "type": "string",
+                                            "example": "error"
+                                        },
+                                        "message": {
+                                            "type": "string",
+                                            "example": "FAQ not found"
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        },
+        "/gallery": {
+            "get": {
+                "tags": [
+                    "Gallery"
+                ],
+                "summary": "Get list of gallery photos",
+                "description": "Returns list of all published gallery photos",
+                "operationId": "getGalleryList",
+                "responses": {
+                    "200": {
+                        "description": "Successful operation",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "success": {
+                                            "type": "boolean",
+                                            "example": true
+                                        },
+                                        "data": {
+                                            "type": "array",
+                                            "items": {
+                                                "properties": {
+                                                    "id": {
+                                                        "type": "integer",
+                                                        "example": 1
+                                                    },
+                                                    "nama": {
+                                                        "type": "string",
+                                                        "example": "Rapat Anggota Tahunan"
+                                                    },
+                                                    "gambar": {
+                                                        "type": "string",
+                                                        "example": "storage/galeri/rapat-anggota.jpg"
+                                                    },
+                                                    "tgl_upload": {
+                                                        "type": "string",
+                                                        "format": "date",
+                                                        "example": "2023-05-20"
+                                                    }
+                                                },
+                                                "type": "object"
+                                            }
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        },
+        "/gallery/{id}": {
+            "get": {
+                "tags": [
+                    "Gallery"
+                ],
+                "summary": "Get specific gallery photo details",
+                "description": "Returns detailed information about a specific gallery photo",
+                "operationId": "getGalleryDetail",
+                "parameters": [
+                    {
+                        "name": "id",
+                        "in": "path",
+                        "description": "Gallery Photo ID",
+                        "required": true,
+                        "schema": {
+                            "type": "integer"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Successful operation",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "success": {
+                                            "type": "boolean",
+                                            "example": true
+                                        },
+                                        "data": {
+                                            "properties": {
+                                                "id": {
+                                                    "type": "integer",
+                                                    "example": 1
+                                                },
+                                                "nama": {
+                                                    "type": "string",
+                                                    "example": "Rapat Anggota Tahunan"
+                                                },
+                                                "gambar": {
+                                                    "type": "string",
+                                                    "example": "storage/galeri/rapat-anggota.jpg"
+                                                },
+                                                "tgl_upload": {
+                                                    "type": "string",
+                                                    "format": "date",
+                                                    "example": "2023-05-20"
+                                                }
+                                            },
+                                            "type": "object"
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    },
+                    "404": {
+                        "description": "Gallery photo not found",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "success": {
+                                            "type": "boolean",
+                                            "example": false
+                                        },
+                                        "message": {
+                                            "type": "string",
+                                            "example": "Foto galeri tidak ditemukan"
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        },
+        "/service-types": {
+            "get": {
+                "tags": [
+                    "Services"
+                ],
+                "summary": "Get list of service types",
+                "description": "Returns list of all service types",
+                "operationId": "getServiceTypesList",
+                "responses": {
+                    "200": {
+                        "description": "Successful operation",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "success": {
+                                            "type": "boolean",
+                                            "example": true
+                                        },
+                                        "data": {
+                                            "type": "array",
+                                            "items": {
+                                                "properties": {
+                                                    "id": {
+                                                        "type": "integer",
+                                                        "example": 1
+                                                    },
+                                                    "nama": {
+                                                        "type": "string",
+                                                        "example": "Simpan Pinjam"
+                                                    }
+                                                },
+                                                "type": "object"
+                                            }
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        },
+        "/service-types/{id}": {
+            "get": {
+                "tags": [
+                    "Services"
+                ],
+                "summary": "Get specific service type with its services",
+                "description": "Returns detailed information about a specific service type and all its services",
+                "operationId": "getServiceTypeDetail",
+                "parameters": [
+                    {
+                        "name": "id",
+                        "in": "path",
+                        "description": "Service Type ID",
+                        "required": true,
+                        "schema": {
+                            "type": "integer"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Successful operation",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "success": {
+                                            "type": "boolean",
+                                            "example": true
+                                        },
+                                        "data": {
+                                            "properties": {
+                                                "id": {
+                                                    "type": "integer",
+                                                    "example": 1
+                                                },
+                                                "nama": {
+                                                    "type": "string",
+                                                    "example": "Simpan Pinjam"
+                                                },
+                                                "layanan": {
+                                                    "type": "array",
+                                                    "items": {
+                                                        "properties": {
+                                                            "id": {
+                                                                "type": "integer",
+                                                                "example": 1
+                                                            },
+                                                            "judul": {
+                                                                "type": "string",
+                                                                "example": "Pinjaman Reguler"
+                                                            },
+                                                            "deskripsi": {
+                                                                "type": "string",
+                                                                "example": "Layanan pinjaman dengan bunga rendah untuk anggota koperasi"
+                                                            }
+                                                        },
+                                                        "type": "object"
+                                                    }
+                                                }
+                                            },
+                                            "type": "object"
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    },
+                    "404": {
+                        "description": "Service type not found",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "success": {
+                                            "type": "boolean",
+                                            "example": false
+                                        },
+                                        "message": {
+                                            "type": "string",
+                                            "example": "Jenis layanan tidak ditemukan"
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        },
+        "/services/{id}": {
+            "get": {
+                "tags": [
+                    "Services"
+                ],
+                "summary": "Get specific service details",
+                "description": "Returns detailed information about a specific service",
+                "operationId": "getServiceDetail",
+                "parameters": [
+                    {
+                        "name": "id",
+                        "in": "path",
+                        "description": "Service ID",
+                        "required": true,
+                        "schema": {
+                            "type": "integer"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Successful operation",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "success": {
+                                            "type": "boolean",
+                                            "example": true
+                                        },
+                                        "data": {
+                                            "properties": {
+                                                "id": {
+                                                    "type": "integer",
+                                                    "example": 1
+                                                },
+                                                "judul": {
+                                                    "type": "string",
+                                                    "example": "Pinjaman Reguler"
+                                                },
+                                                "deskripsi": {
+                                                    "type": "string",
+                                                    "example": "Layanan pinjaman dengan bunga rendah untuk anggota koperasi"
+                                                },
+                                                "jenis_layanan": {
+                                                    "properties": {
+                                                        "id": {
+                                                            "type": "integer",
+                                                            "example": 1
+                                                        },
+                                                        "nama": {
+                                                            "type": "string",
+                                                            "example": "Simpan Pinjam"
+                                                        }
+                                                    },
+                                                    "type": "object"
+                                                }
+                                            },
+                                            "type": "object"
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    },
+                    "404": {
+                        "description": "Service not found",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "success": {
+                                            "type": "boolean",
+                                            "example": false
+                                        },
+                                        "message": {
+                                            "type": "string",
+                                            "example": "Layanan tidak ditemukan"
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        },
+        "/products": {
+            "get": {
+                "tags": [
+                    "Products"
+                ],
+                "summary": "Get list of products",
+                "description": "Returns list of products with optional filtering, sorting and searching",
+                "operationId": "getProductsList",
+                "parameters": [
+                    {
+                        "name": "kategori_id",
+                        "in": "query",
+                        "description": "Filter by category ID",
+                        "required": false,
+                        "schema": {
+                            "type": "integer"
+                        }
+                    },
+                    {
+                        "name": "search",
+                        "in": "query",
+                        "description": "Search term for product name or description",
+                        "required": false,
+                        "schema": {
+                            "type": "string"
+                        }
+                    },
+                    {
+                        "name": "order_by",
+                        "in": "query",
+                        "description": "Field to order by (nama_produk, harga_produk, id_produk)",
+                        "required": false,
+                        "schema": {
+                            "type": "string",
+                            "default": "nama_produk",
+                            "enum": [
+                                "nama_produk",
+                                "harga_produk",
+                                "id_produk"
+                            ]
+                        }
+                    },
+                    {
+                        "name": "order_dir",
+                        "in": "query",
+                        "description": "Order direction (asc, desc)",
+                        "required": false,
+                        "schema": {
+                            "type": "string",
+                            "default": "asc",
+                            "enum": [
+                                "asc",
+                                "desc"
+                            ]
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Successful operation",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "success": {
+                                            "type": "boolean",
+                                            "example": true
+                                        },
+                                        "data": {
+                                            "type": "array",
+                                            "items": {
+                                                "properties": {
+                                                    "id": {
+                                                        "type": "integer",
+                                                        "example": 1
+                                                    },
+                                                    "nama": {
+                                                        "type": "string",
+                                                        "example": "Beras Premium 5kg"
+                                                    },
+                                                    "gambar": {
+                                                        "type": "string",
+                                                        "example": "storage/products/beras.jpg"
+                                                    },
+                                                    "harga": {
+                                                        "type": "integer",
+                                                        "example": 65000
+                                                    },
+                                                    "kategori": {
+                                                        "properties": {
+                                                            "id": {
+                                                                "type": "integer",
+                                                                "example": 1
+                                                            },
+                                                            "nama": {
+                                                                "type": "string",
+                                                                "example": "Sembako"
+                                                            }
+                                                        },
+                                                        "type": "object"
+                                                    },
+                                                    "stok": {
+                                                        "type": "integer",
+                                                        "example": 50
+                                                    },
+                                                    "has_promo": {
+                                                        "type": "boolean",
+                                                        "example": true
+                                                    },
+                                                    "harga_diskon": {
+                                                        "type": "integer",
+                                                        "example": 52000
+                                                    },
+                                                    "promo": {
+                                                        "properties": {
+                                                            "id": {
+                                                                "type": "integer",
+                                                                "example": 1
+                                                            },
+                                                            "judul": {
+                                                                "type": "string",
+                                                                "example": "Promo Spesial Lebaran"
+                                                            },
+                                                            "tipe_diskon": {
+                                                                "type": "string",
+                                                                "example": "persen"
+                                                            },
+                                                            "nilai_diskon": {
+                                                                "type": "integer",
+                                                                "example": 20
+                                                            }
+                                                        },
+                                                        "type": "object"
+                                                    }
+                                                },
+                                                "type": "object"
+                                            }
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        },
+        "/products/{id}": {
+            "get": {
+                "tags": [
+                    "Products"
+                ],
+                "summary": "Get specific product details",
+                "description": "Returns detailed information about a specific product",
+                "operationId": "getProductDetail",
+                "parameters": [
+                    {
+                        "name": "id",
+                        "in": "path",
+                        "description": "Product ID",
+                        "required": true,
+                        "schema": {
+                            "type": "integer"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Successful operation",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "success": {
+                                            "type": "boolean",
+                                            "example": true
+                                        },
+                                        "data": {
+                                            "properties": {
+                                                "id": {
+                                                    "type": "integer",
+                                                    "example": 1
+                                                },
+                                                "nama": {
+                                                    "type": "string",
+                                                    "example": "Beras Premium 5kg"
+                                                },
+                                                "gambar": {
+                                                    "type": "string",
+                                                    "example": "storage/products/beras.jpg"
+                                                },
+                                                "harga": {
+                                                    "type": "integer",
+                                                    "example": 65000
+                                                },
+                                                "kategori": {
+                                                    "properties": {
+                                                        "id": {
+                                                            "type": "integer",
+                                                            "example": 1
+                                                        },
+                                                        "nama": {
+                                                            "type": "string",
+                                                            "example": "Sembako"
+                                                        }
+                                                    },
+                                                    "type": "object"
+                                                },
+                                                "stok": {
+                                                    "type": "integer",
+                                                    "example": 50
+                                                },
+                                                "deskripsi": {
+                                                    "type": "string",
+                                                    "example": "Beras premium kualitas terbaik"
+                                                },
+                                                "has_promo": {
+                                                    "type": "boolean",
+                                                    "example": true
+                                                },
+                                                "harga_diskon": {
+                                                    "type": "integer",
+                                                    "example": 52000
+                                                },
+                                                "promo": {
+                                                    "properties": {
+                                                        "id": {
+                                                            "type": "integer",
+                                                            "example": 1
+                                                        },
+                                                        "judul": {
+                                                            "type": "string",
+                                                            "example": "Promo Spesial Lebaran"
+                                                        },
+                                                        "tipe_diskon": {
+                                                            "type": "string",
+                                                            "example": "persen"
+                                                        },
+                                                        "nilai_diskon": {
+                                                            "type": "integer",
+                                                            "example": 20
+                                                        },
+                                                        "tgl_end": {
+                                                            "type": "string",
+                                                            "format": "date",
+                                                            "example": "2023-06-30"
+                                                        }
+                                                    },
+                                                    "type": "object"
+                                                }
+                                            },
+                                            "type": "object"
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    },
+                    "404": {
+                        "description": "Product not found",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "success": {
+                                            "type": "boolean",
+                                            "example": false
+                                        },
+                                        "message": {
+                                            "type": "string",
+                                            "example": "Produk tidak ditemukan"
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        },
+        "/product-categories": {
+            "get": {
+                "tags": [
+                    "Products"
+                ],
+                "summary": "Get all product categories",
+                "description": "Returns all product categories with product counts",
+                "operationId": "getProductCategories",
+                "responses": {
+                    "200": {
+                        "description": "Successful operation",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "success": {
+                                            "type": "boolean",
+                                            "example": true
+                                        },
+                                        "data": {
+                                            "type": "array",
+                                            "items": {
+                                                "properties": {
+                                                    "id": {
+                                                        "type": "integer",
+                                                        "example": 1
+                                                    },
+                                                    "nama": {
+                                                        "type": "string",
+                                                        "example": "Sembako"
+                                                    },
+                                                    "jumlah_produk": {
+                                                        "type": "integer",
+                                                        "example": 12
+                                                    }
+                                                },
+                                                "type": "object"
+                                            }
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        },
+        "/promos": {
+            "get": {
+                "tags": [
+                    "Promos"
+                ],
+                "summary": "Get list of active promotions",
+                "description": "Returns list of all active promotions with their discounted products",
+                "operationId": "getPromosList",
+                "responses": {
+                    "200": {
+                        "description": "Successful operation",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "success": {
+                                            "type": "boolean",
+                                            "example": true
+                                        },
+                                        "data": {
+                                            "type": "array",
+                                            "items": {
+                                                "properties": {
+                                                    "id": {
+                                                        "type": "integer",
+                                                        "example": 1
+                                                    },
+                                                    "judul": {
+                                                        "type": "string",
+                                                        "example": "Promo Spesial Lebaran"
+                                                    },
+                                                    "tgl_start": {
+                                                        "type": "string",
+                                                        "format": "date",
+                                                        "example": "2023-06-01"
+                                                    },
+                                                    "tgl_end": {
+                                                        "type": "string",
+                                                        "format": "date",
+                                                        "example": "2023-06-30"
+                                                    },
+                                                    "tipe_diskon": {
+                                                        "type": "string",
+                                                        "example": "persen"
+                                                    },
+                                                    "nilai_diskon": {
+                                                        "type": "integer",
+                                                        "example": 20
+                                                    },
+                                                    "produks": {
+                                                        "type": "array",
+                                                        "items": {
+                                                            "properties": {
+                                                                "id": {
+                                                                    "type": "integer",
+                                                                    "example": 1
+                                                                },
+                                                                "nama": {
+                                                                    "type": "string",
+                                                                    "example": "Beras Premium 5kg"
+                                                                },
+                                                                "gambar": {
+                                                                    "type": "string",
+                                                                    "example": "storage/products/beras.jpg"
+                                                                },
+                                                                "kategori_id": {
+                                                                    "type": "integer",
+                                                                    "example": 1
+                                                                },
+                                                                "harga_asli": {
+                                                                    "type": "integer",
+                                                                    "example": 65000
+                                                                },
+                                                                "harga_diskon": {
+                                                                    "type": "integer",
+                                                                    "example": 52000
+                                                                }
+                                                            },
+                                                            "type": "object"
+                                                        }
+                                                    }
+                                                },
+                                                "type": "object"
+                                            }
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        },
+        "/promos/{id}": {
+            "get": {
+                "tags": [
+                    "Promos"
+                ],
+                "summary": "Get specific promotion details",
+                "description": "Returns detailed information about a specific promotion and its products",
+                "operationId": "getPromoDetail",
+                "parameters": [
+                    {
+                        "name": "id",
+                        "in": "path",
+                        "description": "Promotion ID",
+                        "required": true,
+                        "schema": {
+                            "type": "integer"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Successful operation",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "success": {
+                                            "type": "boolean",
+                                            "example": true
+                                        },
+                                        "data": {
+                                            "properties": {
+                                                "id": {
+                                                    "type": "integer",
+                                                    "example": 1
+                                                },
+                                                "judul": {
+                                                    "type": "string",
+                                                    "example": "Promo Spesial Lebaran"
+                                                },
+                                                "tgl_start": {
+                                                    "type": "string",
+                                                    "format": "date",
+                                                    "example": "2023-06-01"
+                                                },
+                                                "tgl_end": {
+                                                    "type": "string",
+                                                    "format": "date",
+                                                    "example": "2023-06-30"
+                                                },
+                                                "tipe_diskon": {
+                                                    "type": "string",
+                                                    "example": "persen"
+                                                },
+                                                "nilai_diskon": {
+                                                    "type": "integer",
+                                                    "example": 20
+                                                },
+                                                "produks": {
+                                                    "type": "array",
+                                                    "items": {
+                                                        "properties": {
+                                                            "id": {
+                                                                "type": "integer",
+                                                                "example": 1
+                                                            },
+                                                            "nama": {
+                                                                "type": "string",
+                                                                "example": "Beras Premium 5kg"
+                                                            },
+                                                            "gambar": {
+                                                                "type": "string",
+                                                                "example": "storage/products/beras.jpg"
+                                                            },
+                                                            "kategori_id": {
+                                                                "type": "integer",
+                                                                "example": 1
+                                                            },
+                                                            "harga_asli": {
+                                                                "type": "integer",
+                                                                "example": 65000
+                                                            },
+                                                            "harga_diskon": {
+                                                                "type": "integer",
+                                                                "example": 52000
+                                                            },
+                                                            "stok": {
+                                                                "type": "integer",
+                                                                "example": 50
+                                                            },
+                                                            "deskripsi": {
+                                                                "type": "string",
+                                                                "example": "Beras premium kualitas terbaik"
+                                                            }
+                                                        },
+                                                        "type": "object"
+                                                    }
+                                                }
+                                            },
+                                            "type": "object"
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    },
+                    "404": {
+                        "description": "Promotion not found",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "success": {
+                                            "type": "boolean",
+                                            "example": false
+                                        },
+                                        "message": {
+                                            "type": "string",
+                                            "example": "Promo tidak ditemukan"
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        },
+        "/struktur": {
+            "get": {
+                "tags": [
+                    "Organization Structure"
+                ],
+                "summary": "Get organization structure",
+                "description": "Returns the organization structure grouped by position",
+                "operationId": "getOrganizationStructure",
+                "responses": {
+                    "200": {
+                        "description": "Successful operation",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "success": {
+                                            "type": "boolean",
+                                            "example": true
+                                        },
+                                        "data": {
+                                            "type": "object",
+                                            "example": {
+                                                "Ketua": [
+                                                    {
+                                                        "id_pengurus": 1,
+                                                        "nama_pengurus": "John Doe"
+                                                    }
+                                                ],
+                                                "Sekretaris": [
+                                                    {
+                                                        "id_pengurus": 2,
+                                                        "nama_pengurus": "Jane Smith"
+                                                    }
+                                                ]
+                                            },
+                                            "additionalProperties": {
+                                                "type": "array",
+                                                "items": {
+                                                    "properties": {
+                                                        "id_pengurus": {
+                                                            "type": "integer",
+                                                            "example": 1
+                                                        },
+                                                        "nama_pengurus": {
+                                                            "type": "string",
+                                                            "example": "John Doe"
+                                                        }
+                                                    },
+                                                    "type": "object"
+                                                }
+                                            }
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    },
+                    "500": {
+                        "description": "Server error"
+                    }
+                }
+            }
+        },
+        "/struktur/{id}": {
+            "get": {
+                "tags": [
+                    "Organization Structure"
+                ],
+                "summary": "Get specific member details",
+                "description": "Returns details of a specific organization member",
+                "operationId": "getOrganizationMember",
+                "parameters": [
+                    {
+                        "name": "id",
+                        "in": "path",
+                        "description": "Member ID",
+                        "required": true,
+                        "schema": {
+                            "type": "integer"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Successful operation",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "success": {
+                                            "type": "boolean",
+                                            "example": true
+                                        },
+                                        "data": {
+                                            "properties": {
+                                                "id_pengurus": {
+                                                    "type": "integer",
+                                                    "example": 1
+                                                },
+                                                "nama_pengurus": {
+                                                    "type": "string",
+                                                    "example": "John Doe"
+                                                },
+                                                "jabatan": {
+                                                    "properties": {
+                                                        "id_jabatan": {
+                                                            "type": "integer",
+                                                            "example": 1
+                                                        },
+                                                        "nama_jabatan": {
+                                                            "type": "string",
+                                                            "example": "Ketua"
+                                                        }
+                                                    },
+                                                    "type": "object"
+                                                }
+                                            },
+                                            "type": "object"
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    },
+                    "404": {
+                        "description": "Member not found"
+                    },
+                    "500": {
+                        "description": "Server error"
+                    }
+                }
+            }
+        }
+    },
+    "components": {
+        "securitySchemes": {
+            "bearerAuth": {
+                "type": "http",
+                "bearerFormat": "JWT",
+                "scheme": "bearer"
+            }
+        }
+    },
+    "tags": [
+        {
+            "name": "Articles",
+            "description": "API Endpoints for Articles"
+        },
+        {
+            "name": "Article Details",
+            "description": "API Endpoints for Article Details"
+        },
+        {
+            "name": "Downloads",
+            "description": "API Endpoints for Download Items"
+        },
+        {
+            "name": "FAQ",
+            "description": "API endpoints for FAQ management"
+        },
+        {
+            "name": "Gallery",
+            "description": "API Endpoints for gallery photos"
+        },
+        {
+            "name": "Services",
+            "description": "API Endpoints for services"
+        },
+        {
+            "name": "Products",
+            "description": "API Endpoints for products"
+        },
+        {
+            "name": "Promos",
+            "description": "API Endpoints for promotions"
+        },
+        {
+            "name": "Organization Structure",
+            "description": "API Endpoints for Organization Structure"
+        }
+    ]
+}
