@@ -3,10 +3,10 @@ import laravel from 'laravel-vite-plugin';
 
 export default defineConfig({
     server: {
-        host: '0.0.0.0', 
+        host: '0.0.0.0',
         cors: true,// Allows external access (via phone/other devices)
         hmr: {
-            host: '192.168.1.13', // Use your IP here
+            host: '192.168.1.25', // Use your IP here
         },
     },
     plugins: [
