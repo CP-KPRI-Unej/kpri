@@ -42,7 +42,7 @@ Route::get("guest/home", function () {
     return view("comprof.home");
 })->name('home');
 Route::get("guest/tentang-kami", function () {
-    return view("comprof.home");
+    return view("comprof.profile");
 })->name('about');
 Route::get("guest/gerai-layanan", function () {
     return view("comprof.home");
