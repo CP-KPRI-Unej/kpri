@@ -6,7 +6,7 @@ export default defineConfig({
         host: '0.0.0.0',
         cors: true,// Allows external access (via phone/other devices)
         hmr: {
-            host: '192.168.1.25', // Use your IP here
+            host: '10.132.0.223', // Use your IP here
         },
     },
     plugins: [

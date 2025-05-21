@@ -20,110 +20,93 @@
             </div>
         </div>
     </section>
+    <section class="py-12 px-4 mb-5">
+        <div class="flex flex-col lg:flex-row gap-10 justify-center items-start">
+            <div class="flex flex-col md:flex-row gap-6 w-full lg:w-[40%]">
+                <div class="w-full md:w-1/2 h-3/4">
+                    <img src="{{ asset('images/visi-misi-1.png') }}" alt="Cooperative Officials"
+                        class="w-full h-full object-cover rounded-3xl" />
+                </div>
+                <div class="w-full md:w-1/2 h-full">
+                    <img src="{{ asset('images/visi-misi-2.png') }}" alt="Cooperative Officials"
+                        class="w-full h-full object-cover rounded-3xl max-h-[600px]" />
+                </div>
+            </div>
 
-    <section class="py-16 md:py-24 bg-gray-50 dark:bg-gray-800">
-        <div class="container mx-auto px-4 sm:px-6 lg:px-8">
-            <h2 class="text-3xl font-bold text-center text-amber-500 mb-12">Visi & Misi</h2>
-
-            <div class="grid grid-cols-1 lg:grid-cols-12 gap-8">
-                <div class="lg:col-span-5 space-y-6">
-                    <div class="flex h-3/4 w-96">
-                        <img src="{{ asset('images/visi-misi-1.png') }}" alt="KPRI UNEJ"
-                            class="w-3/4 h-auto rounded-lg mb-6">
-                        <img src="{{ asset('images/visi-misi-2.png') }}" alt="KPRI UNEJ"
-                            class="w-full h-auto rounded-lg ">
-                    </div>
+            <div class="space-y-10 w-full lg:w-[60%]">
+                <div class="bg-orange-500 text-white p-6 rounded-lg">
+                    <h2 class="text-xl font-bold mb-4">
+                        Visi
+                        <div class="flex w-16 gap-1">
+                            <hr class="border-2 w-10 border-red-600 rounded-sm" />
+                            <hr class="border-2 w-2 border-red-600 rounded-sm" />
+                        </div>
+                    </h2>
+                    <p>
+                        "Menjadi Koperasi Terbaik Dalam Mensejahterakan Anggota dan Bermitra Dengan Stakeholders"
+                    </p>
                 </div>
 
-                <div class="lg:col-span-7">
-                    <div class="bg-amber-500 text-white p-8 rounded-lg shadow-md mb-8">
-                        <h3 class="text-2xl font-bold mb-4">Visi</h3>
-                        <p class="text-lg">"Menjadi Koperasi Terbaik Dalam Mensejahterakan Anggota dan Bermitra Dengan
-                            Stakeholders"</p>
-                    </div>
-
-                    <div class="bg-white dark:bg-gray-700 p-8 rounded-lg shadow-md">
-                        <h3 class="text-2xl font-bold mb-4 text-gray-800 dark:text-white">Misi</h3>
-                        <ol class="list-decimal pl-5 space-y-3 text-gray-700 dark:text-gray-300">
-                            <li>Menyediakan Pelayanan Prima bagi anggota.</li>
-                            <li>Mewujudkan Sumber Daya Manusia koperasi yang professional.</li>
-                            <li>Menyediakan teknologi informasi yang handal.</li>
-                            <li>Membangun jaringan usaha dengan pihak yang berkepentingan.</li>
-                            <li>Meningkatkan social kepada anggota dan masyarakat sekitar.</li>
-                            <li>Bersinergi dengan perguruan tinggi.</li>
-                        </ol>
-                    </div>
+                <div class="border border-gray-200 p-6 rounded-lg bg-white">
+                    <h2 class="text-xl font-bold mb-4 pb-2">
+                        Misi
+                        <div class="flex w-16 gap-1">
+                            <hr class="border-2 w-10 border-red-600 rounded-sm" />
+                            <hr class="border-2 w-2 border-red-600 rounded-sm" />
+                        </div>
+                    </h2>
+                    <ol class="list-decimal pl-6 space-y-2 mt-4 text-gray-700">
+                        <li>Menyediakan Pelayanan Prima bagi anggota.</li>
+                        <li>Mewujudkan SDM koperasi yang profesional.</li>
+                        <li>Menyediakan teknologi informasi yang handal.</li>
+                        <li>Membangun jaringan usaha dengan pihak yang berkepentingan.</li>
+                        <li>Meningkatkan kontribusi sosial kepada anggota dan masyarakat sekitar.</li>
+                        <li>Bersinergi dengan perguruan tinggi.</li>
+                    </ol>
                 </div>
             </div>
         </div>
     </section>
 
-    <section class="py-16 md:py-24 bg-white dark:bg-gray-900">
-        <div class="container mx-auto px-4 sm:px-6 lg:px-8">
+
+    <section class="py-16 bg-white dark:bg-gray-900">
+        <div class="container mx-auto px-4">
             <h2 class="text-3xl font-bold text-center text-amber-500 mb-12">Artikel Terbaru</h2>
 
-            <div class="grid grid-cols-1 lg:grid-cols-2 gap-8 mb-16">
-                <div class="bg-amber-500 text-white p-8 rounded-lg shadow-md">
-                    <h3 class="text-2xl font-bold mb-4 uppercase">KOPERASI KPRI UNEJ ADALAH SALAH SATU KOPERASI PERCONTOHAN
-                        TERBAIK DI INDONESIA</h3>
-                    <p class="text-base">
+            <div
+                class="relative bg-orange-400 rounded-lg md:p-10 md:pb-0 p-6 pb-0 mb-12 flex flex-col md:flex-row gap-6 items-center md:items-start">
+                <div class="flex-1 text-sm text-white">
+                    <h3 class="font-bold text-lg mb-4">
+                        KOPERASI KPRI UNEJ ADALAH SALAH SATU KOPERASI PERCONTOHAN TERBAIK DI INDONESIA
+                    </h3>
+                    <p class="text-justify">
                         Koperasi Pegawai Republik Indonesia (KPRI) Universitas Jember merupakan salah satu koperasi
-                        percontohan terbaik di Indonesia yang telah berdiri sejak 1979. Dengan layanan simpan pinjam, toko
-                        kebutuhan harian, dan pengelolaan yang profesional serta transparan, KPRI UNEJ berhasil meraih
-                        berbagai penghargaan nasional dan menjadi inspirasi bagi koperasi lain. Didukung penuh oleh civitas
-                        akademika Universitas Jember, koperasi ini terus berinovasi dan berkembang sebagai koperasi modern
-                        yang mengedepankan kesejahteraan anggota dan semangat gotong royong.
+                        percontohan terbaik di Indonesia sejak 1979. Layanan simpan pinjam, toko kebutuhan harian, dan
+                        pengelolaan profesional menjadikan KPRI UNEJ inspirasi nasional yang terus berinovasi demi
+                        kesejahteraan anggota.
                     </p>
                 </div>
-
-                <div>
-                    <img src="{{ asset('images/award.jpg') }}" alt="Penghargaan KPRI UNEJ"
-                        class="w-full h-auto rounded-lg shadow-md">
+                <div class="w-full md:w-1/3">
+                    <img src="{{ asset('images/info.png') }}" alt="Koperasi KPRI" class="rounded-lg w-full object-cover" />
                 </div>
             </div>
 
-            <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
-                <div
-                    class="bg-white dark:bg-gray-800 rounded-lg shadow-md overflow-hidden transition-transform duration-300 hover:transform hover:scale-105">
-                    <img src="{{ asset('images/article-1.jpg') }}" alt="Artikel" class="w-full h-48 object-cover">
-                    <div class="p-6">
-                        <h4 class="text-xl font-bold mb-3 text-gray-800 dark:text-white">PELATIHAN PENGELOLA KKPRI UNEJ DAN
-                            BERKELAS</h4>
-                        <p class="text-gray-600 dark:text-gray-300 mb-4">Pelatihan dan peningkatan kapasitas Pengelola KKPRI
-                            UNEJ merupakan agenda rutin Koperasi KPRI UNEJ, hal ini bertujuan...</p>
-                        <a href="#"
-                            class="inline-block bg-amber-500 hover:bg-amber-600 text-white font-medium py-2 px-4 rounded-md transition duration-300">Baca
-                            Selengkapnya</a>
+            <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-8">
+                @foreach ([['img' => 'article-1.jpg', 'title' => 'PELATIHAN PENGELOLA KKPRI UNEJ DAN BERKELAS'], ['img' => 'article-2.jpg', 'title' => 'PENINGKATAN KAPASITAS PENGELOLA KKPRI UNTUK KOPERASI MANDIRI'], ['img' => 'article-3.jpg', 'title' => 'PENINGKATAN KAPASITAS PENGELOLA KOPERASI YANG MANDIRI']] as $article)
+                    <div
+                        class="bg-white dark:bg-gray-800 rounded-lg shadow-md overflow-hidden transition duration-300 hover:scale-105">
+                        <img src="{{ asset('images/' . $article['img']) }}" alt="Artikel" class="w-full h-48 object-cover">
+                        <div class="p-6">
+                            <h4 class="text-xl font-bold mb-3 text-gray-800 dark:text-white">{{ $article['title'] }}</h4>
+                            <p class="text-gray-600 dark:text-gray-300 mb-4">Pelatihan dan peningkatan kapasitas Pengelola
+                                KKPRI UNEJ merupakan agenda rutin koperasi, bertujuan untuk memperkuat profesionalisme
+                                pengelolaan koperasi.</p>
+                            <a href="#"
+                                class="inline-block bg-amber-500 hover:bg-amber-600 text-white font-medium py-2 px-4 rounded-md transition duration-300">Baca
+                                Selengkapnya</a>
+                        </div>
                     </div>
-                </div>
-
-                <div
-                    class="bg-white dark:bg-gray-800 rounded-lg shadow-md overflow-hidden transition-transform duration-300 hover:transform hover:scale-105">
-                    <img src="{{ asset('images/article-2.jpg') }}" alt="Artikel" class="w-full h-48 object-cover">
-                    <div class="p-6">
-                        <h4 class="text-xl font-bold mb-3 text-gray-800 dark:text-white">PENINGKATAN KAPASITAS PENGELOLA
-                            KKPRI UNEJ UNTUK KOPERASI YANG MANDIRI DAN BERKELAS</h4>
-                        <p class="text-gray-600 dark:text-gray-300 mb-4">Pelatihan dan peningkatan kapasitas Pengelola KKPRI
-                            UNEJ merupakan agenda rutin Koperasi KPRI UNEJ, hal ini bertujuan...</p>
-                        <a href="#"
-                            class="inline-block bg-amber-500 hover:bg-amber-600 text-white font-medium py-2 px-4 rounded-md transition duration-300">Baca
-                            Selengkapnya</a>
-                    </div>
-                </div>
-
-                <div
-                    class="bg-white dark:bg-gray-800 rounded-lg shadow-md overflow-hidden transition-transform duration-300 hover:transform hover:scale-105">
-                    <img src="{{ asset('images/article-3.jpg') }}" alt="Artikel" class="w-full h-48 object-cover">
-                    <div class="p-6">
-                        <h4 class="text-xl font-bold mb-3 text-gray-800 dark:text-white">PENINGKATAN KAPASITAS PENGELOLA
-                            KKPRI UNEJ UNTUK KOPERASI YANG MANDIRI</h4>
-                        <p class="text-gray-600 dark:text-gray-300 mb-4">Pelatihan dan peningkatan kapasitas Pengelola KKPRI
-                            UNEJ merupakan agenda rutin Koperasi KPRI UNEJ, hal ini bertujuan...</p>
-                        <a href="#"
-                            class="inline-block bg-amber-500 hover:bg-amber-600 text-white font-medium py-2 px-4 rounded-md transition duration-300">Baca
-                            Selengkapnya</a>
-                    </div>
-                </div>
+                @endforeach
             </div>
 
             <div class="text-center mt-12">
