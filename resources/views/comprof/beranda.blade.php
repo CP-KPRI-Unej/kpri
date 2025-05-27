@@ -91,24 +91,29 @@
                 </div>
             </div>
 
-            <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-8">
-                @foreach ([['img' => 'article-1.jpg', 'title' => 'PELATIHAN PENGELOLA KKPRI UNEJ DAN BERKELAS'], ['img' => 'article-2.jpg', 'title' => 'PENINGKATAN KAPASITAS PENGELOLA KKPRI UNTUK KOPERASI MANDIRI'], ['img' => 'article-3.jpg', 'title' => 'PENINGKATAN KAPASITAS PENGELOLA KOPERASI YANG MANDIRI']] as $article)
-                    <div
-                        class="bg-white dark:bg-gray-800 rounded-lg shadow-md overflow-hidden transition duration-300 hover:scale-105">
-                        <img src="{{ asset('images/' . $article['img']) }}" alt="Artikel" class="w-full h-48 object-cover">
-                        <div class="p-6">
-                            <h4 class="text-xl font-bold mb-3 text-gray-800 dark:text-white">{{ $article['title'] }}</h4>
-                            <p class="text-gray-600 dark:text-gray-300 mb-4">Pelatihan dan peningkatan kapasitas Pengelola
-                                KKPRI UNEJ merupakan agenda rutin koperasi, bertujuan untuk memperkuat profesionalisme
-                                pengelolaan koperasi.</p>
-                            <a href="#"
-                                class="inline-block bg-amber-500 hover:bg-amber-600 text-white font-medium py-2 px-4 rounded-md transition duration-300">Baca
-                                Selengkapnya</a>
-                        </div>
-                    </div>
-                @endforeach
+            <div id="artikel-splide" class="splide">
+                <div class="splide__track">
+                    <ul class="splide__list">
+                        @foreach ([['img' => 'info.png', 'title' => 'PELATIHAN PENGELOLA KKPRI UNEJ DAN BERKELAS'], ['img' => 'info.png', 'title' => 'PENINGKATAN KAPASITAS PENGELOLA KKPRI UNTUK KOPERASI MANDIRI'], ['img' => 'info.png', 'title' => 'PENINGKATAN KAPASITAS PENGELOLA KOPERASI YANG MANDIRI']] as $article)
+                            <li class="splide__slide">
+                                <div
+                                    class="bg-white dark:bg-gray-800 rounded-lg shadow-md overflow-hidden transition duration-300 hover:scale-105 p-4">
+                                    <img src="{{ asset('images/' . $article['img']) }}" alt="Artikel"
+                                        class="w-full h-48 object-cover rounded-md mb-4">
+                                    <h4 class="text-xl font-bold mb-3 text-gray-800 dark:text-white">{{ $article['title'] }}
+                                    </h4>
+                                    <p class="text-gray-600 dark:text-gray-300 mb-4">Pelatihan dan peningkatan kapasitas
+                                        Pengelola KKPRI UNEJ merupakan agenda rutin koperasi, bertujuan untuk memperkuat
+                                        profesionalisme pengelolaan koperasi.</p>
+                                    <a href="#"
+                                        class="inline-block bg-amber-500 hover:bg-amber-600 text-white font-medium py-2 px-4 rounded-md transition duration-300">Baca
+                                        Selengkapnya</a>
+                                </div>
+                            </li>
+                        @endforeach
+                    </ul>
+                </div>
             </div>
-
             <div class="text-center mt-12">
                 <a href="#"
                     class="inline-block border border-amber-500 text-amber-500 hover:bg-amber-500 hover:text-white font-medium py-2 px-6 rounded-md transition duration-300">Lihat

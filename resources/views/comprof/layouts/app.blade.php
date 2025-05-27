@@ -9,6 +9,8 @@
     <link rel="icon" href="{{ asset('images/logo.png') }}" type="image/png">
 
     <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@splidejs/splide@4.1.4/dist/css/splide.min.css">
+
 
     @vite('resources/css/app.css')
 
@@ -49,6 +51,48 @@
             }
         });
     </script>
+    <script src="https://cdn.jsdelivr.net/npm/@splidejs/splide@4.1.4/dist/js/splide.min.js"></script>
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            new Splide('#produk-splide', {
+                type: 'loop',
+                perPage: 3,
+                gap: '1rem',
+                pagination: false,
+                arrows: true,
+                breakpoints: {
+                    768: {
+                        perPage: 1,
+                    },
+                    1024: {
+                        perPage: 2,
+                    },
+                },
+            }).mount();
+        });
+    </script>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            new Splide('#artikel-splide', {
+                type: 'loop',
+                perPage: 3,
+                perMove: 1,
+                gap: '1rem',
+                breakpoints: {
+                    1024: {
+                        perPage: 2,
+                    },
+                    640: {
+                        perPage: 1,
+                    },
+                },
+                autoplay: true,
+                interval: 5000,
+            }).mount();
+        });
+    </script>
+
 
     @stack('scripts')
 </body>

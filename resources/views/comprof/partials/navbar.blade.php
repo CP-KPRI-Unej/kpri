@@ -29,8 +29,8 @@
                     class="{{ request()->routeIs('unit-jasa') ? 'text-amber-500' : 'text-gray-700 dark:text-gray-300' }} hover:text-amber-500 dark:hover:text-amber-400 px-3 py-2 text-sm font-medium">
                     Unit Jasa
                 </a>
-                <a href="{{ route('store') }}"
-                    class="{{ request()->routeIs('store') ? 'text-amber-500' : 'text-gray-700 dark:text-gray-300' }} hover:text-amber-500 dark:hover:text-amber-400 px-3 py-2 text-sm font-medium">
+                <a href="{{ route('unit-toko') }}"
+                    class="{{ request()->routeIs('unit-toko') ? 'text-amber-500' : 'text-gray-700 dark:text-gray-300' }} hover:text-amber-500 dark:hover:text-amber-400 px-3 py-2 text-sm font-medium">
                     Unit Toko
                 </a>
                 <a href="{{ route('members') }}"
@@ -95,8 +95,8 @@
                 class="{{ request()->routeIs('unit-jasa') ? 'bg-amber-500 text-white' : 'text-gray-700 dark:text-gray-300 hover:bg-amber-500 hover:text-white' }} block px-3 py-2 rounded-md text-base font-medium">
                 Unit Jasa
             </a>
-            <a href="{{ route('store') }}"
-                class="{{ request()->routeIs('store') ? 'bg-amber-500 text-white' : 'text-gray-700 dark:text-gray-300 hover:bg-amber-500 hover:text-white' }} block px-3 py-2 rounded-md text-base font-medium">
+            <a href="{{ route('unit-toko') }}"
+                class="{{ request()->routeIs('unit-toko') ? 'bg-amber-500 text-white' : 'text-gray-700 dark:text-gray-300 hover:bg-amber-500 hover:text-white' }} block px-3 py-2 rounded-md text-base font-medium">
                 Unit Toko
             </a>
             <a href="{{ route('members') }}"

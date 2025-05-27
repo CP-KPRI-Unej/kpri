@@ -54,8 +54,8 @@ Route::get("unit-jasa", function () {
     return view("comprof.unit-jasa");
 })->name('unit-jasa');
 Route::get("unit-toko", function () {
-    return view("comprof.beranda");
-})->name('store');
+    return view("comprof.unit-toko");
+})->name('unit-toko');
 Route::get("info-anggota", function () {
     return view("comprof.beranda");
 })->name('members');
