@@ -137,6 +137,10 @@
                 </ol>
             </div>
         </section>
-
+        <a href="https://wa.me/6281234567890" target="_blank"
+            class="fixed bottom-20 left-10 z-50 flex items-center gap-2 bg-orange-500 text-white px-4 py-2 rounded-full shadow-lg hover:bg-orange-600 transition-all">
+            <span class="text-sm md:text-base">Hubungi Kami</span>
+            <img src="{{ asset('images/whatsapp-icon.png') }}" alt="WhatsApp" class="w-6 h-6" />
+        </a>
     </div>
 @endsection
