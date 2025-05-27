@@ -38,26 +38,26 @@ View::composer('admin.layouts.sidebar', function ($view) {
     $view->with('jenisLayanans', JenisLayanan::all());
 });
 
-Route::get("guest/home", function () {
-    return view("comprof.home");
-})->name('home');
-Route::get("guest/tentang-kami", function () {
-    return view("comprof.profile");
-})->name('about');
-Route::get("guest/gerai-layanan", function () {
-    return view("comprof.home");
-})->name('services');
-Route::get("guest/unit-simpan-pinjam", function () {
-    return view("comprof.home");
-})->name('savings');
-Route::get("guest/unit-jasa", function () {
-    return view("comprof.home");
-})->name('services-unit');
-Route::get("guest/unit-toko", function () {
-    return view("comprof.home");
+Route::get("beranda", function () {
+    return view("comprof.beranda");
+})->name('beranda');
+Route::get("tentang-kami", function () {
+    return view("comprof.profil");
+})->name('tentang-kami');
+Route::get("gerai-layanan", function () {
+    return view("comprof.gerai-layanan");
+})->name('gerai-layanan');
+Route::get("unit-simpan-pinjam", function () {
+    return view("comprof.unit-simpan-pinjam");
+})->name('unit-simpan-pinjam');
+Route::get("unit-jasa", function () {
+    return view("comprof.unit-jasa");
+})->name('unit-jasa');
+Route::get("unit-toko", function () {
+    return view("comprof.beranda");
 })->name('store');
-Route::get("guest/info-anggota", function () {
-    return view("comprof.home");
+Route::get("info-anggota", function () {
+    return view("comprof.beranda");
 })->name('members');
 
 Route::get('/', [LinktreeController::class, 'index']);

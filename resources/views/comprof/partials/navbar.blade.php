@@ -2,31 +2,31 @@
     <div class="container mx-auto px-4 sm:px-6 lg:px-8">
         <div class="flex justify-between h-16">
             <div class="flex items-center">
-                <a href="{{ route('home') }}" class="flex items-center">
+                <a href="{{ route('beranda') }}" class="flex items-center">
                     <img src="{{ asset('images/logo.png') }}" alt="KPRI UNEJ Logo" class="h-10 w-10 mr-2">
                     <span class="font-bold text-gray-900 dark:text-white">KPRI UNIVERSITAS JEMBER</span>
                 </a>
             </div>
 
             <div class="hidden md:flex md:items-center md:space-x-6">
-                <a href="{{ route('home') }}"
-                    class="{{ request()->routeIs('home') ? 'text-amber-500' : 'text-gray-700 dark:text-gray-300' }} hover:text-amber-500 dark:hover:text-amber-400 px-3 py-2 text-sm font-medium">
+                <a href="{{ route('beranda') }}"
+                    class="{{ request()->routeIs('beranda') ? 'text-amber-500' : 'text-gray-700 dark:text-gray-300' }} hover:text-amber-500 dark:hover:text-amber-400 px-3 py-2 text-sm font-medium">
                     Beranda
                 </a>
-                <a href="{{ route('about') }}"
-                    class="{{ request()->routeIs('about') ? 'text-amber-500' : 'text-gray-700 dark:text-gray-300' }} hover:text-amber-500 dark:hover:text-amber-400 px-3 py-2 text-sm font-medium">
+                <a href="{{ route('tentang-kami') }}"
+                    class="{{ request()->routeIs('tentang-kami') ? 'text-amber-500' : 'text-gray-700 dark:text-gray-300' }} hover:text-amber-500 dark:hover:text-amber-400 px-3 py-2 text-sm font-medium">
                     Tentang Kami
                 </a>
-                <a href="{{ route('services') }}"
-                    class="{{ request()->routeIs('services') ? 'text-amber-500' : 'text-gray-700 dark:text-gray-300' }} hover:text-amber-500 dark:hover:text-amber-400 px-3 py-2 text-sm font-medium">
+                <a href="{{ route('gerai-layanan') }}"
+                    class="{{ request()->routeIs('gerai-layanan') ? 'text-amber-500' : 'text-gray-700 dark:text-gray-300' }} hover:text-amber-500 dark:hover:text-amber-400 px-3 py-2 text-sm font-medium">
                     Gerai Layanan
                 </a>
-                <a href="{{ route('savings') }}"
-                    class="{{ request()->routeIs('savings') ? 'text-amber-500' : 'text-gray-700 dark:text-gray-300' }} hover:text-amber-500 dark:hover:text-amber-400 px-3 py-2 text-sm font-medium">
+                <a href="{{ route('unit-simpan-pinjam') }}"
+                    class="{{ request()->routeIs('unit-simpan-pinjam') ? 'text-amber-500' : 'text-gray-700 dark:text-gray-300' }} hover:text-amber-500 dark:hover:text-amber-400 px-3 py-2 text-sm font-medium">
                     Unit Simpan Pinjam
                 </a>
-                <a href="{{ route('services-unit') }}"
-                    class="{{ request()->routeIs('services-unit') ? 'text-amber-500' : 'text-gray-700 dark:text-gray-300' }} hover:text-amber-500 dark:hover:text-amber-400 px-3 py-2 text-sm font-medium">
+                <a href="{{ route('unit-jasa') }}"
+                    class="{{ request()->routeIs('unit-jasa') ? 'text-amber-500' : 'text-gray-700 dark:text-gray-300' }} hover:text-amber-500 dark:hover:text-amber-400 px-3 py-2 text-sm font-medium">
                     Unit Jasa
                 </a>
                 <a href="{{ route('store') }}"
@@ -75,24 +75,24 @@
         x-transition:enter-end="opacity-100 translate-y-0" x-transition:leave="transition ease-in duration-150"
         x-transition:leave-start="opacity-100 translate-y-0" x-transition:leave-end="opacity-0 -translate-y-1">
         <div class="px-2 pt-2 pb-3 space-y-1 sm:px-3">
-            <a href="{{ route('home') }}"
-                class="{{ request()->routeIs('home') ? 'bg-amber-500 text-white' : 'text-gray-700 dark:text-gray-300 hover:bg-amber-500 hover:text-white' }} block px-3 py-2 rounded-md text-base font-medium">
+            <a href="{{ route('beranda') }}"
+                class="{{ request()->routeIs('beranda') ? 'bg-amber-500 text-white' : 'text-gray-700 dark:text-gray-300 hover:bg-amber-500 hover:text-white' }} block px-3 py-2 rounded-md text-base font-medium">
                 Beranda
             </a>
-            <a href="{{ route('about') }}"
-                class="{{ request()->routeIs('about') ? 'bg-amber-500 text-white' : 'text-gray-700 dark:text-gray-300 hover:bg-amber-500 hover:text-white' }} block px-3 py-2 rounded-md text-base font-medium">
+            <a href="{{ route('tentang-kami') }}"
+                class="{{ request()->routeIs('tentang-kami') ? 'bg-amber-500 text-white' : 'text-gray-700 dark:text-gray-300 hover:bg-amber-500 hover:text-white' }} block px-3 py-2 rounded-md text-base font-medium">
                 Tentang Kami
             </a>
-            <a href="{{ route('services') }}"
-                class="{{ request()->routeIs('services') ? 'bg-amber-500 text-white' : 'text-gray-700 dark:text-gray-300 hover:bg-amber-500 hover:text-white' }} block px-3 py-2 rounded-md text-base font-medium">
+            <a href="{{ route('gerai-layanan') }}"
+                class="{{ request()->routeIs('gerai-layanan') ? 'bg-amber-500 text-white' : 'text-gray-700 dark:text-gray-300 hover:bg-amber-500 hover:text-white' }} block px-3 py-2 rounded-md text-base font-medium">
                 Gerai Layanan
             </a>
-            <a href="{{ route('savings') }}"
-                class="{{ request()->routeIs('savings') ? 'bg-amber-500 text-white' : 'text-gray-700 dark:text-gray-300 hover:bg-amber-500 hover:text-white' }} block px-3 py-2 rounded-md text-base font-medium">
+            <a href="{{ route('unit-simpan-pinjam') }}"
+                class="{{ request()->routeIs('unit-simpan-pinjam') ? 'bg-amber-500 text-white' : 'text-gray-700 dark:text-gray-300 hover:bg-amber-500 hover:text-white' }} block px-3 py-2 rounded-md text-base font-medium">
                 Unit Simpan Pinjam
             </a>
-            <a href="{{ route('services-unit') }}"
-                class="{{ request()->routeIs('services-unit') ? 'bg-amber-500 text-white' : 'text-gray-700 dark:text-gray-300 hover:bg-amber-500 hover:text-white' }} block px-3 py-2 rounded-md text-base font-medium">
+            <a href="{{ route('unit-jasa') }}"
+                class="{{ request()->routeIs('unit-jasa') ? 'bg-amber-500 text-white' : 'text-gray-700 dark:text-gray-300 hover:bg-amber-500 hover:text-white' }} block px-3 py-2 rounded-md text-base font-medium">
                 Unit Jasa
             </a>
             <a href="{{ route('store') }}"

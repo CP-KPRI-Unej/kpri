@@ -1,29 +1,96 @@
 @extends('comprof.layouts.app')
 
-@section('title', 'Profil')
+@section('title', 'Beranda')
 
 @section('content')
-    <section
-        class="flex flex-col justify-center pt-3 pb-3 text-center h-[500px] px-4 relative w-full bg-[url('/images/hero-profile.png')] bg-cover bg-center">
-        <h1 class="text-4xl font-bold text-orange-500 mb-2">Visi</h1>
-        <p class="text-sm text-black">
-            “Menjadi Koperasi Terbaik Dalam Mensejahterakan Anggota dan Bermitra
-            Dengan Stakeholders”
-        </p>
-        <h1 class="text-4xl mt-5 font-bold text-orange-500 mb-2">Misi</h1>
-        <ol class="list-decimal text-sm text-black mx-auto md:pl-5 pl-10 text-left">
-            <li>Menyediakan Pelayanan Prima bagi anggota.</li>
-            <li>Mewujudkan Sumber Daya Manusia koperasi yang professional.</li>
-            <li>Menyediakan teknologi informasi yang handal.</li>
-            <li>Membangun jaringan usaha dengan pihak yang berkepentingan.</li>
-            <li>Meningkatkan social kepada anggota dan masyarakat sekitar.</li>
-            <li>Bersinergi dengan perguruan tinggi.</li>
-        </ol>
+    <section class="relative  text-white">
+        <div class="absolute inset-0 bg-black opacity-60 z-0"></div>
+        <img src="{{ asset('images/hero.png') }}" alt="Hero Background"
+            class="absolute inset-0 w-full h-full object-cover z-[-1]">
+
+        <div class="container mx-auto px-4 sm:px-6 lg:px-8 py-24 md:py-32 lg:py-40 relative z-10">
+            <div class="max-w-3xl">
+                <h1 class="text-3xl md:text-4xl lg:text-5xl font-bold mb-6 leading-tight">KPRI Universitas Jember untuk Masa
+                    Depan yang Lebih Sejahtera</h1>
+                <p class="text-lg md:text-xl mb-8 text-gray-200">Solusi keuangan dan kebutuhan harian yang dikelola secara
+                    profesional dan transparan.</p>
+                <a href="{{ route('tentang-kami') }}"
+                    class="inline-block bg-amber-500 hover:bg-amber-600 text-white font-medium py-3 px-6 rounded-md transition duration-300">Pelajari
+                    Lebih Lanjut</a>
+            </div>
+        </div>
     </section>
+    <section class="py-12 px-4 mb-5">
+        <div class="flex flex-col lg:flex-row gap-10 justify-center items-start">
+            <div class="flex flex-col md:flex-row gap-6 w-full lg:w-[40%]">
+                <div class="w-full md:w-1/2 h-3/4">
+                    <img src="{{ asset('images/visi-misi-1.png') }}" alt="Cooperative Officials"
+                        class="w-full h-full object-cover rounded-3xl" />
+                </div>
+                <div class="w-full md:w-1/2 h-full">
+                    <img src="{{ asset('images/visi-misi-2.png') }}" alt="Cooperative Officials"
+                        class="w-full h-full object-cover rounded-3xl max-h-[600px]" />
+                </div>
+            </div>
+
+            <div class="space-y-10 w-full lg:w-[60%]">
+                <div class="bg-orange-500 text-white p-6 rounded-lg">
+                    <h2 class="text-xl font-bold mb-4">
+                        Visi
+                        <div class="flex w-16 gap-1">
+                            <hr class="border-2 w-10 border-red-600 rounded-sm" />
+                            <hr class="border-2 w-2 border-red-600 rounded-sm" />
+                        </div>
+                    </h2>
+                    <p>
+                        "Menjadi Koperasi Terbaik Dalam Mensejahterakan Anggota dan Bermitra Dengan Stakeholders"
+                    </p>
+                </div>
+
+                <div class="border border-gray-200 p-6 rounded-lg bg-white">
+                    <h2 class="text-xl font-bold mb-4 pb-2">
+                        Misi
+                        <div class="flex w-16 gap-1">
+                            <hr class="border-2 w-10 border-red-600 rounded-sm" />
+                            <hr class="border-2 w-2 border-red-600 rounded-sm" />
+                        </div>
+                    </h2>
+                    <ol class="list-decimal pl-6 space-y-2 mt-4 text-gray-700">
+                        <li>Menyediakan Pelayanan Prima bagi anggota.</li>
+                        <li>Mewujudkan SDM koperasi yang profesional.</li>
+                        <li>Menyediakan teknologi informasi yang handal.</li>
+                        <li>Membangun jaringan usaha dengan pihak yang berkepentingan.</li>
+                        <li>Meningkatkan kontribusi sosial kepada anggota dan masyarakat sekitar.</li>
+                        <li>Bersinergi dengan perguruan tinggi.</li>
+                    </ol>
+                </div>
+            </div>
+        </div>
+    </section>
+
 
     <section class="py-16 bg-white dark:bg-gray-900">
         <div class="container mx-auto px-4">
             <h2 class="text-3xl font-bold text-center text-amber-500 mb-12">Artikel Terbaru</h2>
+
+            <div
+                class="relative bg-orange-400 rounded-lg md:p-10 md:pb-0 p-6 pb-0 mb-12 flex flex-col md:flex-row gap-6 items-center md:items-start">
+                <div class="flex-1 text-sm text-white">
+                    <h3 class="font-bold text-lg mb-4">
+                        KOPERASI KPRI UNEJ ADALAH SALAH SATU KOPERASI PERCONTOHAN TERBAIK DI INDONESIA
+                    </h3>
+                    <p class="text-justify">
+                        Koperasi Pegawai Republik Indonesia (KPRI) Universitas Jember merupakan salah satu koperasi
+                        percontohan terbaik di Indonesia sejak 1979. Layanan simpan pinjam, toko kebutuhan harian, dan
+                        pengelolaan profesional menjadikan KPRI UNEJ inspirasi nasional yang terus berinovasi demi
+                        kesejahteraan anggota.
+                    </p>
+                </div>
+                <div class="w-full md:w-1/3">
+                    <img src="{{ asset('images/info.png') }}" alt="Koperasi KPRI" class="rounded-lg w-full object-cover" />
+                </div>
+            </div>
+
             <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-8">
                 @foreach ([['img' => 'article-1.jpg', 'title' => 'PELATIHAN PENGELOLA KKPRI UNEJ DAN BERKELAS'], ['img' => 'article-2.jpg', 'title' => 'PENINGKATAN KAPASITAS PENGELOLA KKPRI UNTUK KOPERASI MANDIRI'], ['img' => 'article-3.jpg', 'title' => 'PENINGKATAN KAPASITAS PENGELOLA KOPERASI YANG MANDIRI']] as $article)
                     <div
@@ -47,31 +114,6 @@
                     class="inline-block border border-amber-500 text-amber-500 hover:bg-amber-500 hover:text-white font-medium py-2 px-6 rounded-md transition duration-300">Lihat
                     Semua Artikel</a>
             </div>
-        </div>
-    </section>
-
-    <section class="py-16 bg-white dark:bg-gray-900">
-        <div class="container mx-auto px-4">
-            <h2 class="text-3xl font-bold text-center text-amber-500 mb-12">SEJARAH SINGKAT</h2>
-
-            <div
-                class="relative bg-orange-400 rounded-lg md:p-10 md:pb-0 p-6 pb-0 mb-12 flex flex-col md:flex-row gap-6 items-center md:items-start">
-                <div class="flex-1 text-sm text-white">
-                    <h3 class="font-bold text-lg mb-4">
-                        KOPERASI KPRI UNEJ ADALAH SALAH SATU KOPERASI PERCONTOHAN TERBAIK DI INDONESIA
-                    </h3>
-                    <p class="text-justify">
-                        Koperasi Pegawai Republik Indonesia (KPRI) Universitas Jember merupakan salah satu koperasi
-                        percontohan terbaik di Indonesia sejak 1979. Layanan simpan pinjam, toko kebutuhan harian, dan
-                        pengelolaan profesional menjadikan KPRI UNEJ inspirasi nasional yang terus berinovasi demi
-                        kesejahteraan anggota.
-                    </p>
-                </div>
-                <div class="w-full md:w-1/3">
-                    <img src="{{ asset('images/info.png') }}" alt="Koperasi KPRI" class="rounded-lg w-full object-cover" />
-                </div>
-            </div>
-
         </div>
     </section>
 
