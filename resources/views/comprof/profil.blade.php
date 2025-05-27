@@ -23,32 +23,25 @@
 
     <section class="py-16 bg-white dark:bg-gray-900">
         <div class="container mx-auto px-4">
-            <h2 class="text-3xl font-bold text-center text-orange-500 mb-12">Artikel Terbaru</h2>
-            <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-8">
-                @foreach ([['img' => 'article-1.jpg', 'title' => 'PELATIHAN PENGELOLA KKPRI UNEJ DAN BERKELAS'], ['img' => 'article-2.jpg', 'title' => 'PENINGKATAN KAPASITAS PENGELOLA KKPRI UNTUK KOPERASI MANDIRI'], ['img' => 'article-3.jpg', 'title' => 'PENINGKATAN KAPASITAS PENGELOLA KOPERASI YANG MANDIRI']] as $article)
-                    <div
-                        class="bg-white dark:bg-gray-800 rounded-lg shadow-md overflow-hidden transition duration-300 hover:scale-105">
-                        <img src="{{ asset('images/' . $article['img']) }}" alt="Artikel" class="w-full h-48 object-cover">
-                        <div class="p-6">
-                            <h4 class="text-xl font-bold mb-3 text-gray-800 dark:text-white">{{ $article['title'] }}</h4>
-                            <p class="text-gray-600 dark:text-gray-300 mb-4">Pelatihan dan peningkatan kapasitas Pengelola
-                                KKPRI UNEJ merupakan agenda rutin koperasi, bertujuan untuk memperkuat profesionalisme
-                                pengelolaan koperasi.</p>
-                            <a href="#"
-                                class="inline-block bg-amber-500 hover:bg-amber-600 text-white font-medium py-2 px-4 rounded-md transition duration-300">Baca
-                                Selengkapnya</a>
-                        </div>
-                    </div>
-                @endforeach
-            </div>
+            <h2 class="text-3xl font-bold text-center text-orange-500 mb-12">Galeri Foto</h2>
 
-            <div class="text-center mt-12">
-                <a href="#"
-                    class="inline-block border border-amber-500 text-orange-500 hover:bg-amber-500 hover:text-white font-medium py-2 px-6 rounded-md transition duration-300">Lihat
-                    Semua Artikel</a>
+            <div id="splide" class="splide">
+                <div class="splide__track">
+                    <ul class="splide__list">
+                        @foreach ([['img' => 'info.png'], ['img' => 'info.png'], ['img' => 'info.png'], ['img' => 'info.png'], ['img' => 'info.png'], ['img' => 'info.png'], ['img' => 'info.png']] as $article)
+                            <li class="splide__slide">
+                                <div class="bg-white dark:bg-gray-800 rounded-lg shadow-md overflow-hidden w-full h-80">
+                                    <img src="{{ asset('images/' . $article['img']) }}" alt="Artikel"
+                                        class="w-full h-80 object-cover">
+                                </div>
+                            </li>
+                        @endforeach
+                    </ul>
+                </div>
             </div>
         </div>
     </section>
+
 
     <section class="flex flex-col justify-center pt-14 pb-3 text-center px-4 relative">
         <div class="w-3/4 m-auto flex flex-col gap-4">

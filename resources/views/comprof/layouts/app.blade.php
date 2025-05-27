@@ -93,6 +93,25 @@
         });
     </script>
 
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            new Splide('#splide', {
+                type: 'loop',
+                perPage: 3,
+                perMove: 1,
+                gap: '1rem',
+                breakpoints: {
+                    640: {
+                        perPage: 1,
+                    },
+                    768: {
+                        perPage: 2,
+                    },
+                },
+                autoplay: true,
+            }).mount();
+        });
+    </script>
 
     @stack('scripts')
 </body>
