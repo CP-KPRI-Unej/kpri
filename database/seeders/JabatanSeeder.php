@@ -20,15 +20,16 @@ class JabatanSeeder extends Seeder
                 ['nama_jabatan' => 'Sekretaris'],
                 ['nama_jabatan' => 'Bendahara'],
                 ['nama_jabatan' => 'Anggota'],
+                ['nama_jabatan' => 'Pengawas'],
             ];
-            
+
             foreach ($jabatan as $jbt) {
                 Jabatan::create($jbt);
             }
-            
+
             $this->command->info('Jabatan data seeded successfully!');
         } else {
             $this->command->info('Jabatan data already exists, skipping seeder.');
         }
     }
-} 
+}
