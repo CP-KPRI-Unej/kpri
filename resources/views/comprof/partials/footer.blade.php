@@ -1,6 +1,6 @@
 <footer class="bg-white dark:bg-gray-800 border-t border-gray-200 dark:border-gray-700">
     <div class="container mx-auto px-4 sm:px-6 lg:px-8 py-8">
-        <div class="flex justify-between">
+        <div class="flex justify-between flex-col md:flex-row">
             <div class="flex flex-col justify-center gap-6 items-center mb-6">
                 <img src="{{ asset('images/logo-footer.png') }}" alt="KPRI UNEJ Logo" class="h-28 w-28 mr-3">
                 <h4 class="text-lg font-bold text-gray-900 dark:text-white">KPRI UNIVERSITAS JEMBER</h4>
