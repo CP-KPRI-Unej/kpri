@@ -59,6 +59,9 @@ Route::get("unit-toko", function () {
 Route::get("info-anggota", function () {
     return view("comprof.beranda");
 })->name('members');
+Route::get('/artikel/peningkatan-kapasitas-pengelola-kkpri-unej', function () {
+    return view('article.artikel');
+})->name('articles.show');
 
 Route::get('/', [LinktreeController::class, 'index']);
 

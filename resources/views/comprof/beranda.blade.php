@@ -99,7 +99,7 @@
                                     <p class="text-gray-600 dark:text-gray-300 mb-4">Pelatihan dan peningkatan kapasitas
                                         Pengelola KKPRI UNEJ merupakan agenda rutin koperasi, bertujuan untuk memperkuat
                                         profesionalisme pengelolaan koperasi.</p>
-                                    <a href="#"
+                                    <a href={{ route('articles.show') }}
                                         class="inline-block bg-amber-500 hover:bg-amber-600 text-white font-medium py-2 px-4 rounded-md transition duration-300">Baca
                                         Selengkapnya</a>
                                 </div>
