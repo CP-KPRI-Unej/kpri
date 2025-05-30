@@ -53,7 +53,7 @@
                             <hr class="border-2 w-2 border-red-600 rounded-sm" />
                         </div>
                     </h2>
-                    <p class="text-sm text-black dark:text-white" x-html="$store.beranda.misi">
+                    <p class="text-sm text-black" x-html="$store.beranda.misi">
                         Memuat...
                     </p>
                 </div>
