@@ -109,7 +109,7 @@
                 </div>
             </div>
             <div class="text-center mt-12">
-                <a href="#"
+                <a href={{ route('articles.all') }}
                     class="inline-block border border-amber-500 text-amber-500 hover:bg-amber-500 hover:text-white font-medium py-2 px-6 rounded-md transition duration-300">Lihat
                     Semua Artikel</a>
             </div>

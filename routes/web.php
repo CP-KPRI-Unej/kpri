@@ -60,8 +60,11 @@ Route::get("info-anggota", function () {
     return view("comprof.beranda");
 })->name('members');
 Route::get('/artikel/peningkatan-kapasitas-pengelola-kkpri-unej', function () {
-    return view('article.artikel');
+    return view('article.artikel-detail');
 })->name('articles.show');
+Route::get('/artikel', function () {
+    return view('article.artikel');
+})->name('articles.all');
 
 Route::get('/', [LinktreeController::class, 'index']);
 
