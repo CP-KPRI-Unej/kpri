@@ -112,7 +112,6 @@
             }).mount();
         });
     </script>
-
     @stack('scripts')
 </body>
 

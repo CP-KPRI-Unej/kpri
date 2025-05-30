@@ -34,35 +34,24 @@
             </div>
 
             <div class="space-y-10 w-full lg:w-[60%]">
-                <div class="bg-orange-500 text-white p-6 rounded-lg">
-                    <h2 class="text-xl dark:text-black font-bold mb-4">
-                        Visi
+                <div id="visi" class="bg-orange-500 text-white p-6 rounded-lg">
+                    <h2 class="text-xl font-bold mb-4">Visi
                         <div class="flex w-16 gap-1">
                             <hr class="border-2 w-10 border-red-600 rounded-sm" />
                             <hr class="border-2 w-2 border-red-600 rounded-sm" />
                         </div>
                     </h2>
-                    <p>
-                        "Menjadi Koperasi Terbaik Dalam Mensejahterakan Anggota dan Bermitra Dengan Stakeholders"
-                    </p>
+                    <p id="visi-text"></p>
                 </div>
 
                 <div class="border border-gray-200 p-6 rounded-lg bg-white">
-                    <h2 class="text-xl dark:text-black font-bold mb-4 pb-2">
-                        Misi
+                    <h2 class="text-xl font-bold mb-4 dark:text-black">Misi
                         <div class="flex w-16 gap-1">
                             <hr class="border-2 w-10 border-red-600 rounded-sm" />
                             <hr class="border-2 w-2 border-red-600 rounded-sm" />
                         </div>
                     </h2>
-                    <ol class="list-decimal pl-6 space-y-2 mt-4 text-gray-700">
-                        <li>Menyediakan Pelayanan Prima bagi anggota.</li>
-                        <li>Mewujudkan SDM koperasi yang profesional.</li>
-                        <li>Menyediakan teknologi informasi yang handal.</li>
-                        <li>Membangun jaringan usaha dengan pihak yang berkepentingan.</li>
-                        <li>Meningkatkan kontribusi sosial kepada anggota dan masyarakat sekitar.</li>
-                        <li>Bersinergi dengan perguruan tinggi.</li>
-                    </ol>
+                    <div id="misi-text" class="mt-4 text-black"></div>
                 </div>
             </div>
         </div>
@@ -126,182 +115,129 @@
     <section class="py-16 md:py-24 bg-gray-50 dark:bg-gray-800">
         <div class="container mx-auto px-4 sm:px-6 lg:px-8">
             <h2 class="text-3xl font-bold text-center text-amber-500 mb-12">Pertanyaan yang Sering Diajukan</h2>
-
-            <div class="max-w-3xl mx-auto space-y-4" x-data="{ active: 2 }">
-                <div class="bg-white dark:bg-gray-700 rounded-lg shadow-md overflow-hidden">
-                    <button @click="active = active === 0 ? null : 0"
-                        class="w-full px-6 py-4 text-left font-bold text-gray-800 dark:text-white flex justify-between items-center"
-                        :class="{ 'bg-amber-500 text-white': active === 0 }">
-                        <span>Apakah KPRI UNEJ hanya bergerak di bidang simpan pinjam?</span>
-                        <svg class="w-5 h-5 transform transition-transform duration-300"
-                            :class="{ 'rotate-180': active === 0 }" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20"
-                            fill="currentColor">
-                            <path fill-rule="evenodd"
-                                d="M5.293 7.293a1 1 0 011.414 0L10 10.586l3.293-3.293a1 1 0 111.414 1.414l-4 4a1 1 0 01-1.414 0l-4-4a1 1 0 010-1.414z"
-                                clip-rule="evenodd" />
-                        </svg>
-                    </button>
-                    <div x-show="active === 0" x-transition:enter="transition ease-out duration-200"
-                        x-transition:enter-start="opacity-0 -translate-y-1"
-                        x-transition:enter-end="opacity-100 translate-y-0"
-                        x-transition:leave="transition ease-in duration-150"
-                        x-transition:leave-start="opacity-100 translate-y-0"
-                        x-transition:leave-end="opacity-0 -translate-y-1"
-                        class="px-6 py-4 text-gray-600 dark:text-gray-300">
-                        Tidak, KPRI UNEJ tidak hanya bergerak di bidang simpan pinjam. KPRI UNEJ juga memiliki unit usaha
-                        lain seperti toko kebutuhan harian, unit jasa, dan berbagai layanan lainnya untuk memenuhi kebutuhan
-                        anggota.
+            <div class="max-w-3xl mx-auto space-y-4" x-data="{ active: null }" x-init>
+                <template x-for="(faq, index) in $store.faqStore.faqs" :key="faq.id_faq">
+                    <div class="bg-amber-500 text-white rounded-lg shadow-md overflow-hidden">
+                        <button @click="active = active === index ? null : index"
+                            class="w-full px-6 py-4 text-left font-bold text-white flex justify-between items-center"
+                            :class="{ 'bg-amber-600': active === index }">
+                            <span x-text="faq.judul"></span>
+                            <svg class="w-5 h-5 transform transition-transform duration-300"
+                                :class="{ 'rotate-180': active === index }" xmlns="http://www.w3.org/2000/svg"
+                                viewBox="0 0 20 20" fill="currentColor">
+                                <path fill-rule="evenodd"
+                                    d="M5.293 7.293a1 1 0 011.414 0L10 10.586l3.293-3.293a1 1 0 111.414 1.414l-4 4a1 1 0 01-1.414 0l-4-4a1 1 0 010-1.414z"
+                                    clip-rule="evenodd" />
+                            </svg>
+                        </button>
+                        <hr class="w-11/12 m-auto">
+                        <div x-show="active === index" x-transition class="px-6 py-4 text-black dark:text-white">
+                            <p x-text="faq.deskripsi"></p>
+                        </div>
                     </div>
-                </div>
-
-                <div class="bg-white dark:bg-gray-700 rounded-lg shadow-md overflow-hidden">
-                    <button @click="active = active === 1 ? null : 1"
-                        class="w-full px-6 py-4 text-left font-bold text-gray-800 dark:text-white flex justify-between items-center"
-                        :class="{ 'bg-amber-500 text-white': active === 1 }">
-                        <span>Apa yang dimaksud dengan KPRI UNEJ?</span>
-                        <svg class="w-5 h-5 transform transition-transform duration-300"
-                            :class="{ 'rotate-180': active === 1 }" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20"
-                            fill="currentColor">
-                            <path fill-rule="evenodd"
-                                d="M5.293 7.293a1 1 0 011.414 0L10 10.586l3.293-3.293a1 1 0 111.414 1.414l-4 4a1 1 0 01-1.414 0l-4-4a1 1 0 010-1.414z"
-                                clip-rule="evenodd" />
-                        </svg>
-                    </button>
-                    <div x-show="active === 1" x-transition:enter="transition ease-out duration-200"
-                        x-transition:enter-start="opacity-0 -translate-y-1"
-                        x-transition:enter-end="opacity-100 translate-y-0"
-                        x-transition:leave="transition ease-in duration-150"
-                        x-transition:leave-start="opacity-100 translate-y-0"
-                        x-transition:leave-end="opacity-0 -translate-y-1"
-                        class="px-6 py-4 text-gray-600 dark:text-gray-300">
-                        KPRI UNEJ adalah singkatan dari Koperasi Pegawai Republik Indonesia Universitas Jember. Ini adalah
-                        koperasi yang didirikan untuk melayani kebutuhan finansial dan kesejahteraan para pegawai di
-                        lingkungan Universitas Jember.
-                    </div>
-                </div>
-
-                <div class="bg-white dark:bg-gray-700 rounded-lg shadow-md overflow-hidden">
-                    <button @click="active = active === 2 ? null : 2"
-                        class="w-full px-6 py-4 text-left font-bold text-gray-800 dark:text-white flex justify-between items-center"
-                        :class="{ 'bg-amber-500 text-white': active === 2 }">
-                        <span>Bagaimana cara bergabung dengan KPRI UNEJ?</span>
-                        <svg class="w-5 h-5 transform transition-transform duration-300"
-                            :class="{ 'rotate-180': active === 2 }" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20"
-                            fill="currentColor">
-                            <path fill-rule="evenodd"
-                                d="M5.293 7.293a1 1 0 011.414 0L10 10.586l3.293-3.293a1 1 0 111.414 1.414l-4 4a1 1 0 01-1.414 0l-4-4a1 1 0 010-1.414z"
-                                clip-rule="evenodd" />
-                        </svg>
-                    </button>
-                    <div x-show="active === 2" x-transition:enter="transition ease-out duration-200"
-                        x-transition:enter-start="opacity-0 -translate-y-1"
-                        x-transition:enter-end="opacity-100 translate-y-0"
-                        x-transition:leave="transition ease-in duration-150"
-                        x-transition:leave-start="opacity-100 translate-y-0"
-                        x-transition:leave-end="opacity-0 -translate-y-1"
-                        class="px-6 py-4 text-gray-600 dark:text-gray-300">
-                        Calon anggota dapat mendaftar melalui pengurus atau sekretariat KPRI UNEJ dengan memenuhi syarat
-                        administrasi dan menyetujui ketentuan yang berlaku dalam keanggotaan koperasi.
-                    </div>
-                </div>
+                </template>
             </div>
         </div>
     </section>
+
 
     <section class="py-16 md:py-24 bg-white dark:bg-gray-900">
         <div class="container mx-auto px-4 sm:px-6 lg:px-8">
             <h2 class="text-3xl font-bold text-center text-amber-500 mb-12">Download</h2>
 
-            <div class="grid grid-cols-1 md:grid-cols-2 gap-6 max-w-5xl mx-auto">
-                <div class="space-y-4">
-                    <a href="#"
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-6 max-w-5xl mx-auto" x-data>
+                <template x-for="file in $store.downloads.files" :key="file.id">
+                    <a :href="file.file_url" target="_blank"
                         class="block bg-gray-50 dark:bg-gray-800 hover:bg-amber-50 dark:hover:bg-amber-900/20 rounded-lg p-4 transition duration-300">
                         <div class="flex items-center">
                             <i class="fas fa-file-alt text-amber-500 text-2xl mr-4"></i>
-                            <span class="text-gray-700 dark:text-gray-300">Form Pengajuan Kredit Uang</span>
+                            <span class="text-gray-700 dark:text-gray-300" x-text="file.name"></span>
                         </div>
                     </a>
+                </template>
 
-                    <a href="#"
-                        class="block bg-gray-50 dark:bg-gray-800 hover:bg-amber-50 dark:hover:bg-amber-900/20 rounded-lg p-4 transition duration-300">
-                        <div class="flex items-center">
-                            <i class="fas fa-file-alt text-amber-500 text-2xl mr-4"></i>
-                            <span class="text-gray-700 dark:text-gray-300">Form Pengajuan Kredit Barang</span>
-                        </div>
-                    </a>
-
-                    <a href="#"
-                        class="block bg-gray-50 dark:bg-gray-800 hover:bg-amber-50 dark:hover:bg-amber-900/20 rounded-lg p-4 transition duration-300">
-                        <div class="flex items-center">
-                            <i class="fas fa-file-alt text-amber-500 text-2xl mr-4"></i>
-                            <span class="text-gray-700 dark:text-gray-300">Form Pendaftaran Anggota Baru</span>
-                        </div>
-                    </a>
-
-                    <a href="#"
-                        class="block bg-gray-50 dark:bg-gray-800 hover:bg-amber-50 dark:hover:bg-amber-900/20 rounded-lg p-4 transition duration-300">
-                        <div class="flex items-center">
-                            <i class="fas fa-file-alt text-amber-500 text-2xl mr-4"></i>
-                            <span class="text-gray-700 dark:text-gray-300">Tabel Angsuran Pinjaman Uang 350 Juta</span>
-                        </div>
-                    </a>
-
-                    <a href="#"
-                        class="block bg-gray-50 dark:bg-gray-800 hover:bg-amber-50 dark:hover:bg-amber-900/20 rounded-lg p-4 transition duration-300">
-                        <div class="flex items-center">
-                            <i class="fas fa-file-alt text-amber-500 text-2xl mr-4"></i>
-                            <span class="text-gray-700 dark:text-gray-300">Tabel Angsuran Pinjaman Barang 350 Juta</span>
-                        </div>
-                    </a>
-                </div>
-
-                <div class="space-y-4">
-                    <a href="#"
-                        class="block bg-gray-50 dark:bg-gray-800 hover:bg-amber-50 dark:hover:bg-amber-900/20 rounded-lg p-4 transition duration-300">
-                        <div class="flex items-center">
-                            <i class="fas fa-file-alt text-amber-500 text-2xl mr-4"></i>
-                            <span class="text-gray-700 dark:text-gray-300">Tabel Angsuran Pinjaman 300 Juta</span>
-                        </div>
-                    </a>
-
-                    <a href="#"
-                        class="block bg-gray-50 dark:bg-gray-800 hover:bg-amber-50 dark:hover:bg-amber-900/20 rounded-lg p-4 transition duration-300">
-                        <div class="flex items-center">
-                            <i class="fas fa-file-alt text-amber-500 text-2xl mr-4"></i>
-                            <span class="text-gray-700 dark:text-gray-300">Form Pengajuan Dana Sosial Rawat Inap</span>
-                        </div>
-                    </a>
-
-                    <a href="#"
-                        class="block bg-gray-50 dark:bg-gray-800 hover:bg-amber-50 dark:hover:bg-amber-900/20 rounded-lg p-4 transition duration-300">
-                        <div class="flex items-center">
-                            <i class="fas fa-file-alt text-amber-500 text-2xl mr-4"></i>
-                            <span class="text-gray-700 dark:text-gray-300">Form Pengunduran Diri Anggota</span>
-                        </div>
-                    </a>
-
-                    <a href="#"
-                        class="block bg-gray-50 dark:bg-gray-800 hover:bg-amber-50 dark:hover:bg-amber-900/20 rounded-lg p-4 transition duration-300">
-                        <div class="flex items-center">
-                            <i class="fas fa-file-alt text-amber-500 text-2xl mr-4"></i>
-                            <span class="text-gray-700 dark:text-gray-300">Form Belanja Bulanan</span>
-                        </div>
-                    </a>
-
-                    <a href="#"
-                        class="block bg-gray-50 dark:bg-gray-800 hover:bg-amber-50 dark:hover:bg-amber-900/20 rounded-lg p-4 transition duration-300">
-                        <div class="flex items-center">
-                            <i class="fas fa-file-alt text-amber-500 text-2xl mr-4"></i>
-                            <span class="text-gray-700 dark:text-gray-300">Form Pinjaman Khusus</span>
-                        </div>
-                    </a>
-                </div>
+                <template x-if="$store.downloads.files.length === 0">
+                    <p class="col-span-2 text-center text-gray-400 dark:text-gray-500">Belum ada file yang tersedia.</p>
+                </template>
             </div>
         </div>
     </section>
+
     <a href="https://wa.me/6281234567890" target="_blank"
         class="fixed bottom-20 left-10 z-50 flex items-center gap-2 bg-orange-500 text-white px-4 py-2 rounded-full shadow-lg hover:bg-orange-600 transition-all">
         <span class="text-sm md:text-base">Hubungi Kami</span>
         <img src="{{ asset('images/whatsapp-icon.png') }}" alt="WhatsApp" class="w-6 h-6" />
     </a>
 @endsection
+
+@push('scripts')
+    <script>
+        fetch("https://kpri.fasilkomapp.com/api/service-types/1")
+            .then(response => response.json())
+            .then(data => {
+                if (data.success) {
+                    const layanan = data.data.layanan;
+
+                    layanan.forEach(item => {
+                        if (item.judul.toLowerCase() === "visi") {
+                            document.getElementById("visi-text").innerText = item.deskripsi;
+                        }
+                        if (item.judul.toLowerCase() === "misi") {
+                            const misiContainer = document.getElementById("misi-text");
+                            const points = item.deskripsi.split(/(?<=\.)\s+/);
+
+                            const list = document.createElement("ol");
+                            list.className = "list-decimal pl-3 space-y-2";
+
+                            points.forEach(p => {
+                                if (p.trim()) {
+                                    const li = document.createElement("li");
+                                    li.textContent = p.trim();
+                                    list.appendChild(li);
+                                }
+                            });
+
+                            misiContainer.appendChild(list);
+                        }
+                    });
+                }
+            })
+            .catch(error => {
+                console.error("Gagal memuat data visi & misi:", error);
+            });
+    </script>
+
+    <script>
+        document.addEventListener('alpine:init', () => {
+            Alpine.store('faqStore', {
+                faqs: [],
+            });
+        });
+
+        fetch("https://kpri.fasilkomapp.com/api/faqs")
+            .then(res => res.json())
+            .then(result => {
+                if (result.status === "success") {
+                    Alpine.store('faqStore').faqs = result.data;
+                }
+            })
+            .catch(err => console.error("Gagal memuat data FAQ:", err));
+    </script>
+
+    <script>
+        document.addEventListener('alpine:init', () => {
+            Alpine.store('downloads', {
+                files: []
+            });
+        });
+
+        fetch("https://kpri.fasilkomapp.com/api/downloads")
+            .then(res => res.json())
+            .then(result => {
+                if (result.success) {
+                    Alpine.store('downloads').files = result.data;
+                }
+            })
+            .catch(err => console.error("Gagal memuat data downloads:", err));
+    </script>
+@endpush
