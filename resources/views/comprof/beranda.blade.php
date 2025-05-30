@@ -35,7 +35,7 @@
 
             <div class="space-y-10 w-full lg:w-[60%]">
                 <div class="bg-orange-500 text-white p-6 rounded-lg">
-                    <h2 class="text-xl font-bold mb-4">
+                    <h2 class="text-xl dark:text-black font-bold mb-4">
                         Visi
                         <div class="flex w-16 gap-1">
                             <hr class="border-2 w-10 border-red-600 rounded-sm" />
@@ -48,7 +48,7 @@
                 </div>
 
                 <div class="border border-gray-200 p-6 rounded-lg bg-white">
-                    <h2 class="text-xl font-bold mb-4 pb-2">
+                    <h2 class="text-xl dark:text-black font-bold mb-4 pb-2">
                         Misi
                         <div class="flex w-16 gap-1">
                             <hr class="border-2 w-10 border-red-600 rounded-sm" />

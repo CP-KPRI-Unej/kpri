@@ -6,12 +6,12 @@
     <div id="profile" class="min-h-screen font-sans flex flex-col flex-wrap justify-center">
 
         <section class="flex flex-col justify-center pt-4 pb-3 text-center px-4 relative">
-            <div class="w-full md:w-3/4 m-auto flex flex-col gap-4 bg-white p-8 rounded-lg">
+            <div class="w-full md:w-3/4 m-auto flex flex-col gap-4 bg-white dark:bg-gray-900 p-8 rounded-lg">
                 <h1 class="text-4xl font-bold text-orange-500 mb-2">SIMPANAN</h1>
                 <div class="flex flex-col md:flex-row gap-8">
                     <img src="{{ asset('images/simpan-pinjam.png') }}" alt="Cooperative Officials"
                         class="w-full md:w-80 object-cover rounded-s-3xl rounded-e-3xl" />
-                    <ol class="list-decimal text-sm text-justify text-black space-y-2">
+                    <ol class="list-decimal text-sm text-justify text-black dark:text-white space-y-2">
                         <li class="font-bold">
                             Simpanan Pokok
                             <span class="font-normal">
@@ -68,12 +68,12 @@
         </section>
 
         <section class="flex flex-col w-full justify-center pt-7 pb-3 text-center px-4 relative">
-            <div class="w-full md:w-3/4 m-auto flex flex-col gap-4 bg-white p-8 rounded-lg">
+            <div class="w-full md:w-3/4 m-auto flex flex-col gap-4 bg-white dark:bg-gray-900 p-8 rounded-lg">
                 <h1 class="text-4xl font-bold text-orange-500 mb-2">PINJAMAN</h1>
                 <div class="flex flex-col md:flex-row gap-8">
                     <img src="{{ asset('images/simpan-pinjam-2.png') }}" alt="Cooperative Officials"
                         class="w-full md:w-80 object-cover rounded-s-3xl rounded-e-3xl" />
-                    <ol class="list-decimal text-sm text-justify text-black space-y-2">
+                    <ol class="list-decimal text-sm text-justify text-black dark:text-white space-y-2">
                         <li class="font-bold">
                             Pinjaman Uang
                             <span class="font-normal">
@@ -94,12 +94,12 @@
             </div>
         </section>
 
-        <section class="flex flex-col justify-center pt-3 pb-3 text-center px-4 relative">
-            <div class="w-full md:w-3/4 m-auto flex flex-col gap-4 bg-white p-5 rounded-lg">
+        <section class="flex flex-col justify-center pt-3 pb-10 text-center px-4 relative">
+            <div class="w-full md:w-3/4 m-auto flex flex-col gap-4 bg-white dark:bg-gray-900 p-5 rounded-lg">
                 <img src="{{ asset('images/simpan-pinjam-3.png') }}" alt="Cooperative Officials"
                     class="w-3/4 mb-4 object-cover rounded-s-3xl rounded-e-3xl m-auto" />
                 <h1 class="text-4xl font-bold text-orange-500 mb-2">DANA SOSIAL</h1>
-                <p class="text-sm font-bold text-justify text-black">
+                <p class="text-sm font-bold text-justify text-black dark:text-white">
                     KEPUTUSAN PENGURUS <br />
                     KOPERASI PEGAWAI REPUBLIK INDONESIA (KP-RI) UNIVERSITAS JEMBER <br />
                     NOMOR : 169/40.22/G/XI/2018 <br />

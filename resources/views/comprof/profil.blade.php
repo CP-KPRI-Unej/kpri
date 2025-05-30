@@ -6,12 +6,12 @@
     <section
         class="flex flex-col justify-center pt-3 pb-3 text-center h-[500px] px-4 relative w-full bg-[url('../../public/images/hero-profile.png')] bg-cover bg-center">
         <h1 class="text-4xl font-bold text-orange-500 mb-2">Visi</h1>
-        <p class="text-sm text-black">
+        <p class="text-sm text-black dark:text-white">
             “Menjadi Koperasi Terbaik Dalam Mensejahterakan Anggota dan Bermitra
             Dengan Stakeholders”
         </p>
         <h1 class="text-4xl mt-5 font-bold text-orange-500 mb-2">Misi</h1>
-        <ol class="list-decimal text-sm text-black mx-auto md:pl-5 pl-10 text-left">
+        <ol class="list-decimal text-sm text-black dark:text-white mx-auto md:pl-5 pl-10 text-left">
             <li>Menyediakan Pelayanan Prima bagi anggota.</li>
             <li>Mewujudkan Sumber Daya Manusia koperasi yang professional.</li>
             <li>Menyediakan teknologi informasi yang handal.</li>
@@ -53,7 +53,7 @@
                 <img src="{{ asset('images/profile-kanan.png') }}" alt="Cooperative Officials"
                     class="w-96 h-96 object-cover rounded-s-3xl rounded-e-3xl" />
             </div>
-            <p class="text-sm text-justify text-black">
+            <p class="text-sm text-justify text-black dark:text-white">
                 Koperasi Pegawai Republik Indonesia Universitas Jember (KP-RI UNEJ)
                 didirikan pada 2 Agustus 1979 dengan nama awal Koperasi Pegawai
                 Negeri Universitas Jember (KPN-UNEJ). Tujuan utama pendiriannya
@@ -62,7 +62,7 @@
                 Universitas Jember.
             </p>
 
-            <p class="text-sm text-black text-justify">
+            <p class="text-sm text-black dark:text-white text-justify">
                 Seiring perkembangannya, keanggotaan koperasi tidak hanya terdiri
                 dari Pegawai Negeri Sipil (PNS) tetapi juga non-PNS. Oleh karena
                 itu, pada tahun 1993, namanya diubah menjadi Koperasi Pegawai
@@ -70,7 +70,7 @@
                 mencerminkan anggotanya secara luas.
             </p>
 
-            <p class="text-sm text-black text-justify">
+            <p class="text-sm text-black dark:text-white text-justify">
                 Hingga tahun 2013, KP-RI UNEJ menunjukkan perkembangan yang positif,
                 ditandai dengan peningkatan partisipasi anggota, jumlah transaksi di
                 toko koperasi, serta peningkatan jumlah pinjaman dan simpanan
@@ -79,7 +79,7 @@
                 Kami, Kepuasan Anda adalah Kebahagiaan Kami."
             </p>
 
-            <p class="text-sm text-black text-justify">
+            <p class="text-sm text-black dark:text-white text-justify">
                 Selain itu, KP-RI UNEJ juga berperan dalam program Pendidikan Sistem
                 Ganda (PSG) dan magang, memberikan kesempatan bagi siswa dan
                 mahasiswa di Kabupaten Jember untuk mendapatkan pengalaman dalam
@@ -89,7 +89,7 @@
     </section>
 
     <section class="py-14 px-4 relative">
-        <div class="border border-orange-300 rounded-xl p-8 w-full max-w-4xl mx-auto bg-white relative">
+        <div class="border border-orange-300 rounded-xl p-8 w-full max-w-4xl mx-auto bg-white dark:text-white dark:bg-gray-900 relative">
             <h2 class="text-2xl md:text-3xl font-bold text-orange-500 text-center mb-10">
                 STRUKTUR ORGANISASI
             </h2>

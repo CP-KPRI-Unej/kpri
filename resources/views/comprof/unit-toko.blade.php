@@ -8,10 +8,10 @@
         <section class="flex flex-col justify-center pt-12 pb-3 text-center px-4 relative w-full">
             <img src="{{ asset('images/unit-toko.png') }}" alt="Cooperative Officials"
                 class="w-full md:w-3/4 mb-4 object-cover p-0 md:p-8 rounded-s-3xl rounded-e-3xl m-auto" />
-            <div class="w-3/4 m-auto flex flex-col gap-4 bg-white p-8 rounded-lg">
+            <div class="w-3/4 m-auto flex flex-col gap-4 bg-white dark:bg-gray-900 p-8 rounded-lg">
 
                 <h1 class="text-4xl font-bold text-orange-500 mb-2">PRODUK</h1>
-                <p class="text-sm text-justify text-black">
+                <p class="text-sm text-justify text-black dark:text-white">
                     Produk-produk yang disediakan oleh KP-RI Universitas Jember sangatlah beragam dan memliki harga yang
                     bersaing,
                     jenis produk yang dijual antara lain :
@@ -48,8 +48,8 @@
                                     <div class="border-2 border-orange-400 rounded-lg py-4 px-2 flex flex-col items-center">
                                         <img src="{{ asset('images/' . $item['img']) }}" alt="{{ $item['text'] }}"
                                             class="w-full md:w-3/4 rounded shadow-md" />
-                                        <h2 class="text-center font-bold text-green-800 mt-2">{{ $item['text'] }}</h2>
-                                        <h2 class="text-center font-bold text-black">{{ $item['harga'] }}</h2>
+                                        <h2 class="text-center font-bold text-green-800 dark:text-white mt-2">{{ $item['text'] }}</h2>
+                                        <h2 class="text-center font-bold text-black dark:text-white">{{ $item['harga'] }}</h2>
                                     </div>
                                 </li>
                             @endforeach
