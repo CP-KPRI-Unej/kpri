@@ -20,7 +20,7 @@
             </div>
         </div>
     </section>
-    <section class="py-12 px-4 mb-5">
+    <section class="py-12 px-4 mb-5" x-data>
         <div class="flex flex-col lg:flex-row gap-10 justify-center items-start">
             <div class="flex flex-col md:flex-row gap-6 w-full lg:w-[40%]">
                 <div class="w-full md:w-1/2 h-3/4">
@@ -41,7 +41,9 @@
                             <hr class="border-2 w-2 border-red-600 rounded-sm" />
                         </div>
                     </h2>
-                    <p id="visi-text"></p>
+                    <p class="text-sm text-black dark:text-white" x-html="$store.beranda.visi">
+                        Memuat...
+                    </p>
                 </div>
 
                 <div class="border border-gray-200 p-6 rounded-lg bg-white">
@@ -51,7 +53,9 @@
                             <hr class="border-2 w-2 border-red-600 rounded-sm" />
                         </div>
                     </h2>
-                    <div id="misi-text" class="mt-4 text-black"></div>
+                    <p class="text-sm text-black dark:text-white" x-html="$store.beranda.misi">
+                        Memuat...
+                    </p>
                 </div>
             </div>
         </div>
@@ -172,39 +176,33 @@
 
 @push('scripts')
     <script>
+        document.addEventListener('alpine:init', () => {
+            Alpine.store('beranda', {
+                visi: '',
+                misi: '',
+            });
+
+        });
+
         fetch("https://kpri.fasilkomapp.com/api/service-types/1")
-            .then(response => response.json())
-            .then(data => {
-                if (data.success) {
-                    const layanan = data.data.layanan;
+            .then(res => res.json())
+            .then(result => {
+                if (result.success && result.data && Array.isArray(result.data.layanan)) {
+                    result.data.layanan.forEach(item => {
+                        let html = item.deskripsi;
 
-                    layanan.forEach(item => {
-                        if (item.judul.toLowerCase() === "visi") {
-                            document.getElementById("visi-text").innerText = item.deskripsi;
-                        }
-                        if (item.judul.toLowerCase() === "misi") {
-                            const misiContainer = document.getElementById("misi-text");
-                            const points = item.deskripsi.split(/(?<=\.)\s+/);
+                        html = html.replace(/<ol>/,
+                            '<ol class="list-decimal pl-3 space-y-2 text-justify">');
 
-                            const list = document.createElement("ol");
-                            list.className = "list-decimal pl-3 space-y-2";
-
-                            points.forEach(p => {
-                                if (p.trim()) {
-                                    const li = document.createElement("li");
-                                    li.textContent = p.trim();
-                                    list.appendChild(li);
-                                }
-                            });
-
-                            misiContainer.appendChild(list);
+                        if (item.judul.toLowerCase() === 'visi') {
+                            Alpine.store('beranda').visi = html;
+                        } else if (item.judul.toLowerCase() === 'misi') {
+                            Alpine.store('beranda').misi = html;
                         }
                     });
                 }
             })
-            .catch(error => {
-                console.error("Gagal memuat data visi & misi:", error);
-            });
+            .catch(err => console.error("Gagal mengambil data profil:", err));
     </script>
 
     <script>

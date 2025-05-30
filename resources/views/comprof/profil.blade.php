@@ -7,14 +7,16 @@
         class="flex flex-col justify-center pt-3 pb-3 text-center h-[500px] px-4 relative w-full bg-[url('../../public/images/hero-profile.png')] bg-cover bg-center"
         x-data>
         <h1 class="text-4xl font-bold text-orange-500 mb-2">Visi</h1>
-        <p class="text-sm text-black dark:text-white" x-text="$store.profile.visi">
+        <p class="text-sm text-black dark:text-white" x-html="$store.profile.visi">
             Memuat...
         </p>
 
         <h1 class="text-4xl mt-5 font-bold text-orange-500 mb-2">Misi</h1>
-        <p class="text-sm text-black dark:text-white" x-text="$store.profile.misi">
-            Memuat...
-        </p>
+        <div class="mx-auto">
+            <p class="text-sm text-black dark:text-white" x-html="$store.profile.misi">
+                Memuat...
+            </p>
+        </div>
     </section>
 
     <section class="py-16 bg-white dark:bg-gray-900">
@@ -49,7 +51,7 @@
                     class="w-96 h-96 object-cover rounded-s-3xl rounded-e-3xl" />
             </div>
 
-            <p class="text-sm text-justify text-black dark:text-white" x-text="$store.profile.sejarah">
+            <p class="text-sm text-justify text-black dark:text-white" x-html="$store.profile.sejarah">
                 Memuat sejarah...
             </p>
         </div>
@@ -128,12 +130,17 @@
             .then(result => {
                 if (result.success && result.data && Array.isArray(result.data.layanan)) {
                     result.data.layanan.forEach(item => {
+                        let html = item.deskripsi;
+
+                        html = html.replace(/<ol>/,
+                            '<ol class="list-decimal pl-6 space-y-2 text-justify">');
+
                         if (item.judul.toLowerCase() === 'visi') {
-                            Alpine.store('profile').visi = item.deskripsi;
+                            Alpine.store('profile').visi = html;
                         } else if (item.judul.toLowerCase() === 'misi') {
-                            Alpine.store('profile').misi = item.deskripsi;
+                            Alpine.store('profile').misi = html;
                         } else if (item.judul.toLowerCase().includes('sejarah')) {
-                            Alpine.store('profile').sejarah = item.deskripsi;
+                            Alpine.store('profile').sejarah = html;
                         }
                     });
                 }
