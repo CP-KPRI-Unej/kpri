@@ -71,7 +71,7 @@
 
                 <div class="border-t border-gray-200 dark:border-gray-700 pt-6 mb-12">
                     <h3 class="text-lg font-semibold text-gray-900 dark:text-white mb-4">Bagikan Artikel</h3>
-                    <div class="flex space-x-4">
+                    <div class="flex flex-col gap-3 md:flex-row">
                         <a href="#" class="inline-flex items-center px-4 py-2 bg-blue-600 hover:bg-blue-700 text-white rounded-md transition duration-300">
                             <i class="fab fa-facebook-f mr-2"></i>
                             Facebook
