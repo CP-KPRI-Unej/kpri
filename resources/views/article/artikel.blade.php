@@ -48,7 +48,7 @@
                     </div>
                 </div>
 
-                <div class="flex space-x-4">
+                <div class="flex gap-4 flex-col md:flex-row">
                     <select id="categoryFilter"
                         class="px-4 py-3 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-amber-500 focus:border-transparent dark:bg-gray-700 dark:text-white">
                         <option value="">Semua Kategori</option>
