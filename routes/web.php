@@ -212,8 +212,8 @@ Route::get("unit-toko", function () {
 Route::get("info-anggota", function () {
     return view("comprof.beranda");
 })->name('members');
-Route::get('/artikel/{id}', function () {
-    return view('article.artikel-detail');
+Route::get('/artikel/{id}', function ($id) {
+    return view('article.artikel-detail', ['id' => $id]);
 })->name('articles.show');
 Route::get('/artikel', function () {
     return view('article.artikel');

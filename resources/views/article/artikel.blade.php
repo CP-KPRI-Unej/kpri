@@ -188,7 +188,7 @@
                     ${formatDate(featured.release_date)}
                 </span>
             </div>
-            <a href="/articles/${featured.id}"
+            <a href="/artikel/${featured.id}"
                 class="inline-flex items-center bg-white text-amber-600 font-semibold py-3 px-6 rounded-lg hover:bg-gray-100 transition duration-300">
                 Baca Selengkapnya
                 <i class="fas fa-arrow-right ml-2"></i>
@@ -254,7 +254,7 @@
                                 <span class="flex items-center"><i class="fas fa-eye mr-1"></i>${article.views || 0} views</span>
                             </div>
                             <h3 class="text-lg font-bold text-gray-900 dark:text-white mb-3 line-clamp-2 hover:text-amber-500 transition duration-300">
-                                <a href="/articles/${article.slug}">${article.title}</a>
+                                <a href="/artikel/${article.slug}">${article.title}</a>
                             </h3>
                             <p class="text-gray-600 dark:text-gray-300 text-sm mb-4 line-clamp-3">
                                 ${article.excerpt || ''}
@@ -263,7 +263,7 @@
                                 <div class="flex items-center space-x-2">
                                     <span class="text-sm text-gray-600 dark:text-gray-400">${article.author || 'Admin'}</span>
                                 </div>
-                                <a href="/articles/${article.id}" class="text-amber-500 hover:text-amber-600 font-medium text-sm transition duration-300">
+                                <a href="/artikel/${article.id}" class="text-amber-500 hover:text-amber-600 font-medium text-sm transition duration-300">
                                     Baca →
                                 </a>
                             </div>
