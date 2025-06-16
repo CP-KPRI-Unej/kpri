@@ -11,18 +11,18 @@
                 <p class="text-xl md:text-2xl mb-8 text-orange-100">Informasi terkini seputar KPRI Universitas Jember</p>
                 <div class="flex justify-center">
                     <div class="bg-white bg-opacity-20 backdrop-blur-sm rounded-lg p-2">
-                        <div class="flex items-center space-x-4 text-sm">
+                        <div class="flex items-center space-x-4 text-sm" id="statsInfo">
                             <span class="flex items-center">
                                 <i class="fas fa-newspaper mr-2"></i>
-                                12 Artikel
+                                <span id="articleCountText">0 Artikel</span>
                             </span>
                             <span class="flex items-center">
                                 <i class="fas fa-eye mr-2"></i>
-                                1,234 Pembaca
+                                <span id="totalViewsText">0 Pembaca</span>
                             </span>
                             <span class="flex items-center">
                                 <i class="fas fa-calendar mr-2"></i>
-                                Update Terbaru
+                                <span id="latestUpdateText">-</span>
                             </span>
                         </div>
                     </div>
@@ -149,6 +149,7 @@
                     .then(data => {
                         if (data.status === 'success') {
                             allArticles = data.data;
+                            updateStatsInfo(allArticles);
                             sortAndRenderArticles();
                             renderFeaturedArticle();
                         }
@@ -199,6 +200,30 @@
         </div>
     `;
             }
+
+            function updateStatsInfo(articles) {
+                const articleCountText = document.getElementById('articleCountText');
+                const totalViewsText = document.getElementById('totalViewsText');
+                const latestUpdateText = document.getElementById('latestUpdateText');
+
+                const totalArticles = articles.length;
+                const totalViews = articles.reduce((sum, article) => sum + (article.views || 0), 0);
+                const latestDate = articles
+                    .filter(a => a.release_date)
+                    .map(a => new Date(a.release_date))
+                    .sort((a, b) => b - a)[0];
+
+                articleCountText.textContent = `${totalArticles} Artikel`;
+                totalViewsText.textContent = `${totalViews.toLocaleString('id-ID')} Pembaca`;
+                latestUpdateText.textContent = latestDate ?
+                    latestDate.toLocaleDateString('id-ID', {
+                        year: 'numeric',
+                        month: 'short',
+                        day: 'numeric'
+                    }) :
+                    '-';
+            }
+
 
 
             function renderArticles(articles) {
