@@ -37,10 +37,6 @@
                     class="{{ request()->routeIs('toko.index') || request()->routeIs('toko.show') ? 'text-amber-500' : 'text-gray-700 dark:text-gray-300' }} hover:text-amber-500 dark:hover:text-amber-400 px-3 py-2 text-sm font-medium">
                     Katalog Produk
                 </a>
-                <a href="{{ route('members') }}"
-                    class="{{ request()->routeIs('members') ? 'text-amber-500' : 'text-gray-700 dark:text-gray-300' }} hover:text-amber-500 dark:hover:text-amber-400 px-3 py-2 text-sm font-medium">
-                    Info Anggota
-                </a>
 
                 <button id="cart-button" class="p-1 rounded-full text-gray-700 dark:text-gray-300 hover:text-amber-500 dark:hover:text-amber-400 focus:outline-none relative">
                     <span class="sr-only">Keranjang Belanja</span>

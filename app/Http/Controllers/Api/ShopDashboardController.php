@@ -1,6 +1,6 @@
 <?php
 
-namespace App\Http\Controllers\API;
+namespace App\Http\Controllers\Api;
 
 use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
@@ -56,11 +56,11 @@ class ShopDashboardController extends Controller
     {
         // Sample data for chart - in production, aggregate from database
         $chartData = [
-            1 => 15, 2 => 20, 3 => 25, 4 => 30, 
+            1 => 15, 2 => 20, 3 => 25, 4 => 30,
             5 => 20, 6 => 35, 7 => 40, 8 => 30,
             9 => 45, 10 => 50, 11 => 55, 12 => 60
         ];
 
         return response()->json($chartData);
     }
-} 
+}

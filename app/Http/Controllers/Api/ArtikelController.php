@@ -1,6 +1,6 @@
 <?php
 
-namespace App\Http\Controllers\API;
+namespace App\Http\Controllers\Api;
 
 use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
@@ -38,7 +38,7 @@ class ArtikelController extends Controller
         // Transform data to include counts
         $transformedArtikels = $artikels->map(function ($artikel) {
             $pendingComments = $artikel->komentar->where('status', 'pending')->count();
-            
+
             return [
                 'id_artikel' => $artikel->id_artikel,
                 'nama_artikel' => $artikel->nama_artikel,
@@ -58,7 +58,7 @@ class ArtikelController extends Controller
 
         return response()->json($transformedArtikels);
     }
-    
+
     /**
      * Get comments for a specific article
      *
@@ -74,7 +74,7 @@ class ArtikelController extends Controller
 
         return response()->json($comments);
     }
-    
+
     /**
      * Update the status of a comment
      *
@@ -87,18 +87,18 @@ class ArtikelController extends Controller
         $request->validate([
             'status' => 'required|in:approved,rejected',
         ]);
-        
+
         $comment = Komentar::findOrFail($id);
         $comment->status = $request->status;
         $comment->save();
-        
+
         return response()->json([
             'success' => true,
             'message' => 'Comment status updated successfully',
             'comment' => $comment
         ]);
     }
-    
+
     /**
      * Delete a comment
      *
@@ -109,13 +109,13 @@ class ArtikelController extends Controller
     {
         $comment = Komentar::findOrFail($id);
         $comment->delete();
-        
+
         return response()->json([
             'success' => true,
             'message' => 'Comment deleted successfully'
         ]);
     }
-    
+
     /**
      * Delete an article
      *
@@ -125,7 +125,7 @@ class ArtikelController extends Controller
     public function deleteArticle($id)
     {
         $artikel = Artikel::findOrFail($id);
-        
+
         // Delete associated images first
         foreach ($artikel->images as $image) {
             // Delete the image file from storage
@@ -134,21 +134,21 @@ class ArtikelController extends Controller
             }
             $image->delete();
         }
-        
+
         // Delete associated comments
         foreach ($artikel->komentar as $comment) {
             $comment->delete();
         }
-        
+
         // Delete the article
         $artikel->delete();
-        
+
         return response()->json([
             'success' => true,
             'message' => 'Article deleted successfully'
         ]);
     }
-    
+
     /**
      * Store a newly created article in storage.
      *
@@ -170,7 +170,7 @@ class ArtikelController extends Controller
         try {
             // Start a database transaction
             DB::beginTransaction();
-            
+
             // Create the article
             $artikel = new Artikel();
             $artikel->id_status = $request->id_status;
@@ -180,31 +180,31 @@ class ArtikelController extends Controller
             $artikel->tgl_rilis = $request->tgl_rilis;
             $artikel->tags_artikel = $request->tags_artikel;
             $artikel->save();
-            
+
             // Handle image uploads
             if ($request->hasFile('gambar')) {
                 foreach ($request->file('gambar') as $imageFile) {
                     $path = $imageFile->store('artikel_images', 'public');
-                    
+
                     $artikel->images()->create([
                         'gambar' => $path
                     ]);
                 }
             }
-            
+
             // Commit the transaction
             DB::commit();
-            
+
             return response()->json([
                 'success' => true,
                 'message' => 'Article created successfully',
                 'artikel' => $artikel->load('images', 'status')
             ], 201);
-            
+
         } catch (\Exception $e) {
             // Rollback the transaction in case of an error
             DB::rollBack();
-            
+
             return response()->json([
                 'success' => false,
                 'message' => 'Failed to create article',
@@ -223,7 +223,7 @@ class ArtikelController extends Controller
         $statuses = \App\Models\Status::all();
         return response()->json($statuses);
     }
-    
+
     /**
      * Get article by ID.
      *
@@ -235,7 +235,7 @@ class ArtikelController extends Controller
         $artikel = Artikel::with(['status', 'images'])->findOrFail($id);
         return response()->json($artikel);
     }
-    
+
     /**
      * Update an existing article.
      *
@@ -250,14 +250,14 @@ class ArtikelController extends Controller
             // Convert to PUT request
             $request->offsetUnset('_method');
         }
-        
+
         Log::info('Update Article Request', [
             'id' => $id,
             'method' => $request->method(),
             'has_files' => $request->hasFile('gambar'),
             'delete_images' => $request->has('delete_images') ? $request->input('delete_images') : 'none',
         ]);
-        
+
         $request->validate([
             'nama_artikel' => 'required|string|max:120',
             'deskripsi_artikel' => 'required|string',
@@ -272,10 +272,10 @@ class ArtikelController extends Controller
         try {
             // Start a database transaction
             DB::beginTransaction();
-            
+
             // Get article
             $artikel = Artikel::findOrFail($id);
-            
+
             // Update article data
             $artikel->id_status = $request->id_status;
             $artikel->nama_artikel = $request->nama_artikel;
@@ -283,7 +283,7 @@ class ArtikelController extends Controller
             $artikel->tgl_rilis = $request->tgl_rilis;
             $artikel->tags_artikel = $request->tags_artikel;
             $artikel->save();
-            
+
             // Handle image deletions if specified
             if ($request->has('delete_images') && is_array($request->delete_images)) {
                 foreach ($request->delete_images as $imageId) {
@@ -297,19 +297,19 @@ class ArtikelController extends Controller
                     }
                 }
             }
-            
+
             // Handle new image uploads
             if ($request->hasFile('gambar')) {
                 // Check if the total number of images would exceed 3
                 $currentImagesCount = $artikel->images()->count();
                 $newImagesCount = count($request->file('gambar'));
-                
+
                 Log::info('Image upload info', [
                     'current_count' => $currentImagesCount,
                     'new_count' => $newImagesCount,
                     'total' => $currentImagesCount + $newImagesCount
                 ]);
-                
+
                 if ($currentImagesCount + $newImagesCount > 3) {
                     DB::rollBack();
                     return response()->json([
@@ -318,34 +318,34 @@ class ArtikelController extends Controller
                         'errors' => ['gambar' => ['Maksimal 3 gambar diperbolehkan']]
                     ], 422);
                 }
-                
+
                 foreach ($request->file('gambar') as $imageFile) {
                     $path = $imageFile->store('artikel_images', 'public');
-                    
+
                     $artikel->images()->create([
                         'gambar' => $path
                     ]);
                 }
             }
-            
+
             // Commit the transaction
             DB::commit();
-            
+
             return response()->json([
                 'success' => true,
                 'message' => 'Article updated successfully',
                 'artikel' => $artikel->load('images', 'status')
             ]);
-            
+
         } catch (\Exception $e) {
             // Rollback the transaction in case of an error
             DB::rollBack();
-            
+
             Log::error('Article update error', [
                 'message' => $e->getMessage(),
                 'trace' => $e->getTraceAsString()
             ]);
-            
+
             return response()->json([
                 'success' => false,
                 'message' => 'Failed to update article',
@@ -353,4 +353,4 @@ class ArtikelController extends Controller
             ], 500);
         }
     }
-} 
+}

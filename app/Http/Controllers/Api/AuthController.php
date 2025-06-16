@@ -1,6 +1,6 @@
 <?php
 
-namespace App\Http\Controllers\API;
+namespace App\Http\Controllers\Api;
 
 use App\Http\Controllers\Controller;
 use App\Http\Requests\LoginRequest;
@@ -95,4 +95,4 @@ class AuthController extends Controller
             'role' => $role ?? auth()->user()->role->nama_role
         ]);
     }
-} 
+}

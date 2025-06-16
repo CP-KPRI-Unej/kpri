@@ -6,7 +6,7 @@
 
 <div class="container px-4 mx-auto">
     <!-- Dashboard Header -->
-    <div class="mb-8">
+    <div class="mb-8 mt-5">
         <h1 class="text-2xl font-bold text-gray-800 dark:text-white">Dashboard</h1>
         <p class="text-gray-600 dark:text-gray-400 mt-1">Statistik kunjungan website linktree KPRI</p>
     </div>
@@ -139,7 +139,7 @@
             </div>
         </div>
     </div>
-    
+
     <!-- Most Visited Pages Section -->
     <div class="bg-white dark:bg-gray-800 rounded-xl shadow-lg overflow-hidden mb-8">
         <div class="px-6 py-5 border-b border-gray-100 dark:border-gray-700">
@@ -178,12 +178,12 @@
 <script src="https://cdn.jsdelivr.net/npm/axios/dist/axios.min.js"></script>
 <script>
     let visitorChart = null;
-    
+
     document.addEventListener('DOMContentLoaded', function() {
         // Set up axios defaults
         axios.defaults.headers.common['X-Requested-With'] = 'XMLHttpRequest';
         axios.defaults.headers.common['Accept'] = 'application/json';
-        
+
         // Set JWT token from localStorage if available
         const token = localStorage.getItem('access_token');
         if (token) {
@@ -193,22 +193,22 @@
             // If no token in localStorage, try to get it from the login process
             checkAuthentication();
         }
-        
+
         // Add CSRF token to all requests
         const csrfToken = document.querySelector('meta[name="csrf-token"]').getAttribute('content');
         axios.defaults.headers.common['X-CSRF-TOKEN'] = csrfToken;
-        
+
         // Set up year selector
         document.getElementById('chartYear').addEventListener('change', function() {
             fetchMonthlyChartData(this.value);
         });
-        
+
         // Set current year as default
         const currentYear = new Date().getFullYear();
         document.getElementById('chartYear').value = currentYear;
         document.getElementById('chart-year').textContent = currentYear;
     });
-    
+
     // Check authentication status
     function checkAuthentication() {
         axios.get('/api/auth/me')
@@ -227,33 +227,33 @@
                 }
             });
     }
-    
+
     // Fetch all dashboard data
     function fetchDashboardData() {
         // Determine API path based on role
         let basePath = isShopAdmin() ? '/api/shop/dashboard/' : '/api/admin/dashboard/';
-        
+
         // Fetch summary statistics
         fetchSummaryStats(basePath);
-        
+
         // Fetch monthly chart data for current year
         const currentYear = new Date().getFullYear();
         fetchMonthlyChartData(currentYear, basePath);
-        
+
         // Fetch recent visitors
         fetchRecentVisitors(basePath);
-        
+
         // Fetch top pages
         fetchTopPages(basePath);
     }
-    
+
     // Fetch summary statistics
     function fetchSummaryStats(basePath = '/api/admin/dashboard/') {
         axios.get(basePath + 'summary')
             .then(response => {
                 if (response.data.status === 'success') {
                     const stats = response.data.data;
-                    
+
                     // Update the DOM
                     document.getElementById('total-visitors').textContent = formatNumber(stats.totalVisitors);
                     document.getElementById('today-visitors').textContent = formatNumber(stats.todayVisitors);
@@ -265,7 +265,7 @@
                 handleApiError(error);
             });
     }
-    
+
     // Fetch monthly chart data
     function fetchMonthlyChartData(year, basePath = '/api/admin/dashboard/') {
         // Show loading indicator
@@ -275,17 +275,17 @@
                 <div class="animate-spin rounded-full h-10 w-10 border-b-2 border-blue-500"></div>
             </div>
         `;
-        
+
         axios.get(`${basePath}monthly-chart/${year}`)
             .then(response => {
                 if (response.data.status === 'success') {
                     // Restore canvas
                     chartContainer.innerHTML = '<canvas id="visitorChart" height="250"></canvas>';
-                    
+
                     const chartData = response.data.data.chartData;
                     console.log("API Response:", response.data);
                     console.log("Chart Data:", chartData);
-                    
+
                     // Render chart with the new data
                     renderVisitorChart(chartData);
                     document.getElementById('chart-year').textContent = year;
@@ -307,7 +307,7 @@
                 handleApiError(error);
             });
         }
-        
+
     // Render visitor chart
     function renderVisitorChart(chartData) {
         try {
@@ -316,29 +316,29 @@
                 console.error('Canvas element not found!');
                 return;
             }
-            
+
             const ctx = canvas.getContext('2d');
-            
+
             // Destroy existing chart if it exists
             if (visitorChart) {
                 visitorChart.destroy();
             }
-            
+
             // Prepare data
             const monthNames = ['Jan', 'Feb', 'Mar', 'Apr', 'Mei', 'Jun', 'Jul', 'Agt', 'Sep', 'Okt', 'Nov', 'Des'];
-            
+
             // Convert object to array ensuring proper order
             const dataArray = [];
             for (let i = 1; i <= 12; i++) {
                 dataArray.push(chartData[i] || 0);
             }
-            
+
             console.log("Data for chart (array format):", dataArray);
-            
+
             // Calculate max for y-axis
             const maxValue = Math.max(...dataArray);
             const suggestedMax = maxValue > 0 ? Math.ceil(maxValue * 1.2) : 10;
-            
+
             // Create chart
             visitorChart = new Chart(ctx, {
             type: 'bar',
@@ -414,7 +414,7 @@
             `;
         }
     }
-    
+
     // Fetch recent visitors
     function fetchRecentVisitors(basePath = '/api/admin/dashboard/') {
         axios.get(basePath + 'recent-visitors/10')
@@ -429,17 +429,17 @@
                 handleApiError(error);
             });
     }
-    
+
     // Render recent visitors table
     function renderRecentVisitors(visitors) {
         const tableBody = document.getElementById('recent-visitors-table');
-        
+
         // Remove loading row
         const loadingRow = document.getElementById('loading-row');
         if (loadingRow) {
             loadingRow.remove();
         }
-        
+
         if (visitors.length === 0) {
             const emptyRow = document.createElement('tr');
             emptyRow.className = 'text-gray-700 dark:text-gray-300';
@@ -449,7 +449,7 @@
             tableBody.appendChild(emptyRow);
             return;
         }
-        
+
         // Add visitor rows
         visitors.forEach(visitor => {
             const row = document.createElement('tr');
@@ -464,7 +464,7 @@
             tableBody.appendChild(row);
         });
     }
-    
+
     // Fetch top pages
     function fetchTopPages(basePath = '/api/admin/dashboard/') {
         axios.get(basePath + 'top-pages/5')
@@ -479,17 +479,17 @@
                 handleApiError(error);
             });
     }
-    
+
     // Render top pages table
     function renderTopPages(pages) {
         const tableBody = document.getElementById('top-pages-table');
-        
+
         // Remove loading row
         const loadingRow = document.getElementById('loading-pages-row');
         if (loadingRow) {
             loadingRow.remove();
         }
-        
+
         if (pages.length === 0) {
             const emptyRow = document.createElement('tr');
             emptyRow.className = 'text-gray-700 dark:text-gray-300';
@@ -499,7 +499,7 @@
             tableBody.appendChild(emptyRow);
             return;
         }
-        
+
         // Add page rows
         pages.forEach(page => {
             const row = document.createElement('tr');
@@ -511,18 +511,18 @@
             tableBody.appendChild(row);
         });
     }
-    
+
     // Helper function to check if user is shop admin based on URL
     function isShopAdmin() {
-        return window.location.href.includes('/admin/shop') || 
+        return window.location.href.includes('/admin/shop') ||
                window.location.pathname.startsWith('/admin/shop');
     }
-    
+
     // Helper function to format numbers with commas
     function formatNumber(number) {
         return new Intl.NumberFormat().format(number);
     }
-    
+
     // Handle API errors
     function handleApiError(error) {
         if (error.response && error.response.status === 401) {
@@ -531,4 +531,4 @@
         }
     }
 </script>
-@endpush 
+@endpush

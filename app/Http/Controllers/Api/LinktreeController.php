@@ -1,6 +1,6 @@
 <?php
 
-namespace App\Http\Controllers\API;
+namespace App\Http\Controllers\Api;
 
 use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
@@ -23,7 +23,7 @@ class LinktreeController extends Controller
         $this->middleware('auth:api');
         $this->middleware('role:kpri admin');
     }
-    
+
     /**
      * Get linktree profile data
      *
@@ -33,7 +33,7 @@ class LinktreeController extends Controller
     {
         // Get linktree for current user
         $linktree = Linktree::where('user_id', Auth::user()->id_user)->first();
-        
+
         if (!$linktree) {
             // Create a default linktree if none exists
             $linktree = Linktree::create([
@@ -43,10 +43,10 @@ class LinktreeController extends Controller
                 'logo' => null
             ]);
         }
-        
+
         return response()->json($linktree);
     }
-    
+
     /**
      * Get all links for the linktree
      *
@@ -55,21 +55,21 @@ class LinktreeController extends Controller
     public function getLinks()
     {
         $linktree = Linktree::where('user_id', Auth::user()->id_user)->first();
-        
+
         if (!$linktree) {
             return response()->json([
                 'success' => false,
                 'message' => 'Linktree not found'
             ], 404);
         }
-        
+
         $links = Link::where('page_id', $linktree->id)
             ->orderBy('position', 'asc')
             ->get();
-            
+
         return response()->json($links);
     }
-    
+
     /**
      * Update linktree profile
      *
@@ -84,22 +84,22 @@ class LinktreeController extends Controller
             'logo' => 'nullable|image|mimes:jpeg,png,jpg,gif|max:2048',
             'remove_logo' => 'nullable|boolean'
         ]);
-        
+
         try {
             // Start transaction
             DB::beginTransaction();
-            
+
             $linktree = Linktree::where('user_id', Auth::user()->id_user)->first();
-            
+
             if (!$linktree) {
                 // Create a new linktree if none exists
                 $linktree = new Linktree();
                 $linktree->user_id = Auth::user()->id_user;
             }
-            
+
             $linktree->title = $request->title;
             $linktree->bio = $request->bio ?? '';
-            
+
             // Handle logo removal
             if ($request->has('remove_logo') && $request->remove_logo) {
                 if ($linktree->logo && Storage::exists('public/' . $linktree->logo)) {
@@ -107,33 +107,33 @@ class LinktreeController extends Controller
                 }
                 $linktree->logo = null;
             }
-            
+
             // Handle logo upload
             if ($request->hasFile('logo')) {
                 // Delete old logo if exists
                 if ($linktree->logo && Storage::exists('public/' . $linktree->logo)) {
                     Storage::delete('public/' . $linktree->logo);
                 }
-                
+
                 $path = $request->file('logo')->store('linktree', 'public');
                 $linktree->logo = $path;
             }
-            
+
             $linktree->save();
-            
+
             // Commit transaction
             DB::commit();
-            
+
             return response()->json([
                 'success' => true,
                 'message' => 'Linktree profile updated successfully',
                 'linktree' => $linktree
             ]);
-            
+
         } catch (\Exception $e) {
             // Rollback transaction
             DB::rollBack();
-            
+
             return response()->json([
                 'success' => false,
                 'message' => 'Failed to update linktree profile',
@@ -141,7 +141,7 @@ class LinktreeController extends Controller
             ], 500);
         }
     }
-    
+
     /**
      * Store a new link
      *
@@ -154,13 +154,13 @@ class LinktreeController extends Controller
             'title' => 'required|string|max:100',
             'url' => 'required|url|max:255'
         ]);
-        
+
         try {
             // Start transaction
             DB::beginTransaction();
-            
+
             $linktree = Linktree::where('user_id', Auth::user()->id_user)->first();
-            
+
             if (!$linktree) {
                 // Create a new linktree if none exists
                 $linktree = Linktree::create([
@@ -170,10 +170,10 @@ class LinktreeController extends Controller
                     'logo' => null
                 ]);
             }
-            
+
             // Get highest position
             $maxPosition = Link::where('page_id', $linktree->id)->max('position') ?? 0;
-            
+
             // Create new link
             $link = new Link();
             $link->page_id = $linktree->id;
@@ -181,20 +181,20 @@ class LinktreeController extends Controller
             $link->url = $request->url;
             $link->position = $maxPosition + 1;
             $link->save();
-            
+
             // Commit transaction
             DB::commit();
-            
+
             return response()->json([
                 'success' => true,
                 'message' => 'Link added successfully',
                 'link' => $link
             ], 201);
-            
+
         } catch (\Exception $e) {
             // Rollback transaction
             DB::rollBack();
-            
+
             return response()->json([
                 'success' => false,
                 'message' => 'Failed to add link',
@@ -202,7 +202,7 @@ class LinktreeController extends Controller
             ], 500);
         }
     }
-    
+
     /**
      * Update an existing link
      *
@@ -216,48 +216,48 @@ class LinktreeController extends Controller
             'title' => 'required|string|max:100',
             'url' => 'required|url|max:255'
         ]);
-        
+
         try {
             // Start transaction
             DB::beginTransaction();
-            
+
             $linktree = Linktree::where('user_id', Auth::user()->id_user)->first();
-            
+
             if (!$linktree) {
                 return response()->json([
                     'success' => false,
                     'message' => 'Linktree not found'
                 ], 404);
             }
-            
+
             $link = Link::where('id', $id)
                 ->where('page_id', $linktree->id)
                 ->first();
-            
+
             if (!$link) {
                 return response()->json([
                     'success' => false,
                     'message' => 'Link not found or access denied'
                 ], 404);
             }
-            
+
             $link->title = $request->title;
             $link->url = $request->url;
             $link->save();
-            
+
             // Commit transaction
             DB::commit();
-            
+
             return response()->json([
                 'success' => true,
                 'message' => 'Link updated successfully',
                 'link' => $link
             ]);
-            
+
         } catch (\Exception $e) {
             // Rollback transaction
             DB::rollBack();
-            
+
             return response()->json([
                 'success' => false,
                 'message' => 'Failed to update link',
@@ -265,7 +265,7 @@ class LinktreeController extends Controller
             ], 500);
         }
     }
-    
+
     /**
      * Delete a link
      *
@@ -277,50 +277,50 @@ class LinktreeController extends Controller
         try {
             // Start transaction
             DB::beginTransaction();
-            
+
             $linktree = Linktree::where('user_id', Auth::user()->id_user)->first();
-            
+
             if (!$linktree) {
                 return response()->json([
                     'success' => false,
                     'message' => 'Linktree not found'
                 ], 404);
             }
-            
+
             $link = Link::where('id', $id)
                 ->where('page_id', $linktree->id)
                 ->first();
-            
+
             if (!$link) {
                 return response()->json([
                     'success' => false,
                     'message' => 'Link not found or access denied'
                 ], 404);
             }
-            
+
             // Get position of the deleted link
             $deletedPosition = $link->position;
-            
+
             // Delete the link
             $link->delete();
-            
+
             // Update positions of other links
             Link::where('page_id', $linktree->id)
                 ->where('position', '>', $deletedPosition)
                 ->decrement('position');
-            
+
             // Commit transaction
             DB::commit();
-            
+
             return response()->json([
                 'success' => true,
                 'message' => 'Link deleted successfully'
             ]);
-            
+
         } catch (\Exception $e) {
             // Rollback transaction
             DB::rollBack();
-            
+
             return response()->json([
                 'success' => false,
                 'message' => 'Failed to delete link',
@@ -328,7 +328,7 @@ class LinktreeController extends Controller
             ], 500);
         }
     }
-    
+
     /**
      * Update link positions
      *
@@ -341,42 +341,42 @@ class LinktreeController extends Controller
             'positions' => 'required|array',
             'positions.*' => 'required|integer|exists:links,id'
         ]);
-        
+
         try {
             // Start transaction
             DB::beginTransaction();
-            
+
             $linktree = Linktree::where('user_id', Auth::user()->id_user)->first();
-            
+
             if (!$linktree) {
                 return response()->json([
                     'success' => false,
                     'message' => 'Linktree not found'
                 ], 404);
             }
-            
+
             // Update positions
             $positions = $request->positions;
             foreach ($positions as $index => $linkId) {
                 $position = $index + 1;
-                
+
                 Link::where('id', $linkId)
                     ->where('page_id', $linktree->id)
                     ->update(['position' => $position]);
             }
-            
+
             // Commit transaction
             DB::commit();
-            
+
             return response()->json([
                 'success' => true,
                 'message' => 'Link positions updated successfully'
             ]);
-            
+
         } catch (\Exception $e) {
             // Rollback transaction
             DB::rollBack();
-            
+
             return response()->json([
                 'success' => false,
                 'message' => 'Failed to update link positions',
@@ -384,4 +384,4 @@ class LinktreeController extends Controller
             ], 500);
         }
     }
-} 
+}
