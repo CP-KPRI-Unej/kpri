@@ -85,26 +85,28 @@
             <h2 class="text-3xl font-bold text-center text-amber-500 mb-12">Artikel Terbaru</h2>
 
 
-            <div id="artikel-splide" class="splide">
+            <div id="artikel-splide" class="splide" x-data>
                 <div class="splide__track">
                     <ul class="splide__list">
-                        @foreach ([['img' => 'info.png', 'title' => 'PELATIHAN PENGELOLA KKPRI UNEJ DAN BERKELAS'], ['img' => 'info.png', 'title' => 'PENINGKATAN KAPASITAS PENGELOLA KKPRI UNTUK KOPERASI MANDIRI'], ['img' => 'info.png', 'title' => 'PENINGKATAN KAPASITAS PENGELOLA KOPERASI YANG MANDIRI']] as $article)
+                        <template x-for="article in $store.artikel.articles" :key="article.id">
                             <li class="splide__slide">
                                 <div
                                     class="bg-white dark:bg-gray-800 rounded-lg shadow-md overflow-hidden transition duration-300 hover:scale-105 p-4">
-                                    <img src="{{ asset('images/' . $article['img']) }}" alt="Artikel"
+                                    <img :src="article.thumbnail ?? '{{ asset('images/info.png') }}'" alt="Artikel"
                                         class="w-full h-48 object-cover rounded-md mb-4">
-                                    <h4 class="text-xl font-bold mb-3 text-gray-800 dark:text-white">{{ $article['title'] }}
+                                    <h4 class="text-xl font-bold mb-3 text-gray-800 dark:text-white" x-text="article.title">
                                     </h4>
-                                    <p class="text-gray-600 dark:text-gray-300 mb-4">Pelatihan dan peningkatan kapasitas
-                                        Pengelola KKPRI UNEJ merupakan agenda rutin koperasi, bertujuan untuk memperkuat
-                                        profesionalisme pengelolaan koperasi.</p>
-                                    <a href={{ route('articles.show') }}
+                                    <p class="text-gray-600 dark:text-gray-300 mb-4" x-text="article.excerpt"></p>
+                                    <a :href="'/artikel/' + article.id"
                                         class="inline-block bg-amber-500 hover:bg-amber-600 text-white font-medium py-2 px-4 rounded-md transition duration-300">Baca
                                         Selengkapnya</a>
                                 </div>
                             </li>
-                        @endforeach
+                        </template>
+
+                        <template x-if="$store.artikel.articles.length === 0">
+                            <li class="splide__slide text-center text-gray-500 p-4">Belum ada artikel tersedia.</li>
+                        </template>
                     </ul>
                 </div>
             </div>
@@ -175,6 +177,39 @@
 @endsection
 
 @push('scripts')
+    <script>
+        document.addEventListener('alpine:init', () => {
+            Alpine.store('artikel', {
+                articles: [],
+            });
+        });
+
+        fetch("https://6264-180-245-74-56.ngrok-free.app/api/articles")
+            .then(res => res.json())
+            .then(result => {
+                if (result.status === "success") {
+                    Alpine.store('artikel').articles = result.data.slice(0, 6);
+
+                    setTimeout(() => {
+                        new Splide('#artikel-splide', {
+                            type: 'loop',
+                            perPage: 3,
+                            gap: '1rem',
+                            breakpoints: {
+                                1024: {
+                                    perPage: 2
+                                },
+                                640: {
+                                    perPage: 1
+                                },
+                            },
+                        }).mount();
+                    }, 300);
+                }
+            })
+            .catch(err => console.error("Gagal memuat data artikel:", err));
+    </script>
+
     <script>
         document.addEventListener('alpine:init', () => {
             Alpine.store('beranda', {
