@@ -26,147 +26,147 @@ Route::prefix('admin')->group(function () {
     Route::get('/dashboard', function() {
         return view('admin.dashboard');
     })->name('admin.dashboard');
-    
+
     Route::get('/shop-dashboard', function() {
         return view('admin.shop.dashboard');
     })->name('admin.shop.dashboard');
-    
+
     // Download routes
     Route::get('/download', function() {
         return view('admin.download.index');
     })->name('admin.download.index');
-    
+
     Route::get('/download/create', function() {
         return view('admin.download.create');
     })->name('admin.download.create');
-    
+
     Route::get('/download/{id}/edit', function($id) {
         return view('admin.download.edit', ['id' => $id]);
     })->name('admin.download.edit');
-    
+
     // Artikel routes
     Route::get('/artikel', function() {
         return view('admin.artikel.index');
     })->name('admin.artikel.index');
-    
+
     Route::get('/artikel/create', function() {
         return view('admin.artikel.create');
     })->name('admin.artikel.create');
-    
+
     Route::get('/artikel/{id}/edit', function($id) {
         return view('admin.artikel.edit', ['id' => $id]);
     })->name('admin.artikel.edit');
-    
+
     Route::get('/artikel/{id}/komentar', function($id) {
         return view('admin.artikel.komentar.index');
     })->name('admin.artikel.komentar.index');
-    
+
     // Struktur Kepengurusan routes
     Route::get('/struktur', function() {
         return view('admin.struktur.index');
     })->name('admin.struktur.index');
-    
+
     Route::get('/struktur/create', function() {
         return view('admin.struktur.create');
     })->name('admin.struktur.create');
-    
+
     Route::get('/struktur/{id}/edit', function($id) {
         return view('admin.struktur.edit', ['id' => $id]);
     })->name('admin.struktur.edit');
-    
+
     // Linktree routes
     Route::get('/linktree', function() {
         return view('admin.linktree.index');
     })->name('admin.linktree.index');
-    
+
     // Kategori Produk routes
     Route::get('/kategori', function() {
         return view('admin.kategori.index');
     })->name('admin.kategori.index');
-    
+
     Route::get('/kategori/create', function() {
         return view('admin.kategori.create');
     })->name('admin.kategori.create');
-    
+
     Route::get('/kategori/{id}/edit', function($id) {
         return view('admin.kategori.edit', ['id' => $id]);
     })->name('admin.kategori.edit');
-    
-    
+
+
     // Product routes
     Route::get('/produk', function() {
         return view('admin.produk.index');
     })->name('admin.produk.index');
-    
+
     Route::get('/produk/create', function() {
         return view('admin.produk.create');
     })->name('admin.produk.create');
-    
+
     Route::get('/produk/{id}/edit', function($id) {
         return view('admin.produk.edit', ['id' => $id]);
     })->name('admin.produk.edit');
-    
+
     // Promotion routes
     Route::get('/promo', function() {
         return view('admin.promo.index');
     })->name('admin.promo.index');
-    
+
     Route::get('/promo/create', function() {
         return view('admin.promo.create');
     })->name('admin.promo.create');
-    
+
     Route::get('/promo/edit/{id}', function($id) {
         return view('admin.promo.edit', ['id' => $id]);
     })->name('admin.promo.edit');
-    
+
     // Layanan (Service) routes
     Route::get('/layanan/{id_jenis_layanan}', function($id_jenis_layanan) {
         return view('admin.layanan.index', ['jenis_layanan_id' => $id_jenis_layanan]);
     })->name('admin.layanan.index');
-    
+
     Route::get('/layanan/edit/{id}', function($id) {
         return view('admin.layanan.edit', ['id' => $id]);
     })->name('admin.layanan.edit');
-    
+
     // Gallery routes
     Route::get('/galeri', function() {
         return view('admin.galeri.index');
     })->name('admin.galeri.index');
-    
+
     Route::get('/galeri/create', function() {
         return view('admin.galeri.create');
     })->name('admin.galeri.create');
-    
+
     Route::get('/galeri/{id}/edit', function($id) {
         return view('admin.galeri.edit', ['id' => $id]);
     })->name('admin.galeri.edit');
-    
+
     // FAQ routes
     Route::get('/faq', function() {
         return view('admin.faq.index');
     })->name('admin.faq.index');
-    
+
     Route::get('/faq/create', function() {
         return view('admin.faq.create');
     })->name('admin.faq.create');
-    
+
     Route::get('/faq/{id}/edit', function($id) {
         return view('admin.faq.edit', ['id' => $id]);
     })->name('admin.faq.edit');
-    
+
     // Hero Banner routes
     Route::get('/hero-banners', function() {
         return view('admin.hero-banners.index');
     })->name('admin.hero-banners.index');
-    
+
     Route::get('/hero-banners/create', function() {
         return view('admin.hero-banners.create');
     })->name('admin.hero-banners.create');
-    
+
     Route::get('/hero-banners/{id}/edit', function($id) {
         return view('admin.hero-banners.edit', ['id' => $id]);
     })->name('admin.hero-banners.edit');
-    
+
     // Settings routes
     Route::get('/settings', function() {
         return view('admin.settings.index');
@@ -176,7 +176,7 @@ Route::prefix('admin')->group(function () {
     Route::get('/notifications', function() {
         return view('admin.notifications.index');
     })->name('admin.notifications.index');
-    
+
     // Alias untuk /notification tanpa 's' agar tetap berfungsi
     Route::get('/notification', function() {
         return view('admin.notifications.index');
@@ -212,7 +212,7 @@ Route::get("unit-toko", function () {
 Route::get("info-anggota", function () {
     return view("comprof.beranda");
 })->name('members');
-Route::get('/artikel/peningkatan-kapasitas-pengelola-kkpri-unej', function () {
+Route::get('/artikel/{id}', function () {
     return view('article.artikel-detail');
 })->name('articles.show');
 Route::get('/artikel', function () {
