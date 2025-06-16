@@ -61,18 +61,18 @@ class Artikel extends Model
     }
 
     /**
-     * Get the images for the article.
-     */
-    public function images()
-    {
-        return $this->hasMany(ArtikelImage::class, 'id_artikel', 'id_artikel');
-    }
-
-    /**
      * Get the comments for the article.
      */
     public function komentar()
     {
         return $this->hasMany(Komentar::class, 'id_artikel', 'id_artikel');
+    }
+
+    /**
+     * Get the images for the article.
+     */
+    public function images()
+    {
+        return $this->hasMany(ArtikelImage::class, 'id_artikel', 'id_artikel');
     }
 } 

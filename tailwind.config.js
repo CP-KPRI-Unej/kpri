@@ -27,7 +27,7 @@ export default {
                     950: "#451a03",
                 },
                 primary: {
-                    DEFAULT: "#ff8a00", // Orange
+                    DEFAULT: "#FF991C", // Orange
                     dark: "#e67a00",
                     light: "#ffa94d",
                 },

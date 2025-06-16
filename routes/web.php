@@ -1,26 +1,9 @@
 <?php
 
 use Illuminate\Support\Facades\Route;
-use Illuminate\Support\Facades\View;
-use App\Http\Controllers\Auth\LoginController;
-use App\Http\Controllers\DashboardController;
-use App\Http\Controllers\Admin\DashboardController as AdminDashboardController;
-use App\Http\Controllers\Admin\ArtikelController;
-use App\Http\Controllers\Admin\StrukturController;
-use App\Http\Controllers\Admin\KomentarController;
-use App\Http\Controllers\ArtikelController as PublicArtikelController;
-use App\Http\Controllers\Admin\DownloadItemController;
-use App\Http\Controllers\Admin\ProdukController;
-use App\Http\Controllers\Admin\KategoriProdukController;
-use App\Http\Controllers\Admin\PromoController;
-use App\Http\Controllers\Admin\GaleriController;
-use App\Http\Controllers\Admin\JenisLayananController;
-use App\Http\Controllers\Admin\LayananController;
-use App\Http\Controllers\Admin\SettingsController;
-use App\Http\Controllers\Admin\LinktreeController as AdminLinktreeController;
-use App\Http\Controllers\LinktreeController;
-use App\Models\JenisLayanan;
-use App\Http\Controllers\Admin\FAQController;
+use App\Http\Controllers\TokoController;
+
+
 
 /*
 |--------------------------------------------------------------------------
@@ -33,9 +16,179 @@ use App\Http\Controllers\Admin\FAQController;
 |
 */
 
-// View composer for sharing pages data with all views
-View::composer('admin.layouts.sidebar', function ($view) {
-    $view->with('jenisLayanans', JenisLayanan::all());
+// Admin Authentication Routes
+Route::get('/admin/login', function () {
+    return view('auth.login');
+})->name('admin.login');
+
+// Admin Dashboard Routes
+Route::prefix('admin')->group(function () {
+    Route::get('/dashboard', function() {
+        return view('admin.dashboard');
+    })->name('admin.dashboard');
+    
+    Route::get('/shop-dashboard', function() {
+        return view('admin.shop.dashboard');
+    })->name('admin.shop.dashboard');
+    
+    // Download routes
+    Route::get('/download', function() {
+        return view('admin.download.index');
+    })->name('admin.download.index');
+    
+    Route::get('/download/create', function() {
+        return view('admin.download.create');
+    })->name('admin.download.create');
+    
+    Route::get('/download/{id}/edit', function($id) {
+        return view('admin.download.edit', ['id' => $id]);
+    })->name('admin.download.edit');
+    
+    // Artikel routes
+    Route::get('/artikel', function() {
+        return view('admin.artikel.index');
+    })->name('admin.artikel.index');
+    
+    Route::get('/artikel/create', function() {
+        return view('admin.artikel.create');
+    })->name('admin.artikel.create');
+    
+    Route::get('/artikel/{id}/edit', function($id) {
+        return view('admin.artikel.edit', ['id' => $id]);
+    })->name('admin.artikel.edit');
+    
+    Route::get('/artikel/{id}/komentar', function($id) {
+        return view('admin.artikel.komentar.index');
+    })->name('admin.artikel.komentar.index');
+    
+    // Struktur Kepengurusan routes
+    Route::get('/struktur', function() {
+        return view('admin.struktur.index');
+    })->name('admin.struktur.index');
+    
+    Route::get('/struktur/create', function() {
+        return view('admin.struktur.create');
+    })->name('admin.struktur.create');
+    
+    Route::get('/struktur/{id}/edit', function($id) {
+        return view('admin.struktur.edit', ['id' => $id]);
+    })->name('admin.struktur.edit');
+    
+    // Linktree routes
+    Route::get('/linktree', function() {
+        return view('admin.linktree.index');
+    })->name('admin.linktree.index');
+    
+    // Kategori Produk routes
+    Route::get('/kategori', function() {
+        return view('admin.kategori.index');
+    })->name('admin.kategori.index');
+    
+    Route::get('/kategori/create', function() {
+        return view('admin.kategori.create');
+    })->name('admin.kategori.create');
+    
+    Route::get('/kategori/{id}/edit', function($id) {
+        return view('admin.kategori.edit', ['id' => $id]);
+    })->name('admin.kategori.edit');
+    
+    
+    // Product routes
+    Route::get('/produk', function() {
+        return view('admin.produk.index');
+    })->name('admin.produk.index');
+    
+    Route::get('/produk/create', function() {
+        return view('admin.produk.create');
+    })->name('admin.produk.create');
+    
+    Route::get('/produk/{id}/edit', function($id) {
+        return view('admin.produk.edit', ['id' => $id]);
+    })->name('admin.produk.edit');
+    
+    // Promotion routes
+    Route::get('/promo', function() {
+        return view('admin.promo.index');
+    })->name('admin.promo.index');
+    
+    Route::get('/promo/create', function() {
+        return view('admin.promo.create');
+    })->name('admin.promo.create');
+    
+    Route::get('/promo/edit/{id}', function($id) {
+        return view('admin.promo.edit', ['id' => $id]);
+    })->name('admin.promo.edit');
+    
+    // Layanan (Service) routes
+    Route::get('/layanan/{id_jenis_layanan}', function($id_jenis_layanan) {
+        return view('admin.layanan.index', ['jenis_layanan_id' => $id_jenis_layanan]);
+    })->name('admin.layanan.index');
+    
+    Route::get('/layanan/edit/{id}', function($id) {
+        return view('admin.layanan.edit', ['id' => $id]);
+    })->name('admin.layanan.edit');
+    
+    // Gallery routes
+    Route::get('/galeri', function() {
+        return view('admin.galeri.index');
+    })->name('admin.galeri.index');
+    
+    Route::get('/galeri/create', function() {
+        return view('admin.galeri.create');
+    })->name('admin.galeri.create');
+    
+    Route::get('/galeri/{id}/edit', function($id) {
+        return view('admin.galeri.edit', ['id' => $id]);
+    })->name('admin.galeri.edit');
+    
+    // FAQ routes
+    Route::get('/faq', function() {
+        return view('admin.faq.index');
+    })->name('admin.faq.index');
+    
+    Route::get('/faq/create', function() {
+        return view('admin.faq.create');
+    })->name('admin.faq.create');
+    
+    Route::get('/faq/{id}/edit', function($id) {
+        return view('admin.faq.edit', ['id' => $id]);
+    })->name('admin.faq.edit');
+    
+    // Hero Banner routes
+    Route::get('/hero-banners', function() {
+        return view('admin.hero-banners.index');
+    })->name('admin.hero-banners.index');
+    
+    Route::get('/hero-banners/create', function() {
+        return view('admin.hero-banners.create');
+    })->name('admin.hero-banners.create');
+    
+    Route::get('/hero-banners/{id}/edit', function($id) {
+        return view('admin.hero-banners.edit', ['id' => $id]);
+    })->name('admin.hero-banners.edit');
+    
+    // Settings routes
+    Route::get('/settings', function() {
+        return view('admin.settings.index');
+    })->name('admin.settings.index');
+
+    // Notification routes
+    Route::get('/notifications', function() {
+        return view('admin.notifications.index');
+    })->name('admin.notifications.index');
+    
+    // Alias untuk /notification tanpa 's' agar tetap berfungsi
+    Route::get('/notification', function() {
+        return view('admin.notifications.index');
+    })->name('admin.notification.index');
+
+    Route::get('/notifications/create', function() {
+        return view('admin.notifications.create');
+    })->name('admin.notifications.create');
+
+    Route::get('/notifications/{id}/edit', function($id) {
+        return view('admin.notifications.edit', ['id' => $id]);
+    })->name('admin.notifications.edit');
 });
 
 Route::get("beranda", function () {
@@ -66,117 +219,23 @@ Route::get('/artikel', function () {
     return view('article.artikel');
 })->name('articles.all');
 
-Route::get('/', [LinktreeController::class, 'index']);
+// Toko (Shop) routes
+Route::get('/toko', function() {
+    return view('toko.index-spa');
+})->name('toko.index');
 
+Route::get('/toko/produk/{id}', function($id) {
+    return view('toko.show-spa', ['id' => $id]);
+})->name('toko.show');
 
-// Authentication Routes
-Route::get('admin/login', [LoginController::class, 'showLoginForm'])->name('login');
-Route::post('admin/login', [LoginController::class, 'login']);
-Route::post('logout', [LoginController::class, 'logout'])->name('logout');
-
-// Dashboard routes
-Route::middleware(['auth'])->group(function () {
-    Route::get('/dashboard', [DashboardController::class, 'index'])->name('dashboard');
+// Serve a static view for linktree that will consume the API via JavaScript
+Route::get('/', function () {
+    return view('linktree.static');
 });
 
-// Admin routes
-Route::middleware(['auth', 'admin'])->prefix('admin')->group(function () {
-    // Dashboard
-    Route::get('/dashboard', [AdminDashboardController::class, 'index'])->name('admin.dashboard');
-
-    // Linktree routes
-    Route::get('/linktree', [AdminLinktreeController::class, 'index'])->name('admin.linktree.index');
-    Route::post('/linktree/profile', [AdminLinktreeController::class, 'updateProfile'])->name('admin.linktree.update-profile');
-    Route::get('/linktree/logo', [AdminLinktreeController::class, 'getLogoUrl'])->name('admin.linktree.get-logo');
-    Route::post('/linktree/link', [AdminLinktreeController::class, 'storeLink'])->name('admin.linktree.store-link');
-    Route::put('/linktree/link/{id}', [AdminLinktreeController::class, 'updateLink'])->name('admin.linktree.update-link');
-    Route::delete('/linktree/link/{id}', [AdminLinktreeController::class, 'deleteLink'])->name('admin.linktree.delete-link');
-    Route::post('/linktree/link/positions', [AdminLinktreeController::class, 'updateLinkPositions'])->name('admin.linktree.update-positions');
-
-    // Artikel routes
-    Route::get('/artikel', [ArtikelController::class, 'index'])->name('admin.artikel.index');
-    Route::get('/artikel/create', [ArtikelController::class, 'create'])->name('admin.artikel.create');
-    Route::post('/artikel', [ArtikelController::class, 'store'])->name('admin.artikel.store');
-    Route::get('/artikel/{id}/edit', [ArtikelController::class, 'edit'])->name('admin.artikel.edit');
-    Route::put('/artikel/{id}', [ArtikelController::class, 'update'])->name('admin.artikel.update');
-    Route::delete('/artikel/{id}', [ArtikelController::class, 'destroy'])->name('admin.artikel.destroy');
-
-    // Komentar routes
-    Route::get('/artikel/{artikelId}/komentar/{status?}', [KomentarController::class, 'index'])->name('admin.artikel.komentar.index');
-    Route::patch('/komentar/{id}/status', [KomentarController::class, 'updateStatus'])->name('admin.komentar.update-status');
-    Route::delete('/komentar/{id}', [KomentarController::class, 'destroy'])->name('admin.komentar.destroy');
-
-    // Struktur Kepengurusan routes
-    Route::get('/struktur', [StrukturController::class, 'index'])->name('admin.struktur.index');
-    Route::get('/struktur/create', [StrukturController::class, 'create'])->name('admin.struktur.create');
-    Route::post('/struktur', [StrukturController::class, 'store'])->name('admin.struktur.store');
-    Route::get('/struktur/{id}/edit', [StrukturController::class, 'edit'])->name('admin.struktur.edit');
-    Route::put('/struktur/{id}', [StrukturController::class, 'update'])->name('admin.struktur.update');
-    Route::delete('/struktur/{id}', [StrukturController::class, 'destroy'])->name('admin.struktur.destroy');
-
-
-
-    // Download Item routes
-    Route::get('/download', [DownloadItemController::class, 'index'])->name('admin.download.index');
-    Route::get('/download/create', [DownloadItemController::class, 'create'])->name('admin.download.create');
-    Route::post('/download', [DownloadItemController::class, 'store'])->name('admin.download.store');
-    Route::get('/download/{id}/edit', [DownloadItemController::class, 'edit'])->name('admin.download.edit');
-    Route::put('/download/{id}', [DownloadItemController::class, 'update'])->name('admin.download.update');
-    Route::delete('/download/{id}', [DownloadItemController::class, 'destroy'])->name('admin.download.destroy');
-    Route::post('/download/update-order', [DownloadItemController::class, 'updateOrder'])->name('admin.download.update-order');
-    Route::get('/download/{id}', [DownloadItemController::class, 'download'])->name('admin.download.file');
-
-    // Produk routes
-    Route::get('/produk', [ProdukController::class, 'index'])->name('admin.produk.index');
-    Route::get('/produk/create', [ProdukController::class, 'create'])->name('admin.produk.create');
-    Route::post('/produk', [ProdukController::class, 'store'])->name('admin.produk.store');
-    Route::get('/produk/{id}/edit', [ProdukController::class, 'edit'])->name('admin.produk.edit');
-    Route::put('/produk/{id}', [ProdukController::class, 'update'])->name('admin.produk.update');
-    Route::delete('/produk/{id}', [ProdukController::class, 'destroy'])->name('admin.produk.destroy');
-
-    // Kategori Produk routes
-    Route::get('/kategori', [KategoriProdukController::class, 'index'])->name('admin.kategori.index');
-    Route::get('/kategori/create', [KategoriProdukController::class, 'create'])->name('admin.kategori.create');
-    Route::post('/kategori', [KategoriProdukController::class, 'store'])->name('admin.kategori.store');
-    Route::get('/kategori/{id}/edit', [KategoriProdukController::class, 'edit'])->name('admin.kategori.edit');
-    Route::put('/kategori/{id}', [KategoriProdukController::class, 'update'])->name('admin.kategori.update');
-    Route::delete('/kategori/{id}', [KategoriProdukController::class, 'destroy'])->name('admin.kategori.destroy');
-
-    // Promo routes
-    Route::get('/promo', [PromoController::class, 'index'])->name('admin.promo.index');
-    Route::get('/promo/create', [PromoController::class, 'create'])->name('admin.promo.create');
-    Route::post('/promo', [PromoController::class, 'store'])->name('admin.promo.store');
-    Route::get('/promo/{id}/edit', [PromoController::class, 'edit'])->name('admin.promo.edit');
-    Route::put('/promo/{id}', [PromoController::class, 'update'])->name('admin.promo.update');
-    Route::patch('/promo/{id}/status', [PromoController::class, 'updateStatus'])->name('admin.promo.update-status');
-    Route::delete('/promo/{id}', [PromoController::class, 'destroy'])->name('admin.promo.destroy');
-
-    // Galeri Foto routes
-    Route::get('/galeri', [GaleriController::class, 'index'])->name('admin.galeri.index');
-    Route::get('/galeri/create', [GaleriController::class, 'create'])->name('admin.galeri.create');
-    Route::post('/galeri', [GaleriController::class, 'store'])->name('admin.galeri.store');
-    Route::get('/galeri/{id}/edit', [GaleriController::class, 'edit'])->name('admin.galeri.edit');
-    Route::put('/galeri/{id}', [GaleriController::class, 'update'])->name('admin.galeri.update');
-    Route::delete('/galeri/{id}', [GaleriController::class, 'destroy'])->name('admin.galeri.destroy');
-
-    // Manajemen Halaman routes
-    Route::get('/halaman', [JenisLayananController::class, 'index'])->name('admin.halaman.index');
-
-    // Layanan routes
-    Route::get('/halaman/{id_jenis_layanan}/layanan', [LayananController::class, 'index'])->name('admin.layanan.index');
-    Route::get('/halaman/{id_jenis_layanan}/layanan/{id}/edit', [LayananController::class, 'edit'])->name('admin.layanan.edit');
-    Route::put('/halaman/{id_jenis_layanan}/layanan/{id}', [LayananController::class, 'update'])->name('admin.layanan.update');
-
-    // Settings routes
-    Route::get('/settings', [SettingsController::class, 'index'])->name('admin.settings.index');
-    Route::post('/settings/password', [SettingsController::class, 'updatePassword'])->name('admin.settings.update-password');
-    Route::post('/settings/theme', [SettingsController::class, 'saveTheme'])->name('admin.settings.save-theme');
-
-    // FAQ routes
-    Route::get('/faq', [FAQController::class, 'index'])->name('admin.faq.index');
-    Route::get('/faq/create', [FAQController::class, 'create'])->name('admin.faq.create');
-    Route::post('/faq', [FAQController::class, 'store'])->name('admin.faq.store');
-    Route::get('/faq/{id}/edit', [FAQController::class, 'edit'])->name('admin.faq.edit');
-    Route::put('/faq/{id}', [FAQController::class, 'update'])->name('admin.faq.update');
-    Route::delete('/faq/{id}', [FAQController::class, 'destroy'])->name('admin.faq.destroy');
+// Support for linktree with specific ID
+Route::get('/l/{id}', function ($id) {
+    return view('linktree.static', ['id' => $id]);
 });
+
+

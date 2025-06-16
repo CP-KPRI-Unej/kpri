@@ -30,9 +30,10 @@ class Komentar extends Model
      */
     protected $fillable = [
         'id_artikel',
+        'parent_id',
         'nama_pengomentar',
         'isi_komentar',
-        'status',
+        'status'
     ];
 
     /**
@@ -51,5 +52,21 @@ class Komentar extends Model
     public function artikel()
     {
         return $this->belongsTo(Artikel::class, 'id_artikel', 'id_artikel');
+    }
+
+    /**
+     * Get the parent comment if this is a reply.
+     */
+    public function parent()
+    {
+        return $this->belongsTo(Komentar::class, 'parent_id');
+    }
+
+    /**
+     * Get the replies to this comment.
+     */
+    public function replies()
+    {
+        return $this->hasMany(Komentar::class, 'parent_id');
     }
 } 

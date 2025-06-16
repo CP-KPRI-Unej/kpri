@@ -17,7 +17,7 @@ class Status extends Model
     protected $table = 'status';
 
     /**
-     * The primary key for the model.
+     * The primary key associated with the table.
      *
      * @var string
      */
@@ -40,18 +40,18 @@ class Status extends Model
     ];
 
     /**
-     * Get the gallery items with this status.
-     */
-    public function galeri_fotos()
-    {
-        return $this->hasMany(GaleriFoto::class, 'id_status', 'id_status');
-    }
-
-    /**
-     * Get the articles with this status.
+     * Get the articles for the status.
      */
     public function artikels()
     {
         return $this->hasMany(Artikel::class, 'id_status', 'id_status');
+    }
+
+    /**
+     * Get the gallery items with this status.
+     */
+    public function galleries()
+    {
+        return $this->hasMany(Gallery::class, 'id_status', 'id_status');
     }
 } 

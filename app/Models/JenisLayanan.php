@@ -40,9 +40,9 @@ class JenisLayanan extends Model
     ];
 
     /**
-     * Get the services associated with this page.
+     * Get the services associated with this service type.
      */
-    public function layanans()
+    public function layanan()
     {
         return $this->hasMany(Layanan::class, 'id_jenis_layanan', 'id_jenis_layanan');
     }

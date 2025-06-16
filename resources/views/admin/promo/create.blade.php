@@ -75,50 +75,60 @@
         </a>
     </div>
 
+    <div id="alert-success" class="bg-green-100 border border-green-400 text-green-700 px-4 py-3 rounded relative mb-4 hidden" role="alert">
+        <span class="block sm:inline" id="success-message"></span>
+        <button type="button" class="absolute top-0 bottom-0 right-0 px-4 py-3" onclick="hideAlert('alert-success')" aria-label="Close">
+            <span class="sr-only">Close</span>
+            <svg class="h-4 w-4" fill="currentColor" viewBox="0 0 20 20">
+                <path d="M4.293 4.293a1 1 0 011.414 0L10 8.586l4.293-4.293a1 1 0 111.414 1.414L11.414 10l4.293 4.293a1 1 0 01-1.414 1.414L10 11.414l-4.293 4.293a1 1 0 01-1.414-1.414L8.586 10 4.293 5.707a1 1 0 010-1.414z" clip-rule="evenodd" fill-rule="evenodd"></path>
+            </svg>
+        </button>
+    </div>
+
+    <div id="alert-error" class="bg-red-100 border border-red-400 text-red-700 px-4 py-3 rounded relative mb-4 hidden" role="alert">
+        <span class="block sm:inline" id="error-message"></span>
+        <button type="button" class="absolute top-0 bottom-0 right-0 px-4 py-3" onclick="hideAlert('alert-error')" aria-label="Close">
+            <span class="sr-only">Close</span>
+            <svg class="h-4 w-4" fill="currentColor" viewBox="0 0 20 20">
+                <path d="M4.293 4.293a1 1 0 011.414 0L10 8.586l4.293-4.293a1 1 0 111.414 1.414L11.414 10l4.293 4.293a1 1 0 01-1.414 1.414L10 11.414l-4.293 4.293a1 1 0 01-1.414-1.414L8.586 10 4.293 5.707a1 1 0 010-1.414z" clip-rule="evenodd" fill-rule="evenodd"></path>
+            </svg>
+        </button>
+    </div>
+
     <div class="bg-white dark:bg-gray-800 shadow rounded-lg overflow-hidden">
-        <form action="{{ route('admin.promo.store') }}" method="POST">
-            @csrf
-            
+        <form id="promoForm">
             <div class="p-6 grid grid-cols-1 md:grid-cols-2 gap-6">
                 <!-- Left Column - Basic Info -->
                 <div class="space-y-6">
                     <div>
                         <label for="judul_promo" class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Judul Promosi <span class="text-red-600">*</span></label>
-                        <input type="text" class="w-full px-3 py-2 border rounded-md focus:outline-none focus:ring-2 focus:ring-indigo-500 dark:bg-gray-700 dark:border-gray-600 dark:text-white @error('judul_promo') border-red-500 @enderror" id="judul_promo" name="judul_promo" value="{{ old('judul_promo') }}" required maxlength="120" placeholder="Masukkan judul promosi">
-                        @error('judul_promo')
-                            <p class="mt-1 text-sm text-red-600 dark:text-red-400">{{ $message }}</p>
-                        @enderror
+                        <input type="text" class="w-full px-3 py-2 border rounded-md focus:outline-none focus:ring-2 focus:ring-indigo-500 dark:bg-gray-700 dark:border-gray-600 dark:text-white" id="judul_promo" name="judul_promo" required maxlength="120" placeholder="Masukkan judul promosi">
+                        <p class="mt-1 text-sm text-red-600 dark:text-red-400 error-message" id="judul_promo-error"></p>
                     </div>
                     
                     <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
                         <div>
                             <label for="tgl_start" class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Tanggal Mulai <span class="text-red-600">*</span></label>
-                            <input type="text" class="w-full px-3 py-2 border rounded-md focus:outline-none focus:ring-2 focus:ring-indigo-500 dark:bg-gray-700 dark:border-gray-600 dark:text-white @error('tgl_start') border-red-500 @enderror" id="tgl_start" name="tgl_start" value="{{ old('tgl_start') }}" required placeholder="Pilih tanggal mulai">
-                            @error('tgl_start')
-                                <p class="mt-1 text-sm text-red-600 dark:text-red-400">{{ $message }}</p>
-                            @enderror
+                            <input type="text" class="w-full px-3 py-2 border rounded-md focus:outline-none focus:ring-2 focus:ring-indigo-500 dark:bg-gray-700 dark:border-gray-600 dark:text-white" id="tgl_start" name="tgl_start" required placeholder="Pilih tanggal mulai">
+                            <p class="mt-1 text-sm text-red-600 dark:text-red-400 error-message" id="tgl_start-error"></p>
                         </div>
                         
                         <div>
                             <label for="tgl_end" class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Tanggal Berakhir <span class="text-red-600">*</span></label>
-                            <input type="text" class="w-full px-3 py-2 border rounded-md focus:outline-none focus:ring-2 focus:ring-indigo-500 dark:bg-gray-700 dark:border-gray-600 dark:text-white @error('tgl_end') border-red-500 @enderror" id="tgl_end" name="tgl_end" value="{{ old('tgl_end') }}" required placeholder="Pilih tanggal berakhir">
-                            @error('tgl_end')
-                                <p class="mt-1 text-sm text-red-600 dark:text-red-400">{{ $message }}</p>
-                            @enderror
+                            <input type="text" class="w-full px-3 py-2 border rounded-md focus:outline-none focus:ring-2 focus:ring-indigo-500 dark:bg-gray-700 dark:border-gray-600 dark:text-white" id="tgl_end" name="tgl_end" required placeholder="Pilih tanggal berakhir">
+                            <p class="mt-1 text-sm text-red-600 dark:text-red-400 error-message" id="tgl_end-error"></p>
                         </div>
                     </div>
                     
                     <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
                         <div>
                             <label for="tipe_diskon" class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Tipe Diskon <span class="text-red-600">*</span></label>
-                            <select class="w-full px-3 py-2 border rounded-md focus:outline-none focus:ring-2 focus:ring-indigo-500 dark:bg-gray-700 dark:border-gray-600 dark:text-white @error('tipe_diskon') border-red-500 @enderror" id="tipe_diskon" name="tipe_diskon" required>
+                            <select class="w-full px-3 py-2 border rounded-md focus:outline-none focus:ring-2 focus:ring-indigo-500 dark:bg-gray-700 dark:border-gray-600 dark:text-white" id="tipe_diskon" name="tipe_diskon" required>
                                 <option value="">-- Pilih Tipe --</option>
-                                <option value="persen" {{ old('tipe_diskon') == 'persen' ? 'selected' : '' }}>Persentase (%)</option>
-                                <option value="nominal" {{ old('tipe_diskon') == 'nominal' ? 'selected' : '' }}>Nominal (Rp)</option>
+                                <option value="persen">Persentase (%)</option>
+                                <option value="nominal">Nominal (Rp)</option>
                             </select>
-                            @error('tipe_diskon')
-                                <p class="mt-1 text-sm text-red-600 dark:text-red-400">{{ $message }}</p>
-                            @enderror
+                            <p class="mt-1 text-sm text-red-600 dark:text-red-400 error-message" id="tipe_diskon-error"></p>
                         </div>
                         
                         <div>
@@ -127,45 +137,35 @@
                                 <span id="diskon-prefix" class="inline-flex items-center px-3 py-2 rounded-l-md border border-r-0 border-gray-300 bg-gray-50 text-gray-500 dark:bg-gray-600 dark:border-gray-500 dark:text-gray-300">
                                     Rp
                                 </span>
-                                <input type="number" class="flex-1 px-3 py-2 border focus:outline-none focus:ring-2 focus:ring-indigo-500 dark:bg-gray-700 dark:border-gray-600 dark:text-white @error('nilai_diskon') border-red-500 @enderror rounded-r-md" id="nilai_diskon" name="nilai_diskon" value="{{ old('nilai_diskon') }}" required min="1" placeholder="Nilai diskon">
+                                <input type="number" class="flex-1 px-3 py-2 border focus:outline-none focus:ring-2 focus:ring-indigo-500 dark:bg-gray-700 dark:border-gray-600 dark:text-white rounded-r-md" id="nilai_diskon" name="nilai_diskon" required min="1" placeholder="Nilai diskon">
                                 <span id="diskon-suffix" class="hidden items-center px-3 py-2 rounded-r-md border border-l-0 border-gray-300 bg-gray-50 text-gray-500 dark:bg-gray-600 dark:border-gray-500 dark:text-gray-300">
                                     %
                                 </span>
                             </div>
                             <p id="diskon-help" class="mt-1 text-xs text-gray-500 dark:text-gray-400">Masukkan nilai diskon dalam rupiah.</p>
-                            @error('nilai_diskon')
-                                <p class="mt-1 text-sm text-red-600 dark:text-red-400">{{ $message }}</p>
-                            @enderror
+                            <p class="mt-1 text-sm text-red-600 dark:text-red-400 error-message" id="nilai_diskon-error"></p>
                         </div>
                     </div>
                     
                     <div>
                         <label for="status" class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Status <span class="text-red-600">*</span></label>
-                        <select class="w-full px-3 py-2 border rounded-md focus:outline-none focus:ring-2 focus:ring-indigo-500 dark:bg-gray-700 dark:border-gray-600 dark:text-white @error('status') border-red-500 @enderror" id="status" name="status" required>
-                            <option value="aktif" {{ old('status') == 'aktif' ? 'selected' : '' }}>Aktif</option>
-                            <option value="nonaktif" {{ old('status') == 'nonaktif' ? 'selected' : '' }}>Non-aktif</option>
+                        <select class="w-full px-3 py-2 border rounded-md focus:outline-none focus:ring-2 focus:ring-indigo-500 dark:bg-gray-700 dark:border-gray-600 dark:text-white" id="status" name="status" required>
+                            <option value="aktif">Aktif</option>
+                            <option value="nonaktif">Non-aktif</option>
                         </select>
-                        @error('status')
-                            <p class="mt-1 text-sm text-red-600 dark:text-red-400">{{ $message }}</p>
-                        @enderror
+                        <p class="mt-1 text-sm text-red-600 dark:text-red-400 error-message" id="status-error"></p>
                     </div>
                 </div>
                 
                 <!-- Right Column - Products Selection -->
                 <div class="space-y-6">
                     <div>
-                        <label for="produk_ids" class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Produk yang Dipromo <span class="text-red-600">*</span></label>
-                        <select class="select2 w-full px-3 py-2 border rounded-md focus:outline-none focus:ring-2 focus:ring-indigo-500 dark:bg-gray-700 dark:border-gray-600 dark:text-white @error('produk_ids') border-red-500 @enderror" id="produk_ids" name="produk_ids[]" multiple required>
-                            @foreach($produks as $produk)
-                                <option value="{{ $produk->id_produk }}" {{ in_array($produk->id_produk, old('produk_ids', [])) ? 'selected' : '' }}>
-                                    {{ $produk->nama_produk }} - Rp {{ number_format($produk->harga_produk, 0, ',', '.') }}
-                                </option>
-                            @endforeach
+                        <label for="products" class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Produk yang Dipromo <span class="text-red-600">*</span></label>
+                        <select class="select2 w-full px-3 py-2 border rounded-md focus:outline-none focus:ring-2 focus:ring-indigo-500 dark:bg-gray-700 dark:border-gray-600 dark:text-white" id="products" name="products" multiple required>
+                            <!-- Products will be loaded from API -->
                         </select>
                         <p class="mt-1 text-xs text-gray-500 dark:text-gray-400">Pilih satu atau lebih produk yang akan dimasukkan dalam promosi ini.</p>
-                        @error('produk_ids')
-                            <p class="mt-1 text-sm text-red-600 dark:text-red-400">{{ $message }}</p>
-                        @enderror
+                        <p class="mt-1 text-sm text-red-600 dark:text-red-400 error-message" id="products-error"></p>
                     </div>
                     
                     <div class="bg-gray-50 dark:bg-gray-700 rounded-lg p-4 mt-4">
@@ -184,7 +184,7 @@
                 <a href="{{ route('admin.promo.index') }}" class="px-4 py-2 bg-gray-500 hover:bg-gray-600 text-white rounded-md text-sm transition duration-300">
                     Batal
                 </a>
-                <button type="submit" class="px-4 py-2 bg-indigo-700 hover:bg-indigo-800 text-white rounded-md text-sm transition duration-300">
+                <button type="submit" id="submitBtn" class="px-4 py-2 bg-indigo-700 hover:bg-indigo-800 text-white rounded-md text-sm transition duration-300">
                     <i class="bi bi-save mr-1"></i> Simpan Promo
                 </button>
             </div>
@@ -194,67 +194,225 @@
 @endsection
 
 @push('scripts')
+<script src="https://cdn.jsdelivr.net/npm/axios/dist/axios.min.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/js/select2.min.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/flatpickr"></script>
 <script src="https://cdn.jsdelivr.net/npm/flatpickr/dist/l10n/id.js"></script>
 <script>
-    document.addEventListener('DOMContentLoaded', function() {
-        // Initialize Select2
-        $('.select2').select2({
-            placeholder: 'Pilih produk untuk promosi',
-            width: '100%'
-        });
-        
         // Initialize date pickers
         flatpickr("#tgl_start", {
             locale: "id",
             dateFormat: "Y-m-d",
-            minDate: "today"
+        minDate: "today",
+        onChange: function(selectedDates, dateStr) {
+            // Update the minimum date for end date picker when start date changes
+            endDatePicker.set("minDate", dateStr);
+        }
         });
         
-        flatpickr("#tgl_end", {
+    const endDatePicker = flatpickr("#tgl_end", {
             locale: "id",
             dateFormat: "Y-m-d",
             minDate: "today"
         });
         
-        // Handle discount type change
-        const tipeDiskon = document.getElementById('tipe_diskon');
+    // Handle diskon type changes
+    const tipeDiskonSelect = document.getElementById('tipe_diskon');
         const diskonPrefix = document.getElementById('diskon-prefix');
         const diskonSuffix = document.getElementById('diskon-suffix');
         const diskonHelp = document.getElementById('diskon-help');
-        const nilaiDiskon = document.getElementById('nilai_diskon');
+    const nilaiDiskonInput = document.getElementById('nilai_diskon');
         
-        tipeDiskon.addEventListener('change', updateDiskonType);
-        
-        function updateDiskonType() {
-            const type = tipeDiskon.value;
-            
-            if (type === 'persen') {
+    tipeDiskonSelect.addEventListener('change', function() {
+        if (this.value === 'persen') {
                 diskonPrefix.classList.add('hidden');
                 diskonPrefix.classList.remove('inline-flex');
                 diskonSuffix.classList.remove('hidden');
                 diskonSuffix.classList.add('inline-flex');
-                diskonHelp.textContent = 'Masukkan nilai diskon dalam persentase (1-100).';
-                nilaiDiskon.setAttribute('max', '100');
-            } else if (type === 'nominal') {
+            diskonHelp.textContent = 'Masukkan nilai persentase diskon (1-100).';
+            nilaiDiskonInput.classList.remove('rounded-r-md');
+            nilaiDiskonInput.classList.add('rounded-none');
+            nilaiDiskonInput.max = 100;
+        } else {
                 diskonPrefix.classList.remove('hidden');
                 diskonPrefix.classList.add('inline-flex');
                 diskonSuffix.classList.add('hidden');
                 diskonSuffix.classList.remove('inline-flex');
                 diskonHelp.textContent = 'Masukkan nilai diskon dalam rupiah.';
-                nilaiDiskon.removeAttribute('max');
+            nilaiDiskonInput.classList.add('rounded-r-md');
+            nilaiDiskonInput.classList.remove('rounded-none');
+            nilaiDiskonInput.removeAttribute('max');
+        }
+    });
+    
+    document.addEventListener('DOMContentLoaded', function() {
+        // Set up axios defaults
+        axios.defaults.headers.common['X-Requested-With'] = 'XMLHttpRequest';
+        axios.defaults.headers.common['Accept'] = 'application/json';
+        
+        // Set JWT token from localStorage if available
+        const token = localStorage.getItem('access_token');
+        if (token) {
+            axios.defaults.headers.common['Authorization'] = 'Bearer ' + token;
             } else {
-                diskonPrefix.classList.remove('hidden');
-                diskonPrefix.classList.add('inline-flex');
-                diskonSuffix.classList.add('hidden');
-                diskonSuffix.classList.remove('inline-flex');
-                diskonHelp.textContent = 'Pilih tipe diskon terlebih dahulu.';
-            }
+            // If no token in localStorage, try to get it from the login process
+            checkAuthentication();
         }
         
-        // Run on page load
-        updateDiskonType();
+        // Add CSRF token to all requests
+        const csrfToken = document.querySelector('meta[name="csrf-token"]').getAttribute('content');
+        axios.defaults.headers.common['X-CSRF-TOKEN'] = csrfToken;
+        
+        // Initialize Select2
+        initializeSelect2();
+        
+        // Load available products
+        loadAvailableProducts();
+        
+        // Form submission
+        const form = document.getElementById('promoForm');
+        form.addEventListener('submit', submitForm);
     });
+    
+    // Check authentication status
+    function checkAuthentication() {
+        axios.get('/api/auth/me')
+            .then(response => {
+                // Store the token for future requests
+                const token = response.data.access_token;
+                if (token) {
+                    localStorage.setItem('access_token', token);
+                    axios.defaults.headers.common['Authorization'] = 'Bearer ' + token;
+                }
+                loadAvailableProducts();
+            })
+            .catch(error => {
+                console.error('Authentication error:', error);
+                // Redirect to login if unauthenticated
+                if (error.response && error.response.status === 401) {
+                    window.location.href = '/admin/login';
+                }
+            });
+    }
+    
+    // Initialize Select2
+    function initializeSelect2() {
+        $('.select2').select2({
+            theme: 'bootstrap-5',
+            width: '100%',
+            placeholder: 'Pilih produk untuk promosi',
+            allowClear: true,
+            closeOnSelect: false
+        });
+    }
+    
+    // Load available products from API
+    function loadAvailableProducts() {
+        axios.get('/api/admin/available-products')
+            .then(response => {
+                if (response.data.status === 'success') {
+                    const products = response.data.data;
+                    const select = document.getElementById('products');
+                    select.innerHTML = '';
+                    
+                    products.forEach(product => {
+                        const option = document.createElement('option');
+                        option.value = product.id_produk;
+                        option.textContent = `${product.nama_produk} - Rp ${new Intl.NumberFormat('id-ID').format(product.harga_produk)}`;
+                        select.appendChild(option);
+                    });
+                    
+                    // Re-initialize select2 after populating options
+                    $('.select2').trigger('change');
+                }
+            })
+            .catch(error => {
+                showAlert('error', 'Gagal memuat data produk: ' + (error.response?.data?.message || error.message));
+            });
+    }
+    
+    // Submit form
+    function submitForm(e) {
+        e.preventDefault();
+        
+        // Clear previous error messages
+        document.querySelectorAll('.error-message').forEach(el => {
+            el.textContent = '';
+        });
+        
+        // Show loading state
+        const submitBtn = document.getElementById('submitBtn');
+        const originalBtnText = submitBtn.innerHTML;
+        submitBtn.disabled = true;
+        submitBtn.innerHTML = `
+            <svg class="animate-spin -ml-1 mr-2 h-4 w-4 text-white inline" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
+                <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
+                <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
+            </svg>
+            Menyimpan...
+        `;
+        
+        // Get form data
+        const formData = {
+            judul_promo: document.getElementById('judul_promo').value,
+            tgl_start: document.getElementById('tgl_start').value,
+            tgl_end: document.getElementById('tgl_end').value,
+            tipe_diskon: document.getElementById('tipe_diskon').value,
+            nilai_diskon: document.getElementById('nilai_diskon').value,
+            status: document.getElementById('status').value,
+            products: Array.from(document.getElementById('products').selectedOptions).map(option => option.value)
+        };
+        
+        // Send API request
+        axios.post('/api/admin/promotions', formData)
+            .then(response => {
+                if (response.data.status === 'success') {
+                    showAlert('success', 'Promo berhasil disimpan!');
+                    
+                    // Redirect to index page after a short delay
+                    setTimeout(() => {
+                        window.location.href = '/admin/promo';
+                    }, 1500);
+                }
+            })
+            .catch(error => {
+                // Reset button state
+                submitBtn.disabled = false;
+                submitBtn.innerHTML = originalBtnText;
+                
+                // Handle validation errors
+                if (error.response && error.response.status === 422 && error.response.data.errors) {
+                    const errors = error.response.data.errors;
+                    Object.keys(errors).forEach(field => {
+                        // Convert field name if necessary (e.g., products.0 -> products)
+                        const baseField = field.split('.')[0];
+                        const errorEl = document.getElementById(`${baseField}-error`);
+                        if (errorEl) {
+                            errorEl.textContent = errors[field][0];
+                        }
+                    });
+                    showAlert('error', 'Terdapat kesalahan pada form. Silakan periksa kembali.');
+                } else {
+                    showAlert('error', 'Gagal menyimpan promo: ' + (error.response?.data?.message || error.message));
+                }
+            });
+    }
+    
+    function showAlert(type, message) {
+        const alertElement = document.getElementById(`alert-${type}`);
+        const messageElement = document.getElementById(`${type}-message`);
+        
+        messageElement.textContent = message;
+        alertElement.classList.remove('hidden');
+        
+        // Auto hide after 5 seconds
+        setTimeout(() => {
+            hideAlert(`alert-${type}`);
+        }, 5000);
+    }
+    
+    function hideAlert(elementId) {
+        document.getElementById(elementId).classList.add('hidden');
+    }
 </script>
 @endpush 

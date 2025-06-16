@@ -17,11 +17,13 @@ class CreateKpriTable extends Migration
             $table->increments('id_layanan');
             $table->unsignedInteger('id_jenis_layanan');
             $table->string('judul_layanan', 120);
-            $table->text('deskripsi_layanan');
-
+            $table->text('deskripsi_layanan')->nullable();
+            $table->string('gambar')->nullable(); // Menambahkan kolom gambar (opsional)
+        
             $table->foreign('id_jenis_layanan')->references('id_jenis_layanan')->on('jenis_layanan');
         });
-
+        
+        
         Schema::create('status', function (Blueprint $table) {
             $table->increments('id_status');
             $table->string('nama_status', 20);
@@ -41,7 +43,30 @@ class CreateKpriTable extends Migration
 
             $table->foreign('id_role')->references('id_role')->on('role');
         });
-         
+
+        
+        Schema::create('push_notifications', function (Blueprint $table) {
+            $table->id();
+            $table->string('title');
+            $table->text('message');
+            $table->string('icon')->nullable();
+            $table->string('image')->nullable();
+            $table->string('target_url')->nullable();
+            $table->timestamp('scheduled_at')->nullable();
+            $table->boolean('is_sent')->default(false);
+            $table->unsignedInteger('user_kpri_id')->nullable();
+            $table->foreign('user_kpri_id')->references('id_user')->on('user_KPRI')->onDelete('set null');
+            $table->timestamps();
+        });
+        
+        Schema::create('push_subscriptions_guest', function (Blueprint $table) {
+            $table->id();
+            $table->string('endpoint')->unique();
+            $table->json('keys'); // lebih tepat pakai JSON
+            $table->string('user_agent')->nullable();
+            $table->timestamps();
+        });
+        
          Schema::create('linktree', function (Blueprint $table) {
             $table->increments('id');
             $table->unsignedInteger('user_id');
@@ -88,13 +113,16 @@ class CreateKpriTable extends Migration
         Schema::create('komentar', function (Blueprint $table) {
             $table->increments('id_komentar');
             $table->unsignedInteger('id_artikel');
+            $table->unsignedInteger('parent_id')->nullable(); // Menyimpan ID komentar induk
             $table->string('nama_pengomentar', 100); 
             $table->string('isi_komentar', 255);
             $table->enum('status', ['pending', 'approved', 'rejected'])->default('pending'); 
         
             $table->foreign('id_artikel')->references('id_artikel')->on('artikel')->onDelete('cascade');
+            $table->foreign('parent_id')->references('id_komentar')->on('komentar')->onDelete('cascade'); // Relasi self-referencing
             $table->timestamps(); 
         });
+        
         
 
         Schema::create('jabatan', function (Blueprint $table) {
@@ -232,6 +260,9 @@ class CreateKpriTable extends Migration
     public function down(): void
     {
         Schema::dropIfExists('log_perubahan');
+        Schema::dropIfExists('push_notifications');
+        Schema::dropIfExists('push_subscriptions_guest');
+        Schema::dropIfExists('push_notification_logs');
         Schema::dropIfExists('hero_beranda');
         Schema::dropIfExists('FAQ');
         Schema::dropIfExists('galeri_foto');

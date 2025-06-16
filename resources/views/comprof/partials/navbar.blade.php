@@ -33,10 +33,22 @@
                     class="{{ request()->routeIs('unit-toko') ? 'text-amber-500' : 'text-gray-700 dark:text-gray-300' }} hover:text-amber-500 dark:hover:text-amber-400 px-3 py-2 text-sm font-medium">
                     Unit Toko
                 </a>
+                <a href="{{ route('toko.index') }}"
+                    class="{{ request()->routeIs('toko.index') || request()->routeIs('toko.show') ? 'text-amber-500' : 'text-gray-700 dark:text-gray-300' }} hover:text-amber-500 dark:hover:text-amber-400 px-3 py-2 text-sm font-medium">
+                    Katalog Produk
+                </a>
                 <a href="{{ route('members') }}"
                     class="{{ request()->routeIs('members') ? 'text-amber-500' : 'text-gray-700 dark:text-gray-300' }} hover:text-amber-500 dark:hover:text-amber-400 px-3 py-2 text-sm font-medium">
                     Info Anggota
                 </a>
+
+                <button id="cart-button" class="p-1 rounded-full text-gray-700 dark:text-gray-300 hover:text-amber-500 dark:hover:text-amber-400 focus:outline-none relative">
+                    <span class="sr-only">Keranjang Belanja</span>
+                    <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 3h2l.4 2M7 13h10l4-8H5.4M7 13L5.4 5M7 13l-2.293 2.293c-.63.63-.184 1.707.707 1.707H17m0 0a2 2 0 100 4 2 2 0 000-4zm-8 2a2 2 0 11-4 0 2 2 0 014 0z" />
+                    </svg>
+                    <span id="cart-badge" class="absolute -top-1 -right-1 bg-red-500 text-white text-xs font-bold rounded-full h-4 w-4 flex items-center justify-center hidden">0</span>
+                </button>
 
                 <button onclick="toggleDarkMode()"
                     class="p-1 rounded-full text-gray-700 dark:text-gray-300 hover:text-amber-500 dark:hover:text-amber-400 focus:outline-none">
@@ -99,10 +111,23 @@
                 class="{{ request()->routeIs('unit-toko') ? 'bg-amber-500 text-white' : 'text-gray-700 dark:text-gray-300 hover:bg-amber-500 hover:text-white' }} block px-3 py-2 rounded-md text-base font-medium">
                 Unit Toko
             </a>
+            <a href="{{ route('toko.index') }}"
+                class="{{ request()->routeIs('toko.index') || request()->routeIs('toko.show') ? 'bg-amber-500 text-white' : 'text-gray-700 dark:text-gray-300 hover:bg-amber-500 hover:text-white' }} block px-3 py-2 rounded-md text-base font-medium">
+                Katalog Produk
+            </a>
             <a href="{{ route('members') }}"
                 class="{{ request()->routeIs('members') ? 'bg-amber-500 text-white' : 'text-gray-700 dark:text-gray-300 hover:bg-amber-500 hover:text-white' }} block px-3 py-2 rounded-md text-base font-medium">
                 Info Anggota
             </a>
+            <button id="mobile-cart-button" class="w-full text-left text-gray-700 dark:text-gray-300 hover:bg-amber-500 hover:text-white block px-3 py-2 rounded-md text-base font-medium">
+                <div class="flex items-center">
+                    <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 mr-2" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 3h2l.4 2M7 13h10l4-8H5.4M7 13L5.4 5M7 13l-2.293 2.293c-.63.63-.184 1.707.707 1.707H17m0 0a2 2 0 100 4 2 2 0 000-4zm-8 2a2 2 0 11-4 0 2 2 0 014 0z" />
+                    </svg>
+                    <span>Keranjang Belanja</span>
+                    <span id="mobile-cart-badge" class="ml-2 bg-red-500 text-white text-xs font-bold rounded-full h-4 w-4 flex items-center justify-center hidden">0</span>
+                </div>
+            </button>
             <button onclick="toggleDarkMode()"
                 class="w-full text-left text-gray-700 dark:text-gray-300 hover:bg-amber-500 hover:text-white block px-3 py-2 rounded-md text-base font-medium">
                 <div class="flex items-center">

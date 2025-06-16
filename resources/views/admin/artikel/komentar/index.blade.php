@@ -31,10 +31,10 @@
 <div class="container-fluid px-6 py-4">
     <div class="mb-4 flex justify-between items-center">
         <div>
-            <h1 class="text-2xl font-semibold">Komentar Artikel: {{ $artikel->nama_artikel }}</h1>
+            <h1 class="text-2xl font-semibold">Komentar Artikel: <span id="artikelTitle">Loading...</span></h1>
             <p class="text-sm text-gray-500 dark:text-gray-400">Kelola komentar untuk artikel ini</p>
         </div>
-        <a href="{{ route('admin.artikel.index') }}" class="bg-gray-200 text-gray-700 px-4 py-2 rounded-md text-sm flex items-center">
+        <a href="/admin/artikel" class="bg-gray-200 text-gray-700 px-4 py-2 rounded-md text-sm flex items-center">
             <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 mr-1" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 19l-7-7m0 0l7-7m-7 7h18" />
             </svg>
@@ -68,38 +68,34 @@
     <div class="mb-4 border-b border-gray-200 dark:border-gray-700">
         <ul class="flex flex-wrap -mb-px text-sm font-medium text-center">
             <li class="mr-2">
-                <a href="{{ route('admin.artikel.komentar.index', ['artikelId' => $artikel->id_artikel, 'status' => 'all']) }}" 
-                   class="inline-block p-4 rounded-t-lg border-b-2 {{ $status == 'all' ? 'text-orange-600 border-orange-600 active dark:text-orange-500 dark:border-orange-500' : 'border-transparent hover:text-gray-600 hover:border-gray-300 dark:hover:text-gray-300' }}">
+                <a href="#" class="tab-link inline-block p-4 rounded-t-lg border-b-2 text-orange-600 border-orange-600 active dark:text-orange-500 dark:border-orange-500" data-status="all">
                     Semua 
-                    <span class="inline-flex items-center justify-center px-2 py-1 ml-2 text-xs font-bold leading-none text-white bg-gray-500 rounded-full">
-                        {{ $artikel->komentar->count() }}
+                    <span id="allCount" class="inline-flex items-center justify-center px-2 py-1 ml-2 text-xs font-bold leading-none text-white bg-gray-500 rounded-full">
+                        0
                     </span>
                 </a>
             </li>
             <li class="mr-2">
-                <a href="{{ route('admin.artikel.komentar.index', ['artikelId' => $artikel->id_artikel, 'status' => 'pending']) }}"
-                   class="inline-block p-4 rounded-t-lg border-b-2 {{ $status == 'pending' ? 'text-orange-600 border-orange-600 active dark:text-orange-500 dark:border-orange-500' : 'border-transparent hover:text-gray-600 hover:border-gray-300 dark:hover:text-gray-300' }}">
+                <a href="#" class="tab-link inline-block p-4 rounded-t-lg border-b-2 border-transparent hover:text-gray-600 hover:border-gray-300 dark:hover:text-gray-300" data-status="pending">
                     Pending
-                    <span class="inline-flex items-center justify-center px-2 py-1 ml-2 text-xs font-bold leading-none text-white bg-yellow-500 rounded-full">
-                        {{ $artikel->komentar->where('status', 'pending')->count() }}
+                    <span id="pendingCount" class="inline-flex items-center justify-center px-2 py-1 ml-2 text-xs font-bold leading-none text-white bg-yellow-500 rounded-full">
+                        0
                     </span>
                 </a>
             </li>
             <li class="mr-2">
-                <a href="{{ route('admin.artikel.komentar.index', ['artikelId' => $artikel->id_artikel, 'status' => 'approved']) }}"
-                   class="inline-block p-4 rounded-t-lg border-b-2 {{ $status == 'approved' ? 'text-orange-600 border-orange-600 active dark:text-orange-500 dark:border-orange-500' : 'border-transparent hover:text-gray-600 hover:border-gray-300 dark:hover:text-gray-300' }}">
+                <a href="#" class="tab-link inline-block p-4 rounded-t-lg border-b-2 border-transparent hover:text-gray-600 hover:border-gray-300 dark:hover:text-gray-300" data-status="approved">
                     Disetujui
-                    <span class="inline-flex items-center justify-center px-2 py-1 ml-2 text-xs font-bold leading-none text-white bg-green-500 rounded-full">
-                        {{ $artikel->komentar->where('status', 'approved')->count() }}
+                    <span id="approvedCount" class="inline-flex items-center justify-center px-2 py-1 ml-2 text-xs font-bold leading-none text-white bg-green-500 rounded-full">
+                        0
                     </span>
                 </a>
             </li>
             <li class="mr-2">
-                <a href="{{ route('admin.artikel.komentar.index', ['artikelId' => $artikel->id_artikel, 'status' => 'rejected']) }}"
-                   class="inline-block p-4 rounded-t-lg border-b-2 {{ $status == 'rejected' ? 'text-orange-600 border-orange-600 active dark:text-orange-500 dark:border-orange-500' : 'border-transparent hover:text-gray-600 hover:border-gray-300 dark:hover:text-gray-300' }}">
+                <a href="#" class="tab-link inline-block p-4 rounded-t-lg border-b-2 border-transparent hover:text-gray-600 hover:border-gray-300 dark:hover:text-gray-300" data-status="rejected">
                     Ditolak
-                    <span class="inline-flex items-center justify-center px-2 py-1 ml-2 text-xs font-bold leading-none text-white bg-red-500 rounded-full">
-                        {{ $artikel->komentar->where('status', 'rejected')->count() }}
+                    <span id="rejectedCount" class="inline-flex items-center justify-center px-2 py-1 ml-2 text-xs font-bold leading-none text-white bg-red-500 rounded-full">
+                        0
                     </span>
                 </a>
             </li>
@@ -107,23 +103,166 @@
     </div>
 
     <div class="bg-white dark:bg-gray-800 shadow rounded-lg overflow-visible table-container">
-        @if(count($komentars) > 0)
+        <div id="commentTableContainer">
+            <!-- Loading indicator -->
+            <div id="loadingIndicator" class="p-6 text-center text-gray-500 dark:text-gray-400">
+                <svg class="animate-spin h-10 w-10 mx-auto mb-2 text-gray-400" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
+                    <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
+                    <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
+                </svg>
+                <p>Loading comments...</p>
+            </div>
+            
+            <!-- Comments table will be inserted here -->
+        </div>
+    </div>
+</div>
+
+@push('scripts')
+<script>
+    document.addEventListener('DOMContentLoaded', function() {
+        const token = localStorage.getItem('access_token');
+        if (!token) {
+            window.location.href = '/admin/login';
+            return;
+        }
+        
+        // Get article ID from URL
+        const pathParts = window.location.pathname.split('/');
+        const articleId = pathParts[pathParts.length - 2]; // Assuming URL pattern is /admin/artikel/{id}/komentar
+        
+        // Current filter status
+        let currentStatus = 'all';
+        
+        // Fetch article and comments data
+        fetchArticleData(articleId);
+        
+        // Add event listeners to status tabs
+        document.querySelectorAll('.tab-link').forEach(tab => {
+            tab.addEventListener('click', function(e) {
+                e.preventDefault();
+                
+                // Remove active class from all tabs
+                document.querySelectorAll('.tab-link').forEach(t => {
+                    t.classList.remove('text-orange-600', 'border-orange-600', 'active', 'dark:text-orange-500', 'dark:border-orange-500');
+                    t.classList.add('border-transparent', 'hover:text-gray-600', 'hover:border-gray-300', 'dark:hover:text-gray-300');
+                });
+                
+                // Add active class to clicked tab
+                this.classList.add('text-orange-600', 'border-orange-600', 'active', 'dark:text-orange-500', 'dark:border-orange-500');
+                this.classList.remove('border-transparent', 'hover:text-gray-600', 'hover:border-gray-300', 'dark:hover:text-gray-300');
+                
+                // Update current status
+                currentStatus = this.getAttribute('data-status');
+                
+                // Filter comments
+                filterCommentsByStatus(currentStatus);
+            });
+        });
+        
+        function fetchArticleData(articleId) {
+            // First, fetch the article to get its title
+            fetch('/api/admin/articles', {
+                headers: {
+                    'Authorization': `Bearer ${token}`,
+                    'Content-Type': 'application/json',
+                    'Accept': 'application/json'
+                }
+            })
+            .then(response => {
+                if (!response.ok) {
+                    if (response.status === 401) {
+                        localStorage.removeItem('access_token');
+                        window.location.href = '/admin/login';
+                    }
+                    throw new Error('Failed to fetch articles');
+                }
+                return response.json();
+            })
+            .then(articles => {
+                const article = articles.find(a => a.id_artikel == articleId);
+                if (article) {
+                    document.getElementById('artikelTitle').textContent = article.nama_artikel;
+                }
+                
+                // Now fetch the comments
+                fetchComments(articleId);
+            })
+            .catch(error => {
+                console.error('Error fetching article data:', error);
+                document.getElementById('loadingIndicator').innerHTML = `
+                    <svg xmlns="http://www.w3.org/2000/svg" class="h-10 w-10 mx-auto mb-2 text-red-500" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z" />
+                    </svg>
+                    <p class="text-red-500">Failed to load article data. Please try again.</p>
+                `;
+            });
+        }
+        
+        function fetchComments(articleId) {
+            fetch(`/api/admin/articles/${articleId}/comments`, {
+                headers: {
+                    'Authorization': `Bearer ${token}`,
+                    'Content-Type': 'application/json',
+                    'Accept': 'application/json'
+                }
+            })
+            .then(response => {
+                if (!response.ok) {
+                    if (response.status === 401) {
+                        localStorage.removeItem('access_token');
+                        window.location.href = '/admin/login';
+                    }
+                    throw new Error('Failed to fetch comments');
+                }
+                return response.json();
+            })
+            .then(comments => {
+                renderComments(comments);
+            })
+            .catch(error => {
+                console.error('Error fetching comments:', error);
+                document.getElementById('loadingIndicator').innerHTML = `
+                    <svg xmlns="http://www.w3.org/2000/svg" class="h-10 w-10 mx-auto mb-2 text-red-500" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z" />
+                    </svg>
+                    <p class="text-red-500">Failed to load comments. Please try again.</p>
+                `;
+            });
+        }
+        
+        function renderComments(comments) {
+            const container = document.getElementById('commentTableContainer');
+            
+            // Update counts
+            document.getElementById('allCount').textContent = comments.length;
+            document.getElementById('pendingCount').textContent = comments.filter(c => c.status === 'pending').length;
+            document.getElementById('approvedCount').textContent = comments.filter(c => c.status === 'approved').length;
+            document.getElementById('rejectedCount').textContent = comments.filter(c => c.status === 'rejected').length;
+            
+            if (comments.length === 0) {
+                container.innerHTML = `
+                    <div class="p-6 text-center text-gray-500 dark:text-gray-400">
+                        <svg xmlns="http://www.w3.org/2000/svg" class="h-10 w-10 mx-auto mb-2" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 12h.01M12 12h.01M16 12h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+                        </svg>
+                        <p>Tidak ada komentar untuk ditampilkan</p>
+                    </div>
+                `;
+                return;
+            }
+            
+            let html = `
         <div class="flex justify-between items-center p-4 border-b border-gray-200 dark:border-gray-700">
             <div class="text-gray-500 dark:text-gray-400 text-sm">
-                Menampilkan {{ count($komentars) }} komentar
+                        Menampilkan <span id="displayedCount">${comments.length}</span> komentar
             </div>
             <div class="flex space-x-2">
-                @if($status == 'pending' && $artikel->komentar->where('status', 'pending')->count() > 0)
-                <form id="approveAllForm" action="{{ route('admin.komentar.update-status', 0) }}" method="POST" class="inline-block">
-                    @csrf
-                    @method('PATCH')
-                    <input type="hidden" name="status" value="approved">
-                    <input type="hidden" name="artikelId" value="{{ $artikel->id_artikel }}">
-                    <button type="button" onclick="confirmMultipleAction('approveAllForm', 'Apakah Anda yakin ingin menyetujui semua komentar yang menunggu?')" class="bg-green-500 hover:bg-green-600 text-white px-3 py-1 rounded-md text-sm">
+                        <div id="approveAllContainer" class="inline-block ${comments.filter(c => c.status === 'pending').length === 0 ? 'hidden' : ''}">
+                            <button type="button" id="approveAllBtn" class="bg-green-500 hover:bg-green-600 text-white px-3 py-1 rounded-md text-sm">
                         <i class="bi bi-check-all mr-1"></i> Setujui Semua Pending
                     </button>
-                </form>
-                @endif
+                        </div>
                 
                 <div class="relative" x-data="{ open: false }">
                     <button @click="open = !open" class="bg-blue-500 hover:bg-blue-600 text-white px-3 py-1 rounded-md text-sm flex items-center">
@@ -175,40 +314,78 @@
                     </th>
                 </tr>
             </thead>
-            <tbody class="bg-white dark:bg-gray-800 divide-y divide-gray-200 dark:divide-gray-700">
-                @foreach($komentars as $komentar)
-                <tr class="hover:bg-gray-50 dark:hover:bg-gray-700 dropdown-container">
+                    <tbody id="commentTableBody" class="bg-white dark:bg-gray-800 divide-y divide-gray-200 dark:divide-gray-700">
+                        ${comments.map(comment => createCommentRow(comment)).join('')}
+                    </tbody>
+                </table>
+            `;
+            
+            container.innerHTML = html;
+            
+            // Add event listeners
+            document.getElementById('selectAll').addEventListener('change', function() {
+                document.querySelectorAll('#commentTableBody input[type="checkbox"]').forEach(cb => {
+                    cb.checked = this.checked;
+                });
+            });
+            
+            document.getElementById('approveAllBtn')?.addEventListener('click', function() {
+                approveAllPendingComments(comments);
+            });
+            
+            // Initialize dropdowns with Alpine.js
+            // This is needed because we're dynamically adding elements
+            if (typeof Alpine !== 'undefined') {
+                Alpine.initTree(document.getElementById('commentTableContainer'));
+            }
+            
+            // Add event listeners to action buttons
+            attachActionEventListeners();
+            
+            // Apply current filter
+            filterCommentsByStatus(currentStatus);
+        }
+        
+        function createCommentRow(comment) {
+            // Determine status classes and text
+            let statusClass = '';
+            let statusBadge = '';
+            
+            if (comment.status === 'approved') {
+                statusClass = 'bg-green-100 text-green-800 dark:bg-green-900 dark:text-green-300';
+                statusBadge = '<i class="bi bi-check-circle"></i> Disetujui';
+            } else if (comment.status === 'rejected') {
+                statusClass = 'bg-red-100 text-red-800 dark:bg-red-900 dark:text-red-300';
+                statusBadge = '<i class="bi bi-x-circle"></i> Ditolak';
+            } else {
+                statusClass = 'bg-yellow-100 text-yellow-800 dark:bg-yellow-900 dark:text-yellow-300';
+                statusBadge = '<i class="bi bi-clock"></i> Menunggu';
+            }
+            
+            // Format date
+            const date = new Date(comment.created_at);
+            const formattedDate = `${date.getDate().toString().padStart(2, '0')}/${(date.getMonth() + 1).toString().padStart(2, '0')}/${date.getFullYear()} ${date.getHours().toString().padStart(2, '0')}:${date.getMinutes().toString().padStart(2, '0')}`;
+            
+            return `
+                <tr class="hover:bg-gray-50 dark:hover:bg-gray-700 dropdown-container" data-status="${comment.status}">
                     <td class="px-4 py-4 whitespace-nowrap">
-                        <input type="checkbox" value="{{ $komentar->id_komentar }}" class="form-checkbox h-4 w-4 text-indigo-600 rounded border-gray-300">
+                        <input type="checkbox" value="${comment.id_komentar}" class="form-checkbox h-4 w-4 text-indigo-600 rounded border-gray-300">
                     </td>
                     <td class="px-4 py-4 whitespace-nowrap">
-                        <div class="text-sm font-medium text-gray-900 dark:text-white">{{ $komentar->nama_pengomentar }}</div>
+                        <div class="text-sm font-medium text-gray-900 dark:text-white">${comment.nama_pengomentar}</div>
                     </td>
                     <td class="px-4 py-4">
                         <div class="text-sm text-gray-500 dark:text-gray-400">
-                            {{ $komentar->isi_komentar }}
+                            ${comment.isi_komentar}
                         </div>
                     </td>
                     <td class="px-4 py-4 whitespace-nowrap">
-                        @php
-                            $statusClass = '';
-                            if($komentar->status == 'approved') {
-                                $statusClass = 'bg-green-100 text-green-800 dark:bg-green-900 dark:text-green-300';
-                                $statusBadge = '<i class="bi bi-check-circle"></i> Disetujui';
-                            } elseif($komentar->status == 'rejected') {
-                                $statusClass = 'bg-red-100 text-red-800 dark:bg-red-900 dark:text-red-300';
-                                $statusBadge = '<i class="bi bi-x-circle"></i> Ditolak';
-                            } else {
-                                $statusClass = 'bg-yellow-100 text-yellow-800 dark:bg-yellow-900 dark:text-yellow-300';
-                                $statusBadge = '<i class="bi bi-clock"></i> Menunggu';
-                            }
-                        @endphp
-                        <span class="px-2 inline-flex text-xs leading-5 font-semibold rounded-full {{ $statusClass }}">
-                            {!! $statusBadge !!}
+                        <span class="px-2 inline-flex text-xs leading-5 font-semibold rounded-full ${statusClass}">
+                            ${statusBadge}
                         </span>
                     </td>
                     <td class="px-4 py-4 whitespace-nowrap text-sm text-gray-500 dark:text-gray-400">
-                        {{ $komentar->created_at->format('d/m/Y H:i') }}
+                        ${formattedDate}
                     </td>
                     <td class="px-4 py-4 whitespace-nowrap text-right text-sm font-medium relative">
                         <div class="relative" x-data="{ open: false }">
@@ -223,184 +400,272 @@
                                     <div class="px-4 py-2 text-xs text-gray-500 dark:text-gray-400">Ubah Status</div>
 
                                     <!-- Approve Comment -->
-                                    @if($komentar->status != 'approved')
-                                    <form action="{{ route('admin.komentar.update-status', $komentar->id_komentar) }}" method="POST">
-                                        @csrf
-                                        @method('PATCH')
-                                        <input type="hidden" name="status" value="approved">
-                                        <button type="submit" class="w-full text-left block px-4 py-2 text-sm text-green-700 dark:text-green-400 hover:bg-gray-100 dark:hover:bg-gray-700" role="menuitem">
+                                    ${comment.status !== 'approved' ? `
+                                    <button type="button" class="update-status-btn w-full text-left block px-4 py-2 text-sm text-green-700 dark:text-green-400 hover:bg-gray-100 dark:hover:bg-gray-700" 
+                                            role="menuitem" 
+                                            data-comment-id="${comment.id_komentar}" 
+                                            data-status="approved">
                                             <i class="bi bi-check-circle mr-2"></i> Setujui
                                         </button>
-                                    </form>
-                                    @endif
+                                    ` : ''}
 
                                     <!-- Reject Comment -->
-                                    @if($komentar->status != 'rejected')
-                                    <form action="{{ route('admin.komentar.update-status', $komentar->id_komentar) }}" method="POST">
-                                        @csrf
-                                        @method('PATCH')
-                                        <input type="hidden" name="status" value="rejected">
-                                        <button type="submit" class="w-full text-left block px-4 py-2 text-sm text-yellow-700 dark:text-yellow-400 hover:bg-gray-100 dark:hover:bg-gray-700" role="menuitem">
+                                    ${comment.status !== 'rejected' ? `
+                                    <button type="button" class="update-status-btn w-full text-left block px-4 py-2 text-sm text-yellow-700 dark:text-yellow-400 hover:bg-gray-100 dark:hover:bg-gray-700" 
+                                            role="menuitem" 
+                                            data-comment-id="${comment.id_komentar}" 
+                                            data-status="rejected">
                                             <i class="bi bi-x-circle mr-2"></i> Tolak
                                         </button>
-                                    </form>
-                                    @endif
+                                    ` : ''}
 
                                     <!-- Return to Pending -->
-                                    @if($komentar->status != 'pending')
-                                    <form action="{{ route('admin.komentar.update-status', $komentar->id_komentar) }}" method="POST">
-                                        @csrf
-                                        @method('PATCH')
-                                        <input type="hidden" name="status" value="pending">
-                                        <button type="submit" class="w-full text-left block px-4 py-2 text-sm text-blue-700 dark:text-blue-400 hover:bg-gray-100 dark:hover:bg-gray-700" role="menuitem">
+                                    ${comment.status !== 'pending' ? `
+                                    <button type="button" class="update-status-btn w-full text-left block px-4 py-2 text-sm text-blue-700 dark:text-blue-400 hover:bg-gray-100 dark:hover:bg-gray-700" 
+                                            role="menuitem" 
+                                            data-comment-id="${comment.id_komentar}" 
+                                            data-status="pending">
                                             <i class="bi bi-arrow-counterclockwise mr-2"></i> Set Pending
                                         </button>
-                                    </form>
-                                    @endif
+                                    ` : ''}
 
                                     <div class="border-t border-gray-100 dark:border-gray-700"></div>
 
                                     <!-- Delete Comment -->
-                                    <form action="{{ route('admin.komentar.destroy', $komentar->id_komentar) }}" method="POST" onsubmit="return confirm('Apakah Anda yakin ingin menghapus komentar ini?');">
-                                        @csrf
-                                        @method('DELETE')
-                                        <button type="submit" class="w-full text-left block px-4 py-2 text-sm text-red-700 dark:text-red-400 hover:bg-gray-100 dark:hover:bg-gray-700" role="menuitem">
+                                    <button type="button" class="delete-comment-btn w-full text-left block px-4 py-2 text-sm text-red-700 dark:text-red-400 hover:bg-gray-100 dark:hover:bg-gray-700" 
+                                            role="menuitem" 
+                                            data-comment-id="${comment.id_komentar}">
                                             <i class="bi bi-trash mr-2"></i> Hapus
                                         </button>
-                                    </form>
                                 </div>
                             </div>
                         </div>
                     </td>
                 </tr>
-                @endforeach
-            </tbody>
-        </table>
-        @else
-        <div class="p-6 text-center text-gray-500 dark:text-gray-400">
-            <svg xmlns="http://www.w3.org/2000/svg" class="h-10 w-10 mx-auto mb-2" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 12h.01M12 12h.01M16 12h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
-            </svg>
-            <p>Tidak ada komentar untuk ditampilkan</p>
-        </div>
-        @endif
-    </div>
-</div>
-@endsection
-
-@section('scripts')
-<script>
-    // Function to handle the select all checkbox
-    document.getElementById('selectAll').addEventListener('change', function() {
-        var checkboxes = document.querySelectorAll('table tbody input[type="checkbox"]');
-        for (var checkbox of checkboxes) {
-            checkbox.checked = this.checked;
+            `;
+        }
+        
+        function attachActionEventListeners() {
+            // Status update buttons
+            document.querySelectorAll('.update-status-btn').forEach(btn => {
+                btn.addEventListener('click', function() {
+                    const commentId = this.getAttribute('data-comment-id');
+                    const status = this.getAttribute('data-status');
+                    updateCommentStatus(commentId, status);
+                });
+            });
+            
+            // Delete buttons
+            document.querySelectorAll('.delete-comment-btn').forEach(btn => {
+                btn.addEventListener('click', function() {
+                    const commentId = this.getAttribute('data-comment-id');
+                    if (confirm('Apakah Anda yakin ingin menghapus komentar ini?')) {
+                        deleteComment(commentId);
+                    }
+                });
+            });
+        }
+        
+        function filterCommentsByStatus(status) {
+            const rows = document.querySelectorAll('#commentTableBody tr');
+            let visibleCount = 0;
+            
+            rows.forEach(row => {
+                if (status === 'all' || row.getAttribute('data-status') === status) {
+                    row.style.display = '';
+                    visibleCount++;
+                } else {
+                    row.style.display = 'none';
         }
     });
 
-    // Function to confirm multiple deletion
-    function confirmMultipleDelete() {
-        var selectedIds = [];
-        var checkboxes = document.querySelectorAll('table tbody input[type="checkbox"]:checked');
-        
-        for (var checkbox of checkboxes) {
-            selectedIds.push(checkbox.value);
-        }
-        
-        if (selectedIds.length === 0) {
-            alert('Silakan pilih setidaknya satu komentar.');
-            return;
-        }
-        
-        if (confirm('Apakah Anda yakin ingin menghapus ' + selectedIds.length + ' komentar terpilih?')) {
-            // Create a form and submit it
-            var form = document.createElement('form');
-            form.method = 'POST';
-            form.action = '{{ route("admin.komentar.destroy", 0) }}';
-            
-            var csrfInput = document.createElement('input');
-            csrfInput.type = 'hidden';
-            csrfInput.name = '_token';
-            csrfInput.value = '{{ csrf_token() }}';
-            form.appendChild(csrfInput);
-            
-            var methodInput = document.createElement('input');
-            methodInput.type = 'hidden';
-            methodInput.name = '_method';
-            methodInput.value = 'DELETE';
-            form.appendChild(methodInput);
-            
-            for (var id of selectedIds) {
-                var input = document.createElement('input');
-                input.type = 'hidden';
-                input.name = 'selected_ids[]';
-                input.value = id;
-                form.appendChild(input);
+            // Update displayed count
+            const displayedCount = document.getElementById('displayedCount');
+            if (displayedCount) {
+                displayedCount.textContent = visibleCount;
             }
             
-            document.body.appendChild(form);
-            form.submit();
+            // Show/hide approve all button based on pending comments
+            const approveAllContainer = document.getElementById('approveAllContainer');
+            if (approveAllContainer) {
+                if (status === 'pending' && visibleCount > 0) {
+                    approveAllContainer.classList.remove('hidden');
+                } else {
+                    approveAllContainer.classList.add('hidden');
+        }
+            }
+        }
+        
+        function updateCommentStatus(commentId, status) {
+            fetch(`/api/admin/comments/${commentId}/status`, {
+                method: 'POST',
+                headers: {
+                    'Authorization': `Bearer ${token}`,
+                    'Content-Type': 'application/json',
+                    'Accept': 'application/json',
+                    'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').getAttribute('content')
+                },
+                body: JSON.stringify({ status })
+            })
+            .then(response => {
+                if (!response.ok) {
+                    throw new Error('Failed to update comment status');
+                }
+                return response.json();
+            })
+            .then(data => {
+                // Refresh comments
+                fetchComments(articleId);
+            })
+            .catch(error => {
+                console.error('Error updating comment status:', error);
+                alert('Failed to update comment status. Please try again.');
+            });
+        }
+        
+        function deleteComment(commentId) {
+            fetch(`/api/admin/comments/${commentId}`, {
+                method: 'DELETE',
+                headers: {
+                    'Authorization': `Bearer ${token}`,
+                    'Content-Type': 'application/json',
+                    'Accept': 'application/json',
+                    'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').getAttribute('content')
+                }
+            })
+            .then(response => {
+                if (!response.ok) {
+                    throw new Error('Failed to delete comment');
+                }
+                return response.json();
+            })
+            .then(data => {
+                // Refresh comments
+                fetchComments(articleId);
+            })
+            .catch(error => {
+                console.error('Error deleting comment:', error);
+                alert('Failed to delete comment. Please try again.');
+            });
+        }
+        
+        function approveAllPendingComments(allComments) {
+            const pendingComments = allComments.filter(comment => comment.status === 'pending');
+            
+            if (pendingComments.length === 0) {
+                alert('No pending comments to approve.');
+                return;
+            }
+            
+            if (confirm(`Are you sure you want to approve all ${pendingComments.length} pending comments?`)) {
+                // Create promises for all update requests
+                const updatePromises = pendingComments.map(comment => {
+                    return fetch(`/api/admin/comments/${comment.id_komentar}/status`, {
+                        method: 'POST',
+                        headers: {
+                            'Authorization': `Bearer ${token}`,
+                            'Content-Type': 'application/json',
+                            'Accept': 'application/json',
+                            'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').getAttribute('content')
+                        },
+                        body: JSON.stringify({ status: 'approved' })
+                    });
+                });
+                
+                // Execute all promises
+                Promise.all(updatePromises)
+                    .then(() => {
+                        // Refresh comments after all updates
+                        fetchComments(articleId);
+                    })
+                    .catch(error => {
+                        console.error('Error approving all comments:', error);
+                        alert('Failed to approve all comments. Please try again.');
+                    });
         }
     }
 
-    // Function to confirm multiple action
-    function confirmMultipleAction(formId, message) {
-        if (confirm(message)) {
-            document.getElementById(formId).submit();
-        }
-    }
-
-    // Function to bulk update status
-    function bulkUpdateStatus(status) {
-        var selectedIds = [];
-        var checkboxes = document.querySelectorAll('table tbody input[type="checkbox"]:checked');
-        
-        for (var checkbox of checkboxes) {
+        // Global functions needed for bulk actions
+        window.bulkUpdateStatus = function(status) {
+            const selectedIds = [];
+            document.querySelectorAll('#commentTableBody input[type="checkbox"]:checked').forEach(checkbox => {
             selectedIds.push(checkbox.value);
-        }
+            });
         
         if (selectedIds.length === 0) {
-            alert('Silakan pilih setidaknya satu komentar.');
+                alert('Please select at least one comment.');
             return;
         }
         
-        var statusText = status === 'approved' ? 'menyetujui' : (status === 'rejected' ? 'menolak' : 'mengubah status menjadi pending');
+            const statusText = status === 'approved' ? 'approve' : (status === 'rejected' ? 'reject' : 'set to pending');
         
-        if (confirm('Apakah Anda yakin ingin ' + statusText + ' ' + selectedIds.length + ' komentar terpilih?')) {
-            // Create a form and submit it
-            var form = document.createElement('form');
-            form.method = 'POST';
-            form.action = '{{ route("admin.komentar.update-status", 0) }}';
+            if (confirm(`Are you sure you want to ${statusText} ${selectedIds.length} selected comments?`)) {
+                // Create promises for all update requests
+                const updatePromises = selectedIds.map(id => {
+                    return fetch(`/api/admin/comments/${id}/status`, {
+                        method: 'POST',
+                        headers: {
+                            'Authorization': `Bearer ${token}`,
+                            'Content-Type': 'application/json',
+                            'Accept': 'application/json',
+                            'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').getAttribute('content')
+                        },
+                        body: JSON.stringify({ status })
+                    });
+                });
+                
+                // Execute all promises
+                Promise.all(updatePromises)
+                    .then(() => {
+                        // Refresh comments after all updates
+                        fetchComments(articleId);
+                    })
+                    .catch(error => {
+                        console.error('Error updating comments:', error);
+                        alert('Failed to update comments. Please try again.');
+                    });
+            }
+        };
+        
+        window.confirmMultipleDelete = function() {
+            const selectedIds = [];
+            document.querySelectorAll('#commentTableBody input[type="checkbox"]:checked').forEach(checkbox => {
+                selectedIds.push(checkbox.value);
+            });
             
-            var csrfInput = document.createElement('input');
-            csrfInput.type = 'hidden';
-            csrfInput.name = '_token';
-            csrfInput.value = '{{ csrf_token() }}';
-            form.appendChild(csrfInput);
-            
-            var methodInput = document.createElement('input');
-            methodInput.type = 'hidden';
-            methodInput.name = '_method';
-            methodInput.value = 'PATCH';
-            form.appendChild(methodInput);
-            
-            var statusInput = document.createElement('input');
-            statusInput.type = 'hidden';
-            statusInput.name = 'status';
-            statusInput.value = status;
-            form.appendChild(statusInput);
-            
-            for (var id of selectedIds) {
-                var input = document.createElement('input');
-                input.type = 'hidden';
-                input.name = 'selected_ids[]';
-                input.value = id;
-                form.appendChild(input);
+            if (selectedIds.length === 0) {
+                alert('Please select at least one comment.');
+                return;
             }
             
-            document.body.appendChild(form);
-            form.submit();
-        }
+            if (confirm(`Are you sure you want to delete ${selectedIds.length} selected comments?`)) {
+                // Create promises for all delete requests
+                const deletePromises = selectedIds.map(id => {
+                    return fetch(`/api/admin/comments/${id}`, {
+                        method: 'DELETE',
+                        headers: {
+                            'Authorization': `Bearer ${token}`,
+                            'Content-Type': 'application/json',
+                            'Accept': 'application/json',
+                            'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').getAttribute('content')
+                        }
+                    });
+                });
+                
+                // Execute all promises
+                Promise.all(deletePromises)
+                    .then(() => {
+                        // Refresh comments after all deletions
+                        fetchComments(articleId);
+                    })
+                    .catch(error => {
+                        console.error('Error deleting comments:', error);
+                        alert('Failed to delete comments. Please try again.');
+                    });
     }
+        };
+    });
 </script>
+@endpush
+
 @endsection 

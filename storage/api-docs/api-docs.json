@@ -11,7 +11,7 @@
     },
     "servers": [
         {
-            "url": "/api",
+            "url": "/User/Api",
             "description": "API Server"
         }
     ],
@@ -920,6 +920,478 @@
                 }
             }
         },
+        "/products/search": {
+            "get": {
+                "tags": [
+                    "Product Search & Filter"
+                ],
+                "summary": "Advanced product search and filter",
+                "description": "Search and filter products with multiple criteria and pagination",
+                "operationId": "searchProducts",
+                "parameters": [
+                    {
+                        "name": "q",
+                        "in": "query",
+                        "description": "Search query for product name or description",
+                        "required": false,
+                        "schema": {
+                            "type": "string"
+                        }
+                    },
+                    {
+                        "name": "category_id",
+                        "in": "query",
+                        "description": "Filter by category ID (comma-separated for multiple)",
+                        "required": false,
+                        "schema": {
+                            "type": "string",
+                            "example": "1,2,3"
+                        }
+                    },
+                    {
+                        "name": "min_price",
+                        "in": "query",
+                        "description": "Minimum price filter",
+                        "required": false,
+                        "schema": {
+                            "type": "integer",
+                            "minimum": 0
+                        }
+                    },
+                    {
+                        "name": "max_price",
+                        "in": "query",
+                        "description": "Maximum price filter",
+                        "required": false,
+                        "schema": {
+                            "type": "integer",
+                            "minimum": 0
+                        }
+                    },
+                    {
+                        "name": "has_promo",
+                        "in": "query",
+                        "description": "Filter products with active promotions (true/false)",
+                        "required": false,
+                        "schema": {
+                            "type": "boolean"
+                        }
+                    },
+                    {
+                        "name": "in_stock",
+                        "in": "query",
+                        "description": "Filter products in stock (true/false)",
+                        "required": false,
+                        "schema": {
+                            "type": "boolean"
+                        }
+                    },
+                    {
+                        "name": "sort_by",
+                        "in": "query",
+                        "description": "Sort field",
+                        "required": false,
+                        "schema": {
+                            "type": "string",
+                            "default": "nama_produk",
+                            "enum": [
+                                "nama_produk",
+                                "harga_produk",
+                                "stok_produk",
+                                "created_at",
+                                "popularity"
+                            ]
+                        }
+                    },
+                    {
+                        "name": "sort_order",
+                        "in": "query",
+                        "description": "Sort order",
+                        "required": false,
+                        "schema": {
+                            "type": "string",
+                            "default": "asc",
+                            "enum": [
+                                "asc",
+                                "desc"
+                            ]
+                        }
+                    },
+                    {
+                        "name": "per_page",
+                        "in": "query",
+                        "description": "Items per page (max 50)",
+                        "required": false,
+                        "schema": {
+                            "type": "integer",
+                            "default": 15,
+                            "maximum": 50
+                        }
+                    },
+                    {
+                        "name": "page",
+                        "in": "query",
+                        "description": "Page number",
+                        "required": false,
+                        "schema": {
+                            "type": "integer",
+                            "default": 1,
+                            "minimum": 1
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Successful operation",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "success": {
+                                            "type": "boolean",
+                                            "example": true
+                                        },
+                                        "data": {
+                                            "properties": {
+                                                "products": {
+                                                    "type": "array",
+                                                    "items": {
+                                                        "properties": {
+                                                            "id": {
+                                                                "type": "integer",
+                                                                "example": 1
+                                                            },
+                                                            "nama": {
+                                                                "type": "string",
+                                                                "example": "Beras Premium 5kg"
+                                                            },
+                                                            "gambar": {
+                                                                "type": "string",
+                                                                "example": "storage/products/beras.jpg"
+                                                            },
+                                                            "harga": {
+                                                                "type": "integer",
+                                                                "example": 65000
+                                                            },
+                                                            "kategori": {
+                                                                "properties": {
+                                                                    "id": {
+                                                                        "type": "integer",
+                                                                        "example": 1
+                                                                    },
+                                                                    "nama": {
+                                                                        "type": "string",
+                                                                        "example": "Sembako"
+                                                                    }
+                                                                },
+                                                                "type": "object"
+                                                            },
+                                                            "stok": {
+                                                                "type": "integer",
+                                                                "example": 50
+                                                            },
+                                                            "has_promo": {
+                                                                "type": "boolean",
+                                                                "example": true
+                                                            },
+                                                            "harga_diskon": {
+                                                                "type": "integer",
+                                                                "example": 52000
+                                                            },
+                                                            "promo": {
+                                                                "properties": {
+                                                                    "id": {
+                                                                        "type": "integer",
+                                                                        "example": 1
+                                                                    },
+                                                                    "judul": {
+                                                                        "type": "string",
+                                                                        "example": "Promo Spesial"
+                                                                    }
+                                                                },
+                                                                "type": "object"
+                                                            }
+                                                        },
+                                                        "type": "object"
+                                                    }
+                                                },
+                                                "pagination": {
+                                                    "properties": {
+                                                        "current_page": {
+                                                            "type": "integer",
+                                                            "example": 1
+                                                        },
+                                                        "per_page": {
+                                                            "type": "integer",
+                                                            "example": 15
+                                                        },
+                                                        "total": {
+                                                            "type": "integer",
+                                                            "example": 100
+                                                        },
+                                                        "last_page": {
+                                                            "type": "integer",
+                                                            "example": 7
+                                                        },
+                                                        "from": {
+                                                            "type": "integer",
+                                                            "example": 1
+                                                        },
+                                                        "to": {
+                                                            "type": "integer",
+                                                            "example": 15
+                                                        }
+                                                    },
+                                                    "type": "object"
+                                                },
+                                                "filters_applied": {
+                                                    "properties": {
+                                                        "search_query": {
+                                                            "type": "string"
+                                                        },
+                                                        "categories": {
+                                                            "type": "array",
+                                                            "items": {
+                                                                "type": "integer"
+                                                            }
+                                                        },
+                                                        "price_range": {
+                                                            "type": "object"
+                                                        },
+                                                        "has_promo": {
+                                                            "type": "boolean"
+                                                        },
+                                                        "in_stock": {
+                                                            "type": "boolean"
+                                                        }
+                                                    },
+                                                    "type": "object"
+                                                }
+                                            },
+                                            "type": "object"
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    },
+                    "422": {
+                        "description": "Validation error",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "success": {
+                                            "type": "boolean",
+                                            "example": false
+                                        },
+                                        "message": {
+                                            "type": "string",
+                                            "example": "Validation failed"
+                                        },
+                                        "errors": {
+                                            "type": "object"
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        },
+        "/products/filter-options": {
+            "get": {
+                "tags": [
+                    "Product Search & Filter"
+                ],
+                "summary": "Get available filter options",
+                "description": "Returns available categories, price ranges, and other filter options",
+                "operationId": "getFilterOptions",
+                "responses": {
+                    "200": {
+                        "description": "Successful operation",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "success": {
+                                            "type": "boolean",
+                                            "example": true
+                                        },
+                                        "data": {
+                                            "properties": {
+                                                "categories": {
+                                                    "type": "array",
+                                                    "items": {
+                                                        "properties": {
+                                                            "id": {
+                                                                "type": "integer",
+                                                                "example": 1
+                                                            },
+                                                            "nama": {
+                                                                "type": "string",
+                                                                "example": "Sembako"
+                                                            },
+                                                            "jumlah_produk": {
+                                                                "type": "integer",
+                                                                "example": 25
+                                                            }
+                                                        },
+                                                        "type": "object"
+                                                    }
+                                                },
+                                                "price_range": {
+                                                    "properties": {
+                                                        "min": {
+                                                            "type": "integer",
+                                                            "example": 1000
+                                                        },
+                                                        "max": {
+                                                            "type": "integer",
+                                                            "example": 500000
+                                                        }
+                                                    },
+                                                    "type": "object"
+                                                },
+                                                "sort_options": {
+                                                    "type": "array",
+                                                    "items": {
+                                                        "properties": {
+                                                            "value": {
+                                                                "type": "string",
+                                                                "example": "nama_produk"
+                                                            },
+                                                            "label": {
+                                                                "type": "string",
+                                                                "example": "Nama Produk"
+                                                            }
+                                                        },
+                                                        "type": "object"
+                                                    }
+                                                },
+                                                "statistics": {
+                                                    "properties": {
+                                                        "total_products": {
+                                                            "type": "integer",
+                                                            "example": 150
+                                                        },
+                                                        "products_with_promo": {
+                                                            "type": "integer",
+                                                            "example": 45
+                                                        },
+                                                        "products_in_stock": {
+                                                            "type": "integer",
+                                                            "example": 130
+                                                        }
+                                                    },
+                                                    "type": "object"
+                                                }
+                                            },
+                                            "type": "object"
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        },
+        "/products/search-suggestions": {
+            "get": {
+                "tags": [
+                    "Product Search & Filter"
+                ],
+                "summary": "Get search suggestions",
+                "description": "Returns product name suggestions based on partial search query",
+                "operationId": "getSearchSuggestions",
+                "parameters": [
+                    {
+                        "name": "q",
+                        "in": "query",
+                        "description": "Partial search query (minimum 2 characters)",
+                        "required": true,
+                        "schema": {
+                            "type": "string",
+                            "minLength": 2
+                        }
+                    },
+                    {
+                        "name": "limit",
+                        "in": "query",
+                        "description": "Maximum number of suggestions (max 10)",
+                        "required": false,
+                        "schema": {
+                            "type": "integer",
+                            "default": 5,
+                            "maximum": 10
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Successful operation",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "success": {
+                                            "type": "boolean",
+                                            "example": true
+                                        },
+                                        "data": {
+                                            "type": "array",
+                                            "items": {
+                                                "properties": {
+                                                    "id": {
+                                                        "type": "integer",
+                                                        "example": 1
+                                                    },
+                                                    "nama": {
+                                                        "type": "string",
+                                                        "example": "Beras Premium 5kg"
+                                                    },
+                                                    "kategori": {
+                                                        "type": "string",
+                                                        "example": "Sembako"
+                                                    }
+                                                },
+                                                "type": "object"
+                                            }
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    },
+                    "422": {
+                        "description": "Validation error",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "success": {
+                                            "type": "boolean",
+                                            "example": false
+                                        },
+                                        "message": {
+                                            "type": "string",
+                                            "example": "Query must be at least 2 characters"
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        },
         "/products": {
             "get": {
                 "tags": [
@@ -1643,6 +2115,10 @@
         {
             "name": "Services",
             "description": "API Endpoints for services"
+        },
+        {
+            "name": "Product Search & Filter",
+            "description": "API Endpoints for product search and filtering"
         },
         {
             "name": "Products",

@@ -23,7 +23,7 @@ class ArtikelSeeder extends Seeder
 
         // Get admin users for authorship
         $users = User::whereHas('role', function($query) {
-            $query->where('nama_role', 'admin');
+            $query->where('nama_role', 'kpri admin');
         })->get();
         
         if ($users->isEmpty()) {
