@@ -216,7 +216,8 @@ class AdminNotificationController extends Controller
             'image' => 'nullable|image|mimes:jpeg,png,jpg,gif,svg|max:2048',
             'target_url' => 'nullable|string|max:255',
             'scheduled_at' => 'nullable|date',
-            'send_now' => 'nullable|boolean'
+            'send_now' => 'nullable|boolean',
+            'reschedule' => 'nullable|boolean'
         ]);
         
         if ($validator->fails()) {
@@ -228,7 +229,7 @@ class AdminNotificationController extends Controller
         }
         
         try {
-            // Check if notification exists and is not sent yet
+            // Check if notification exists
             $notification = PushNotification::find($id);
             
             if (!$notification) {
@@ -238,14 +239,18 @@ class AdminNotificationController extends Controller
                 ], 404);
             }
             
-            if ($notification->is_sent) {
+            $sendNow = filter_var($request->input('send_now', false), FILTER_VALIDATE_BOOLEAN);
+            $reschedule = filter_var($request->input('reschedule', false), FILTER_VALIDATE_BOOLEAN);
+            
+            // Allow rescheduling of sent notifications
+            if ($notification->is_sent && $reschedule) {
+                $notification->is_sent = false;
+            } else if ($notification->is_sent && !$reschedule) {
                 return response()->json([
                     'status' => 'error',
-                    'message' => 'Cannot update a notification that has already been sent'
+                    'message' => 'Cannot update a notification that has already been sent. Use reschedule option to send it again.'
                 ], 400);
             }
-            
-            $sendNow = filter_var($request->input('send_now', false), FILTER_VALIDATE_BOOLEAN);
             
             $notification->title = $request->title;
             $notification->message = $request->message;
@@ -304,7 +309,7 @@ class AdminNotificationController extends Controller
             
             return response()->json([
                 'status' => 'success',
-                'message' => $sendNow ? 'Notification sent successfully' : 'Notification updated successfully'
+                'message' => $sendNow ? 'Notification sent successfully' : ($reschedule ? 'Notification rescheduled successfully' : 'Notification updated successfully')
             ]);
         } catch (\Exception $e) {
             return response()->json([
@@ -333,15 +338,7 @@ class AdminNotificationController extends Controller
                 ], 404);
             }
             
-            // If notification is already sent, we might want to prevent deletion
-            // or implement a soft delete instead
-            if ($notification->is_sent) {
-                return response()->json([
-                    'status' => 'error',
-                    'message' => 'Cannot delete a notification that has already been sent'
-                ], 400);
-            }
-            
+            // Allow deletion of sent notifications
             $notification->delete();
             
             return response()->json([
@@ -373,13 +370,6 @@ class AdminNotificationController extends Controller
                     'status' => 'error',
                     'message' => 'Notification not found'
                 ], 404);
-            }
-            
-            if ($notification->is_sent) {
-                return response()->json([
-                    'status' => 'error',
-                    'message' => 'Notification has already been sent'
-                ], 400);
             }
             
             // Send the notification

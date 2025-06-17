@@ -7,6 +7,8 @@
     <title>KPRI Linktree</title>
     @vite('resources/css/app.css')
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.0/font/bootstrap-icons.css">
+    <!-- Push notification script -->
+    <script src="{{ asset('js/push-notifications.js') }}"></script>
     <style>
         @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap');
         
@@ -135,6 +137,39 @@
             padding: 2rem;
         }
     </style>
+    <script>
+        // Simple notification permission request - only on root path
+        document.addEventListener('DOMContentLoaded', function() {
+            // Only request permission on the root path
+            if (window.location.pathname === '/') {
+                setTimeout(function() {
+                    if ('Notification' in window) {
+                        if (Notification.permission !== 'granted' && Notification.permission !== 'denied') {
+                            Notification.requestPermission().then(function(permission) {
+                                if (permission === 'granted') {
+                                    // Register service worker for push notifications if permission granted
+                                    if ('serviceWorker' in navigator && 'PushManager' in window) {
+                                        navigator.serviceWorker.register('/sw.js')
+                                            .then(function(registration) {
+                                                // Initialize push notification handler
+                                                if (window.pushNotificationHandler) {
+                                                    window.pushNotificationHandler.init()
+                                                        .then(function(success) {
+                                                            if (success) {
+                                                                window.pushNotificationHandler.subscribe();
+                                                            }
+                                                        });
+                                                }
+                                            });
+                                    }
+                                }
+                            });
+                        }
+                    }
+                }, 2000); // Short delay for better user experience
+            }
+        });
+    </script>
 </head>
 <body>
     <!-- Background image div -->
