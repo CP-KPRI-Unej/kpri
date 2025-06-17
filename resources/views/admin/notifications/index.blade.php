@@ -54,6 +54,22 @@
         </div>
         
         <div class="flex space-x-2 w-full md:w-auto justify-end">
+            <div id="bulk-actions" class="hidden mr-2">
+                <div class="flex space-x-2">
+                    <button id="bulk-send-btn" class="bg-green-600 hover:bg-green-700 text-white px-4 py-2 rounded-md text-sm flex items-center">
+                        <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 mr-1" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 10V3L4 14h7v7l9-11h-7z" />
+                        </svg>
+                        Send Selected
+                    </button>
+                    <button id="bulk-delete-btn" class="bg-red-600 hover:bg-red-700 text-white px-4 py-2 rounded-md text-sm flex items-center">
+                        <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 mr-1" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" />
+                        </svg>
+                        Delete Selected
+                    </button>
+                </div>
+            </div>
             <button id="process-due-btn" class="bg-green-600 text-white px-4 py-2 rounded-md text-sm flex items-center">
                 <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 mr-1" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 10V3L4 14h7v7l9-11h-7z" />
@@ -74,6 +90,11 @@
             <table class="min-w-full divide-y divide-gray-200 dark:divide-gray-700">
                 <thead class="bg-gray-50 dark:bg-gray-700">
                     <tr>
+                        <th scope="col" class="px-3 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">
+                            <div class="flex items-center">
+                                <input type="checkbox" id="select-all-checkbox" class="form-checkbox h-4 w-4 text-orange-500 rounded border-gray-300 focus:ring-orange-500">
+                            </div>
+                        </th>
                         <th scope="col" class="px-3 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">Judul</th>
                         <th scope="col" class="px-3 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider hidden md:table-cell">Pesan</th>
                         <th scope="col" class="px-3 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">Status</th>
@@ -83,7 +104,7 @@
                 </thead>
                 <tbody id="notifications-table-body" class="bg-white dark:bg-gray-800 divide-y divide-gray-200 dark:divide-gray-700">
                     <!-- Loading state -->
-                    <tr><td colspan="5" class="px-3 py-4 text-center"><div class="animate-pulse flex justify-center items-center"><svg class="animate-spin h-5 w-5 text-gray-500" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24"><circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle><path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path></svg><span class="ml-2">Loading notifications...</span></div></td></tr>
+                    <tr><td colspan="6" class="px-3 py-4 text-center"><div class="animate-pulse flex justify-center items-center"><svg class="animate-spin h-5 w-5 text-gray-500" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24"><circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle><path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path></svg><span class="ml-2">Loading notifications...</span></div></td></tr>
                 </tbody>
             </table>
         </div>
@@ -173,7 +194,7 @@ document.addEventListener('DOMContentLoaded', function() {
     function renderTable(notifications) {
         tableBody.innerHTML = '';
         if (!notifications || notifications.length === 0) {
-            tableBody.innerHTML = `<tr><td colspan="5" class="px-3 py-4 text-center text-sm text-gray-500">Tidak ada data notifikasi</td></tr>`;
+            tableBody.innerHTML = `<tr><td colspan="6" class="px-3 py-4 text-center text-sm text-gray-500">Tidak ada data notifikasi</td></tr>`;
             return;
         }
 
@@ -189,6 +210,11 @@ document.addEventListener('DOMContentLoaded', function() {
             const message = notification.message || 'No Message';
             
             row.innerHTML = `
+                <td class="px-3 py-4 whitespace-nowrap">
+                    <div class="flex items-center">
+                        <input type="checkbox" class="notification-checkbox form-checkbox h-4 w-4 text-orange-500 rounded border-gray-300 focus:ring-orange-500" data-id="${notification.id}" data-is-sent="${notification.is_sent ? '1' : '0'}">
+                    </div>
+                </td>
                 <td class="px-3 py-4 whitespace-nowrap">
                     <div class="flex items-center">
                         ${notification.icon ? `<img src="${notification.icon}" alt="Icon" class="h-8 w-8 mr-2 rounded-full object-cover">` : ''}
@@ -210,7 +236,7 @@ document.addEventListener('DOMContentLoaded', function() {
                         <div x-show="open" @click.away="open = false" x-cloak class="origin-top-right absolute right-0 mt-2 w-48 rounded-md shadow-lg bg-white dark:bg-gray-800 ring-1 ring-black ring-opacity-5 z-40">
                             <div class="py-1" role="menu" aria-orientation="vertical">
                                 <a href="/admin/notifications/${notification.id}/edit" class="block px-4 py-2 text-sm text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700" role="menuitem"><i class="bi bi-pencil mr-2"></i> Edit</a>
-                                ${!notification.is_sent ? `<button onclick="sendNow(${notification.id})" class="w-full text-left block px-4 py-2 text-sm text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700" role="menuitem"><i class="bi bi-send mr-2"></i> Send Now</button>` : ''}
+                                ${!notification.is_sent ? `<button onclick="sendNow(${notification.id})" class="w-full text-left block px-4 py-2 text-sm text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700" role="menuitem"><i class="bi bi-send mr-2"></i> Send Now</button>` : `<button onclick="rescheduleNotification(${notification.id})" class="w-full text-left block px-4 py-2 text-sm text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700" role="menuitem"><i class="bi bi-calendar mr-2"></i> Reschedule</button>`}
                                 <button onclick="deleteNotification(${notification.id})" class="w-full text-left block px-4 py-2 text-sm text-red-700 dark:text-red-400 hover:bg-gray-100 dark:hover:bg-gray-700" role="menuitem"><i class="bi bi-trash mr-2"></i> Delete</button>
                             </div>
                         </div>
@@ -219,6 +245,9 @@ document.addEventListener('DOMContentLoaded', function() {
             `;
             tableBody.appendChild(row);
         });
+
+        // Add event listeners for checkboxes
+        setupCheckboxes();
     }
 
     function renderPagination(paginationData) {
@@ -262,11 +291,11 @@ document.addEventListener('DOMContentLoaded', function() {
     }
     
     function showLoadingState() {
-        tableBody.innerHTML = `<tr><td colspan="5" class="px-3 py-4 text-center"><div class="animate-pulse flex justify-center items-center"><svg class="animate-spin h-5 w-5 text-gray-500" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24"><circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle><path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path></svg><span class="ml-2">Loading notifications...</span></div></td></tr>`;
+        tableBody.innerHTML = `<tr><td colspan="6" class="px-3 py-4 text-center"><div class="animate-pulse flex justify-center items-center"><svg class="animate-spin h-5 w-5 text-gray-500" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24"><circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle><path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path></svg><span class="ml-2">Loading notifications...</span></div></td></tr>`;
     }
 
     function showErrorState(message = 'Error loading notifications. Please try again later.') {
-        tableBody.innerHTML = `<tr><td colspan="5" class="px-3 py-4 text-center text-sm text-red-500">${message}</td></tr>`;
+        tableBody.innerHTML = `<tr><td colspan="6" class="px-3 py-4 text-center text-sm text-red-500">${message}</td></tr>`;
     }
 
     function formatDate(dateString) {
@@ -437,6 +466,157 @@ document.addEventListener('DOMContentLoaded', function() {
             showAlert(error.message || 'Failed to send notification.', 'error');
         });
     };
+
+    // Add these functions at the end of the DOMContentLoaded event handler
+    function setupCheckboxes() {
+        const selectAllCheckbox = document.getElementById('select-all-checkbox');
+        const notificationCheckboxes = document.querySelectorAll('.notification-checkbox');
+        const bulkActionsDiv = document.getElementById('bulk-actions');
+        const bulkSendBtn = document.getElementById('bulk-send-btn');
+        const bulkDeleteBtn = document.getElementById('bulk-delete-btn');
+        
+        // Select all checkbox
+        selectAllCheckbox.addEventListener('change', function() {
+            const isChecked = this.checked;
+            notificationCheckboxes.forEach(checkbox => {
+                checkbox.checked = isChecked;
+            });
+            toggleBulkActions();
+        });
+        
+        // Individual checkboxes
+        notificationCheckboxes.forEach(checkbox => {
+            checkbox.addEventListener('change', function() {
+                toggleBulkActions();
+                
+                // Update "select all" checkbox
+                const allChecked = document.querySelectorAll('.notification-checkbox:checked').length === notificationCheckboxes.length;
+                selectAllCheckbox.checked = allChecked;
+            });
+        });
+        
+        // Bulk send button
+        bulkSendBtn.addEventListener('click', function() {
+            const selectedIds = getSelectedNotificationIds(false); // Only get unsent notifications
+            if (selectedIds.length === 0) {
+                showAlert('No unsent notifications selected', 'error');
+                return;
+            }
+            
+            if (!confirm(`Are you sure you want to send ${selectedIds.length} notifications now?`)) return;
+            
+            bulkSend(selectedIds);
+        });
+        
+        // Bulk delete button
+        bulkDeleteBtn.addEventListener('click', function() {
+            const selectedIds = getSelectedNotificationIds();
+            if (selectedIds.length === 0) {
+                showAlert('No notifications selected', 'error');
+                return;
+            }
+            
+            if (!confirm(`Are you sure you want to delete ${selectedIds.length} notifications?`)) return;
+            
+            bulkDelete(selectedIds);
+        });
+    }
+    
+    function toggleBulkActions() {
+        const bulkActionsDiv = document.getElementById('bulk-actions');
+        const selectedCount = document.querySelectorAll('.notification-checkbox:checked').length;
+        
+        if (selectedCount > 0) {
+            bulkActionsDiv.classList.remove('hidden');
+        } else {
+            bulkActionsDiv.classList.add('hidden');
+        }
+    }
+    
+    function getSelectedNotificationIds(includeAll = true) {
+        const selectedIds = [];
+        document.querySelectorAll('.notification-checkbox:checked').forEach(checkbox => {
+            // If includeAll is false, only include unsent notifications
+            if (includeAll || checkbox.dataset.isSent === '0') {
+                selectedIds.push(parseInt(checkbox.dataset.id));
+            }
+        });
+        return selectedIds;
+    }
+    
+    function bulkSend(ids) {
+        const originalBtnText = document.getElementById('bulk-send-btn').innerHTML;
+        document.getElementById('bulk-send-btn').innerHTML = `<svg class="animate-spin h-4 w-4 mr-1" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24"><circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle><path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path></svg> Sending...`;
+        document.getElementById('bulk-send-btn').disabled = true;
+        
+        const promises = ids.map(id => 
+            fetch(`${API_URL}/${id}/send-now`, {
+                method: 'POST',
+                headers: { 
+                    'Authorization': `Bearer ${token}`,
+                    'Content-Type': 'application/json',
+                    'Accept': 'application/json'
+                }
+            })
+            .then(response => {
+                if (!response.ok) {
+                    return response.json().then(err => { throw new Error(`Failed to send notification #${id}: ${err.message || 'Unknown error'}`) });
+                }
+                return response.json();
+            })
+        );
+        
+        Promise.all(promises)
+            .then(() => {
+                showAlert(`Successfully sent ${ids.length} notifications`);
+                fetchNotifications();
+            })
+            .catch(error => {
+                console.error('Error sending notifications:', error);
+                showAlert(error.message || 'Failed to send some notifications', 'error');
+            })
+            .finally(() => {
+                document.getElementById('bulk-send-btn').innerHTML = originalBtnText;
+                document.getElementById('bulk-send-btn').disabled = false;
+            });
+    }
+    
+    function bulkDelete(ids) {
+        const originalBtnText = document.getElementById('bulk-delete-btn').innerHTML;
+        document.getElementById('bulk-delete-btn').innerHTML = `<svg class="animate-spin h-4 w-4 mr-1" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24"><circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle><path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path></svg> Deleting...`;
+        document.getElementById('bulk-delete-btn').disabled = true;
+        
+        const promises = ids.map(id => 
+            fetch(`${API_URL}/${id}`, {
+                method: 'DELETE',
+                headers: { 
+                    'Authorization': `Bearer ${token}`,
+                    'Content-Type': 'application/json',
+                    'Accept': 'application/json'
+                }
+            })
+            .then(response => {
+                if (!response.ok) {
+                    return response.json().then(err => { throw new Error(`Failed to delete notification #${id}: ${err.message || 'Unknown error'}`) });
+                }
+                return response.json();
+            })
+        );
+        
+        Promise.all(promises)
+            .then(() => {
+                showAlert(`Successfully deleted ${ids.length} notifications`);
+                fetchNotifications();
+            })
+            .catch(error => {
+                console.error('Error deleting notifications:', error);
+                showAlert(error.message || 'Failed to delete some notifications', 'error');
+            })
+            .finally(() => {
+                document.getElementById('bulk-delete-btn').innerHTML = originalBtnText;
+                document.getElementById('bulk-delete-btn').disabled = false;
+            });
+    }
 
     // Initial fetch
     fetchNotifications();

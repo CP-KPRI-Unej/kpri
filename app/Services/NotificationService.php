@@ -3,7 +3,10 @@
 namespace App\Services;
 
 use App\Models\PushNotification;
+use App\Models\PushSubscriptionGuest;
 use Illuminate\Support\Facades\Log;
+use Minishlink\WebPush\WebPush;
+use Minishlink\WebPush\Subscription;
 
 class NotificationService
 {
@@ -30,12 +33,20 @@ class NotificationService
             // Get all subscriptions
             $subscriptions = $this->getSubscriptions();
             
-            // Send to each subscription
-            foreach ($subscriptions as $subscription) {
-                $this->sendToSubscription($notification, $subscription);
+            if (count($subscriptions) === 0) {
+                Log::info("No active subscriptions found");
+                return true;
             }
             
-            Log::info("Notification sent successfully: {$notificationId}");
+            // Send to each subscription
+            $successCount = 0;
+            foreach ($subscriptions as $subscription) {
+                if ($this->sendToSubscription($notification, $subscription)) {
+                    $successCount++;
+                }
+            }
+            
+            Log::info("Notification sent successfully to {$successCount} out of " . count($subscriptions) . " subscriptions");
             return true;
         } catch (\Exception $e) {
             Log::error("Failed to send notification: {$e->getMessage()}");
@@ -46,44 +57,70 @@ class NotificationService
     /**
      * Get all active subscriptions
      * 
-     * @return array
+     * @return \Illuminate\Database\Eloquent\Collection
      */
     private function getSubscriptions()
     {
-        // In a real implementation, you would fetch subscriptions from the database
-        // For now, we'll return an empty array
-        return [];
+        // Get all guest subscriptions
+        return PushSubscriptionGuest::all();
     }
     
     /**
      * Send notification to a specific subscription
      * 
      * @param PushNotification $notification
-     * @param object $subscription
+     * @param PushSubscriptionGuest $subscription
      * @return bool
      */
     private function sendToSubscription($notification, $subscription)
     {
         try {
-            // In a real implementation, you would use a library like web-push-php/web-push
-            // to send the notification to the subscription
+            // Prepare the subscription object for web-push
+            $subscriptionObject = Subscription::create([
+                'endpoint' => $subscription->endpoint,
+                'keys' => $subscription->keys
+            ]);
             
-            // Example:
-            // $webPush = new WebPush($auth);
-            // $webPush->sendNotification(
-            //     $subscription->endpoint,
-            //     json_encode([
-            //         'title' => $notification->title,
-            //         'body' => $notification->message,
-            //         'icon' => $notification->icon,
-            //         'image' => $notification->image,
-            //         'data' => [
-            //             'url' => $notification->target_url
-            //         ]
-            //     ])
-            // );
+            // Prepare the notification payload
+            $payload = json_encode([
+                'title' => $notification->title,
+                'body' => $notification->message,
+                'icon' => $notification->icon,
+                'image' => $notification->image,
+                'data' => [
+                    'url' => $notification->target_url
+                ]
+            ]);
             
-            return true;
+            // Get VAPID keys from environment
+            $auth = [
+                'VAPID' => [
+                    'subject' => env('VAPID_SUBJECT'),
+                    'publicKey' => env('VAPID_PUBLIC_KEY'),
+                    'privateKey' => env('VAPID_PRIVATE_KEY'),
+                ]
+            ];
+            
+            // Create WebPush instance
+            $webPush = new WebPush($auth);
+            
+            // Send the notification
+            $report = $webPush->sendOneNotification($subscriptionObject, $payload);
+            
+            if ($report->isSuccess()) {
+                Log::info("Push notification sent successfully to {$subscription->endpoint}");
+                return true;
+            } else {
+                Log::warning("Push notification failed for {$subscription->endpoint}: {$report->getReason()}");
+                
+                // If the subscription is expired or invalid, remove it
+                if ($report->isSubscriptionExpired()) {
+                    Log::info("Removing expired subscription: {$subscription->endpoint}");
+                    $subscription->delete();
+                }
+                
+                return false;
+            }
         } catch (\Exception $e) {
             Log::error("Failed to send notification to subscription: {$e->getMessage()}");
             return false;

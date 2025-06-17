@@ -27,6 +27,8 @@ use App\Http\Controllers\Api\AdminFaqController;
 use App\Http\Controllers\Api\AdminSettingsController;
 use App\Http\Controllers\Api\AdminNotificationController;
 use App\Http\Controllers\Api\TokoApiController;
+use App\Http\Controllers\Api\PushSubscriptionController;
+use App\Http\Controllers\Api\PublicNotificationController;
 
 
 
@@ -233,3 +235,9 @@ Route::get('/shop/products', [TokoApiController::class, 'getProducts']);
 Route::get('/shop/products/{id}', [TokoApiController::class, 'getProduct']);
 Route::get('/shop/categories', [TokoApiController::class, 'getCategories']);
 Route::get('/shop/promotions', [TokoApiController::class, 'getPromotions']);
+
+// Push Notification Routes
+Route::get('/push/key', [PushSubscriptionController::class, 'getPublicKey']);
+Route::post('/push/subscribe', [PushSubscriptionController::class, 'store']);
+Route::post('/push/unsubscribe', [PushSubscriptionController::class, 'destroy']);
+Route::get('/push/notifications/recent', [PublicNotificationController::class, 'getRecent']);

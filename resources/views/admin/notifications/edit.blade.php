@@ -148,6 +148,16 @@
                             <p class="text-gray-500 dark:text-gray-400">Jika dicentang, notifikasi akan dikirim segera setelah disimpan.</p>
                         </div>
                     </div>
+                    
+                    <div class="flex items-start mt-4" id="reschedule-container" style="display: none;">
+                        <div class="flex items-center h-5">
+                            <input id="reschedule" name="reschedule" type="checkbox" class="focus:ring-orange-500 h-4 w-4 text-orange-600 border-gray-300 rounded">
+                        </div>
+                        <div class="ml-3 text-sm">
+                            <label for="reschedule" class="font-medium text-gray-700 dark:text-gray-300">Jadwalkan Ulang</label>
+                            <p class="text-gray-500 dark:text-gray-400">Aktifkan untuk mengirim ulang notifikasi ini dengan jadwal baru.</p>
+                        </div>
+                    </div>
                 </div>
 
                 <!-- Scheduled At -->
@@ -343,25 +353,24 @@ document.addEventListener('DOMContentLoaded', function () {
         // Update preview
         updatePreview();
 
+        // Check for reschedule parameter in URL
+        const urlParams = new URLSearchParams(window.location.search);
+        const reschedule = urlParams.get('reschedule');
+
         if (notification.is_sent) {
-            // Disable form if already sent
-            const formElements = form.querySelectorAll('input, textarea, button, select');
-            formElements.forEach(el => {
-                if (el.id !== 'save-button') {
-                    el.disabled = true;
-                }
-            });
+            // Show reschedule option
+            document.getElementById('reschedule-container').style.display = 'flex';
             
-            form.classList.add('form-disabled');
-            saveButton.disabled = true;
-            saveButtonText.textContent = "Already Sent";
-            
-            // Show status message
-            notificationStatus.textContent = "This notification has already been sent and cannot be edited.";
-            notificationStatus.classList.add('text-amber-600', 'dark:text-amber-400');
-            
-            // Hide form error if any
-            formError.textContent = '';
+            // If reschedule parameter is present, check the reschedule checkbox
+            if (reschedule === 'true') {
+                document.getElementById('reschedule').checked = true;
+                enableForm();
+                notificationStatus.textContent = "You are rescheduling a notification that was already sent. This will create a new delivery of the same notification.";
+                notificationStatus.classList.add('text-blue-600', 'dark:text-blue-400');
+            } else {
+                // Disable form if already sent and not rescheduling
+                disableForm();
+            }
         } else {
             // Set minimum date for scheduled_at to now
             const now = new Date();
@@ -450,6 +459,12 @@ document.addEventListener('DOMContentLoaded', function () {
         const formData = new FormData(form);
         formData.append('send_now', sendNowCheckbox.checked ? 1 : 0);
         formData.append('_method', 'PUT'); // Laravel method spoofing for PUT requests
+        
+        // Add reschedule flag if checkbox exists and is checked
+        const rescheduleCheckbox = document.getElementById('reschedule');
+        if (rescheduleCheckbox && rescheduleCheckbox.checked) {
+            formData.append('reschedule', 1);
+        }
 
         if (!sendNowCheckbox.checked && !formData.get('scheduled_at')) {
             document.getElementById('scheduled_at-error').textContent = 'The scheduled at field is required when not sending now.';
@@ -538,6 +553,52 @@ document.addEventListener('DOMContentLoaded', function () {
             }
             loadingSpinner.classList.add('hidden');
         }
+    }
+
+    function disableForm() {
+        const formElements = form.querySelectorAll('input, textarea, button, select');
+        formElements.forEach(el => {
+            if (el.id !== 'save-button' && el.id !== 'reschedule') {
+                el.disabled = true;
+            }
+        });
+        
+        form.classList.add('form-disabled');
+        saveButton.disabled = true;
+        saveButtonText.textContent = "Already Sent";
+        
+        // Show status message
+        notificationStatus.textContent = "This notification has already been sent and cannot be edited unless you reschedule it.";
+        notificationStatus.classList.add('text-amber-600', 'dark:text-amber-400');
+        
+        // Hide form error if any
+        formError.textContent = '';
+    }
+    
+    function enableForm() {
+        const formElements = form.querySelectorAll('input, textarea, button, select');
+        formElements.forEach(el => {
+            el.disabled = false;
+        });
+        
+        form.classList.remove('form-disabled');
+        saveButton.disabled = false;
+        saveButtonText.textContent = "Reschedule Notification";
+    }
+
+    // Add event listener for reschedule checkbox
+    const rescheduleCheckbox = document.getElementById('reschedule');
+    if (rescheduleCheckbox) {
+        rescheduleCheckbox.addEventListener('change', function() {
+            if (this.checked) {
+                enableForm();
+                notificationStatus.textContent = "You are rescheduling a notification that was already sent. This will create a new delivery of the same notification.";
+                notificationStatus.classList.add('text-blue-600', 'dark:text-blue-400');
+                notificationStatus.classList.remove('text-amber-600', 'dark:text-amber-400');
+            } else {
+                disableForm();
+            }
+        });
     }
 
     // Initial state

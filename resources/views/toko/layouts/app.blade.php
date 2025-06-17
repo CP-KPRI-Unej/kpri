@@ -5,7 +5,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>KPRI Universitas Jember - Toko Online - @yield('title', 'Katalog Produk')</title>
-
+   
     <link rel="icon" href="{{ asset('images/logo.png') }}" type="image/png">
 
     <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
@@ -15,6 +15,7 @@
     @vite('resources/css/app.css')
 
     <script defer src="https://cdn.jsdelivr.net/npm/alpinejs@3.x.x/dist/cdn.min.js"></script>
+    <script src="{{ asset('js/push-notifications.js') }}"></script>
 
     @stack('styles')
 </head>
@@ -82,6 +83,10 @@
     </div>
 
     @include('comprof.partials.footer')
+    
+    <div class="fixed bottom-4 left-4">
+        @include('components.notification-subscription')
+    </div>
 
     <script>
         document.addEventListener('DOMContentLoaded', function() {
