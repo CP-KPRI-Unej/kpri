@@ -1,6 +1,6 @@
 <?php
 
-namespace App\Http\Controllers\API;
+namespace App\Http\Controllers\Api;
 
 use App\Http\Controllers\Controller;
 use App\Models\KategoriProduk;
@@ -20,13 +20,13 @@ class KategoriProdukController extends Controller
         $categories = KategoriProduk::withCount('produks')
             ->orderBy('kategori')
             ->get();
-            
+
         return response()->json([
             'success' => true,
             'data' => $categories
         ]);
     }
-    
+
     /**
      * Display the specified category.
      *
@@ -36,13 +36,13 @@ class KategoriProdukController extends Controller
     public function show($id)
     {
         $category = KategoriProduk::withCount('produks')->findOrFail($id);
-        
+
         return response()->json([
             'success' => true,
             'data' => $category
         ]);
     }
-    
+
     /**
      * Store a newly created category.
      *
@@ -75,7 +75,7 @@ class KategoriProdukController extends Controller
             'data' => $category
         ], 201);
     }
-    
+
     /**
      * Update the specified category.
      *
@@ -87,7 +87,7 @@ class KategoriProdukController extends Controller
     {
         // Find category
         $category = KategoriProduk::findOrFail($id);
-        
+
         // Validate request
         $validator = Validator::make($request->all(), [
             'kategori' => 'required|string|max:30|unique:kategori_produk,kategori,' . $id . ',id_kategori',
@@ -111,7 +111,7 @@ class KategoriProdukController extends Controller
             'data' => $category
         ]);
     }
-    
+
     /**
      * Remove the specified category.
      *
@@ -122,7 +122,7 @@ class KategoriProdukController extends Controller
     {
         // Find category
         $category = KategoriProduk::withCount('produks')->findOrFail($id);
-        
+
         // Check if category has products
         if ($category->produks_count > 0) {
             return response()->json([
@@ -130,13 +130,13 @@ class KategoriProdukController extends Controller
                 'message' => 'Cannot delete category that has products'
             ], 422);
         }
-        
+
         // Delete category
         $category->delete();
-        
+
         return response()->json([
             'success' => true,
             'message' => 'Category deleted successfully'
         ]);
     }
-} 
+}

@@ -1,6 +1,6 @@
 <?php
 
-namespace App\Http\Controllers\API;
+namespace App\Http\Controllers\Api;
 
 use App\Http\Controllers\Controller;
 use App\Models\StrukturKepengurusan;
@@ -19,18 +19,18 @@ class StrukturController extends Controller
     {
         // Get all jabatan
         $jabatan = Jabatan::all();
-        
+
         // Get all pengurus with their respective jabatan
         $strukturByJabatan = [];
-        
+
         foreach ($jabatan as $jab) {
             $pengurus = StrukturKepengurusan::where('id_jabatan', $jab->id_jabatan)
                 ->orderBy('nama_pengurus')
                 ->get();
-                
+
             $strukturByJabatan[$jab->nama_jabatan] = $pengurus;
         }
-        
+
         return response()->json([
             'success' => true,
             'data' => $strukturByJabatan
@@ -45,13 +45,13 @@ class StrukturController extends Controller
     public function getJabatan()
     {
         $jabatan = Jabatan::all();
-        
+
         return response()->json([
             'success' => true,
             'data' => $jabatan
         ]);
     }
-    
+
     /**
      * Display the specified resource.
      *
@@ -62,7 +62,7 @@ class StrukturController extends Controller
     {
         $pengurus = StrukturKepengurusan::with('jabatan')
             ->findOrFail($id);
-            
+
         return response()->json([
             'success' => true,
             'data' => $pengurus
@@ -115,7 +115,7 @@ class StrukturController extends Controller
     {
         // Find the pengurus
         $pengurus = StrukturKepengurusan::findOrFail($id);
-        
+
         // Validate the request
         $validator = Validator::make($request->all(), [
             'id_jabatan' => 'required|exists:jabatan,id_jabatan',
@@ -153,13 +153,13 @@ class StrukturController extends Controller
     {
         // Find the pengurus
         $pengurus = StrukturKepengurusan::findOrFail($id);
-        
+
         // Delete the pengurus
         $pengurus->delete();
-        
+
         return response()->json([
             'success' => true,
             'message' => 'Data pengurus berhasil dihapus'
         ]);
     }
-} 
+}

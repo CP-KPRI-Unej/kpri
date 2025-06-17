@@ -33,14 +33,6 @@
                     class="{{ request()->routeIs('unit-toko') ? 'text-amber-500' : 'text-gray-700 dark:text-gray-300' }} hover:text-amber-500 dark:hover:text-amber-400 px-3 py-2 text-sm font-medium">
                     Unit Toko
                 </a>
-                <a href="{{ route('toko.index') }}"
-                    class="{{ request()->routeIs('toko.index') || request()->routeIs('toko.show') ? 'text-amber-500' : 'text-gray-700 dark:text-gray-300' }} hover:text-amber-500 dark:hover:text-amber-400 px-3 py-2 text-sm font-medium">
-                    Katalog Produk
-                </a>
-                <a href="{{ route('members') }}"
-                    class="{{ request()->routeIs('members') ? 'text-amber-500' : 'text-gray-700 dark:text-gray-300' }} hover:text-amber-500 dark:hover:text-amber-400 px-3 py-2 text-sm font-medium">
-                    Info Anggota
-                </a>
 
                 <button id="cart-button" class="p-1 rounded-full text-gray-700 dark:text-gray-300 hover:text-amber-500 dark:hover:text-amber-400 focus:outline-none relative">
                     <span class="sr-only">Keranjang Belanja</span>
@@ -110,14 +102,6 @@
             <a href="{{ route('unit-toko') }}"
                 class="{{ request()->routeIs('unit-toko') ? 'bg-amber-500 text-white' : 'text-gray-700 dark:text-gray-300 hover:bg-amber-500 hover:text-white' }} block px-3 py-2 rounded-md text-base font-medium">
                 Unit Toko
-            </a>
-            <a href="{{ route('toko.index') }}"
-                class="{{ request()->routeIs('toko.index') || request()->routeIs('toko.show') ? 'bg-amber-500 text-white' : 'text-gray-700 dark:text-gray-300 hover:bg-amber-500 hover:text-white' }} block px-3 py-2 rounded-md text-base font-medium">
-                Katalog Produk
-            </a>
-            <a href="{{ route('members') }}"
-                class="{{ request()->routeIs('members') ? 'bg-amber-500 text-white' : 'text-gray-700 dark:text-gray-300 hover:bg-amber-500 hover:text-white' }} block px-3 py-2 rounded-md text-base font-medium">
-                Info Anggota
             </a>
             <button id="mobile-cart-button" class="w-full text-left text-gray-700 dark:text-gray-300 hover:bg-amber-500 hover:text-white block px-3 py-2 rounded-md text-base font-medium">
                 <div class="flex items-center">

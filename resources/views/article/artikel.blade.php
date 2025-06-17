@@ -11,18 +11,18 @@
                 <p class="text-xl md:text-2xl mb-8 text-orange-100">Informasi terkini seputar KPRI Universitas Jember</p>
                 <div class="flex justify-center">
                     <div class="bg-white bg-opacity-20 backdrop-blur-sm rounded-lg p-2">
-                        <div class="flex items-center space-x-4 text-sm">
+                        <div class="flex items-center space-x-4 text-sm" id="statsInfo">
                             <span class="flex items-center">
                                 <i class="fas fa-newspaper mr-2"></i>
-                                12 Artikel
+                                <span id="articleCountText">0 Artikel</span>
                             </span>
                             <span class="flex items-center">
                                 <i class="fas fa-eye mr-2"></i>
-                                1,234 Pembaca
+                                <span id="totalViewsText">0 Pembaca</span>
                             </span>
                             <span class="flex items-center">
                                 <i class="fas fa-calendar mr-2"></i>
-                                Update Terbaru
+                                <span id="latestUpdateText">-</span>
                             </span>
                         </div>
                     </div>
@@ -89,50 +89,10 @@
             </div>
 
             <div class="bg-gradient-to-r from-amber-500 to-orange-500 rounded-2xl overflow-hidden shadow-2xl">
-                <div class="grid grid-cols-1 lg:grid-cols-2">
-                    <div class="p-8 lg:p-12 text-white">
-                        <div class="mb-4">
-                            <span
-                                class="inline-block bg-white bg-opacity-20 text-white text-xs px-3 py-1 rounded-full mb-4">
-                                <i class="fas fa-star mr-1"></i>
-                                Artikel Terbaru
-                            </span>
-                        </div>
-                        <h3 class="text-2xl lg:text-3xl font-bold mb-4 leading-tight">
-                            PENINGKATAN KAPASITAS PENGELOLA KKPRI UNEJ UNTUK KOPERASI YANG MANDIRI DAN BERKELAS
-                        </h3>
-                        <p class="text-orange-100 mb-6 leading-relaxed">
-                            Koperasi Pegawai Republik Indonesia (KPRI) Universitas Jember merupakan salah satu koperasi
-                            percontohan terbaik di Indonesia yang telah berdiri sejak 1979...
-                        </p>
-                        <div class="flex items-center space-x-6 mb-6 text-sm text-orange-100">
-                            <span class="flex items-center">
-                                <i class="fas fa-user mr-2"></i>
-                                Adi Pramono
-                            </span>
-                            <span class="flex items-center">
-                                <i class="fas fa-calendar mr-2"></i>
-                                3 Desember 2023
-                            </span>
-                            <span class="flex items-center">
-                                <i class="fas fa-eye mr-2"></i>
-                                245 views
-                            </span>
-                        </div>
-                        <a href="{{ route('articles.show') }}"
-                            class="inline-flex items-center bg-white text-amber-600 font-semibold py-3 px-6 rounded-lg hover:bg-gray-100 transition duration-300">
-                            Baca Selengkapnya
-                            <i class="fas fa-arrow-right ml-2"></i>
-                        </a>
-                    </div>
-                    <div class="relative">
-                        <img src="https://hebbkx1anhila5yf.public.blob.vercel-storage.com/image-FTptesYC9SooLsU9GkHyPjMVXQnTcc.png"
-                            alt="Featured Article" class="w-full h-full object-cover">
-                        <div class="absolute inset-0 bg-gradient-to-t from-black via-transparent to-transparent opacity-30">
-                        </div>
-                    </div>
+                <div class="grid grid-cols-1 lg:grid-cols-2" id="featuredArticle">
                 </div>
             </div>
+
         </div>
     </section>
 
@@ -149,308 +109,7 @@
             </div>
 
             <div id="articlesContainer" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
-                <article
-                    class="article-card bg-white dark:bg-gray-700 rounded-xl shadow-lg overflow-hidden transition-all duration-300 hover:shadow-2xl hover:transform hover:scale-105"
-                    data-category="pelatihan" data-date="2023-12-03"
-                    data-title="PELATIHAN PENGELOLA KKPRI UNEJ DAN BERKELAS">
-                    <div class="relative">
-                        <img src="{{ asset('images/hero.png') }}" alt="Article" class="w-full h-48 object-cover">
-                        <div class="absolute top-4 left-4">
-                            <span class="bg-amber-500 text-white text-xs px-3 py-1 rounded-full">Pelatihan</span>
-                        </div>
-                        <div class="absolute top-4 right-4">
-                            <button
-                                class="bg-white bg-opacity-80 hover:bg-opacity-100 text-gray-700 p-2 rounded-full transition duration-300">
-                                <i class="fas fa-bookmark"></i>
-                            </button>
-                        </div>
-                    </div>
-                    <div class="p-6">
-                        <div class="flex items-center space-x-4 text-xs text-gray-500 dark:text-gray-400 mb-3">
-                            <span class="flex items-center">
-                                <i class="fas fa-calendar mr-1"></i>
-                                15 Nov 2023
-                            </span>
-                            <span class="flex items-center">
-                                <i class="fas fa-eye mr-1"></i>
-                                156 views
-                            </span>
-                            <span class="flex items-center">
-                                <i class="fas fa-clock mr-1"></i>
-                                4 min
-                            </span>
-                        </div>
-                        <h3
-                            class="text-lg font-bold text-gray-900 dark:text-white mb-3 line-clamp-2 hover:text-amber-500 transition duration-300">
-                            <a href="#">PELATIHAN PENGELOLA KKPRI UNEJ DAN BERKELAS</a>
-                        </h3>
-                        <p class="text-gray-600 dark:text-gray-300 text-sm mb-4 line-clamp-3">
-                            Pelatihan dan peningkatan kapasitas Pengelola KKPRI UNEJ merupakan agenda rutin Koperasi KPRI
-                            UNEJ, hal ini bertujuan untuk meningkatkan kualitas pelayanan...
-                        </p>
-                        <div class="flex items-center justify-between">
-                            <div class="flex items-center space-x-2">
-                                <span class="text-sm text-gray-600 dark:text-gray-400">Admin KPRI</span>
-                            </div>
-                            <a href="#"
-                                class="text-amber-500 hover:text-amber-600 font-medium text-sm transition duration-300">
-                                Baca →
-                            </a>
-                        </div>
-                    </div>
-                </article>
 
-                <article
-                    class="article-card bg-white dark:bg-gray-700 rounded-xl shadow-lg overflow-hidden transition-all duration-300 hover:shadow-2xl hover:transform hover:scale-105"
-                    data-category="penghargaan" data-date="2023-10-20"
-                    data-title="KPRI UNEJ RAIH PENGHARGAAN KOPERASI TERBAIK">
-                    <div class="relative">
-                        <img src="{{ asset('images/hero.png') }}" alt="Article" class="w-full h-48 object-cover">
-                        <div class="absolute top-4 left-4">
-                            <span class="bg-green-500 text-white text-xs px-3 py-1 rounded-full">Penghargaan</span>
-                        </div>
-                        <div class="absolute top-4 right-4">
-                            <button
-                                class="bg-white bg-opacity-80 hover:bg-opacity-100 text-gray-700 p-2 rounded-full transition duration-300">
-                                <i class="fas fa-bookmark"></i>
-                            </button>
-                        </div>
-                    </div>
-                    <div class="p-6">
-                        <div class="flex items-center space-x-4 text-xs text-gray-500 dark:text-gray-400 mb-3">
-                            <span class="flex items-center">
-                                <i class="fas fa-calendar mr-1"></i>
-                                20 Okt 2023
-                            </span>
-                            <span class="flex items-center">
-                                <i class="fas fa-eye mr-1"></i>
-                                289 views
-                            </span>
-                            <span class="flex items-center">
-                                <i class="fas fa-clock mr-1"></i>
-                                3 min
-                            </span>
-                        </div>
-                        <h3
-                            class="text-lg font-bold text-gray-900 dark:text-white mb-3 line-clamp-2 hover:text-amber-500 transition duration-300">
-                            <a href="#">KPRI UNEJ RAIH PENGHARGAAN KOPERASI TERBAIK</a>
-                        </h3>
-                        <p class="text-gray-600 dark:text-gray-300 text-sm mb-4 line-clamp-3">
-                            KPRI Universitas Jember kembali menorehkan prestasi membanggakan dengan meraih penghargaan
-                            sebagai koperasi terbaik tingkat nasional...
-                        </p>
-                        <div class="flex items-center justify-between">
-                            <div class="flex items-center space-x-2">
-                                <span class="text-sm text-gray-600 dark:text-gray-400">Humas KPRI</span>
-                            </div>
-                            <a href="#"
-                                class="text-amber-500 hover:text-amber-600 font-medium text-sm transition duration-300">
-                                Baca →
-                            </a>
-                        </div>
-                    </div>
-                </article>
-
-                <article
-                    class="article-card bg-white dark:bg-gray-700 rounded-xl shadow-lg overflow-hidden transition-all duration-300 hover:shadow-2xl hover:transform hover:scale-105"
-                    data-category="inovasi" data-date="2023-10-05" data-title="INOVASI LAYANAN DIGITAL KPRI UNEJ">
-                    <div class="relative">
-                        <img src="{{ asset('images/hero.png') }}" alt="Article" class="w-full h-48 object-cover">
-                        <div class="absolute top-4 left-4">
-                            <span class="bg-blue-500 text-white text-xs px-3 py-1 rounded-full">Inovasi</span>
-                        </div>
-                        <div class="absolute top-4 right-4">
-                            <button
-                                class="bg-white bg-opacity-80 hover:bg-opacity-100 text-gray-700 p-2 rounded-full transition duration-300">
-                                <i class="fas fa-bookmark"></i>
-                            </button>
-                        </div>
-                    </div>
-                    <div class="p-6">
-                        <div class="flex items-center space-x-4 text-xs text-gray-500 dark:text-gray-400 mb-3">
-                            <span class="flex items-center">
-                                <i class="fas fa-calendar mr-1"></i>
-                                5 Okt 2023
-                            </span>
-                            <span class="flex items-center">
-                                <i class="fas fa-eye mr-1"></i>
-                                198 views
-                            </span>
-                            <span class="flex items-center">
-                                <i class="fas fa-clock mr-1"></i>
-                                6 min
-                            </span>
-                        </div>
-                        <h3
-                            class="text-lg font-bold text-gray-900 dark:text-white mb-3 line-clamp-2 hover:text-amber-500 transition duration-300">
-                            <a href="#">INOVASI LAYANAN DIGITAL KPRI UNEJ</a>
-                        </h3>
-                        <p class="text-gray-600 dark:text-gray-300 text-sm mb-4 line-clamp-3">
-                            KPRI UNEJ meluncurkan platform digital terbaru untuk memudahkan anggota dalam mengakses berbagai
-                            layanan koperasi secara online...
-                        </p>
-                        <div class="flex items-center justify-between">
-                            <div class="flex items-center space-x-2">
-                                <span class="text-sm text-gray-600 dark:text-gray-400">Tim IT</span>
-                            </div>
-                            <a href="#"
-                                class="text-amber-500 hover:text-amber-600 font-medium text-sm transition duration-300">
-                                Baca →
-                            </a>
-                        </div>
-                    </div>
-                </article>
-
-                <article
-                    class="article-card bg-white dark:bg-gray-700 rounded-xl shadow-lg overflow-hidden transition-all duration-300 hover:shadow-2xl hover:transform hover:scale-105"
-                    data-category="keuangan" data-date="2023-09-15"
-                    data-title="LAPORAN KEUANGAN KPRI UNEJ SEMESTER 1 2023">
-                    <div class="relative">
-                        <img src="{{ asset('images/hero.png') }}" alt="Article" class="w-full h-48 object-cover">
-                        <div class="absolute top-4 left-4">
-                            <span class="bg-purple-500 text-white text-xs px-3 py-1 rounded-full">Keuangan</span>
-                        </div>
-                        <div class="absolute top-4 right-4">
-                            <button
-                                class="bg-white bg-opacity-80 hover:bg-opacity-100 text-gray-700 p-2 rounded-full transition duration-300">
-                                <i class="fas fa-bookmark"></i>
-                            </button>
-                        </div>
-                    </div>
-                    <div class="p-6">
-                        <div class="flex items-center space-x-4 text-xs text-gray-500 dark:text-gray-400 mb-3">
-                            <span class="flex items-center">
-                                <i class="fas fa-calendar mr-1"></i>
-                                15 Sep 2023
-                            </span>
-                            <span class="flex items-center">
-                                <i class="fas fa-eye mr-1"></i>
-                                324 views
-                            </span>
-                            <span class="flex items-center">
-                                <i class="fas fa-clock mr-1"></i>
-                                8 min
-                            </span>
-                        </div>
-                        <h3
-                            class="text-lg font-bold text-gray-900 dark:text-white mb-3 line-clamp-2 hover:text-amber-500 transition duration-300">
-                            <a href="#">LAPORAN KEUANGAN KPRI UNEJ SEMESTER 1 2023</a>
-                        </h3>
-                        <p class="text-gray-600 dark:text-gray-300 text-sm mb-4 line-clamp-3">
-                            Transparansi keuangan menjadi komitmen utama KPRI UNEJ. Berikut adalah laporan keuangan semester
-                            pertama tahun 2023 yang menunjukkan pertumbuhan positif...
-                        </p>
-                        <div class="flex items-center justify-between">
-                            <div class="flex items-center space-x-2">
-                                <span class="text-sm text-gray-600 dark:text-gray-400">Bendahara</span>
-                            </div>
-                            <a href="#"
-                                class="text-amber-500 hover:text-amber-600 font-medium text-sm transition duration-300">
-                                Baca →
-                            </a>
-                        </div>
-                    </div>
-                </article>
-
-                <article
-                    class="article-card bg-white dark:bg-gray-700 rounded-xl shadow-lg overflow-hidden transition-all duration-300 hover:shadow-2xl hover:transform hover:scale-105"
-                    data-category="pelatihan" data-date="2023-08-20" data-title="WORKSHOP MANAJEMEN KOPERASI MODERN">
-                    <div class="relative">
-                        <img src="{{ asset('images/hero.png') }}" alt="Article" class="w-full h-48 object-cover">
-                        <div class="absolute top-4 left-4">
-                            <span class="bg-amber-500 text-white text-xs px-3 py-1 rounded-full">Pelatihan</span>
-                        </div>
-                        <div class="absolute top-4 right-4">
-                            <button
-                                class="bg-white bg-opacity-80 hover:bg-opacity-100 text-gray-700 p-2 rounded-full transition duration-300">
-                                <i class="fas fa-bookmark"></i>
-                            </button>
-                        </div>
-                    </div>
-                    <div class="p-6">
-                        <div class="flex items-center space-x-4 text-xs text-gray-500 dark:text-gray-400 mb-3">
-                            <span class="flex items-center">
-                                <i class="fas fa-calendar mr-1"></i>
-                                20 Agu 2023
-                            </span>
-                            <span class="flex items-center">
-                                <i class="fas fa-eye mr-1"></i>
-                                167 views
-                            </span>
-                            <span class="flex items-center">
-                                <i class="fas fa-clock mr-1"></i>
-                                5 min
-                            </span>
-                        </div>
-                        <h3
-                            class="text-lg font-bold text-gray-900 dark:text-white mb-3 line-clamp-2 hover:text-amber-500 transition duration-300">
-                            <a href="#">WORKSHOP MANAJEMEN KOPERASI MODERN</a>
-                        </h3>
-                        <p class="text-gray-600 dark:text-gray-300 text-sm mb-4 line-clamp-3">
-                            KPRI UNEJ mengadakan workshop manajemen koperasi modern untuk meningkatkan kemampuan pengelolaan
-                            dan adaptasi terhadap perkembangan zaman...
-                        </p>
-                        <div class="flex items-center justify-between">
-                            <div class="flex items-center space-x-2">
-                                <span class="text-sm text-gray-600 dark:text-gray-400">Sekretaris</span>
-                            </div>
-                            <a href="#"
-                                class="text-amber-500 hover:text-amber-600 font-medium text-sm transition duration-300">
-                                Baca →
-                            </a>
-                        </div>
-                    </div>
-                </article>
-
-                <article
-                    class="article-card bg-white dark:bg-gray-700 rounded-xl shadow-lg overflow-hidden transition-all duration-300 hover:shadow-2xl hover:transform hover:scale-105"
-                    data-category="inovasi" data-date="2023-07-10" data-title="PELUNCURAN APLIKASI MOBILE KPRI UNEJ">
-                    <div class="relative">
-                        <img src="{{ asset('images/hero.png') }}" alt="Article" class="w-full h-48 object-cover">
-                        <div class="absolute top-4 left-4">
-                            <span class="bg-blue-500 text-white text-xs px-3 py-1 rounded-full">Inovasi</span>
-                        </div>
-                        <div class="absolute top-4 right-4">
-                            <button
-                                class="bg-white bg-opacity-80 hover:bg-opacity-100 text-gray-700 p-2 rounded-full transition duration-300">
-                                <i class="fas fa-bookmark"></i>
-                            </button>
-                        </div>
-                    </div>
-                    <div class="p-6">
-                        <div class="flex items-center space-x-4 text-xs text-gray-500 dark:text-gray-400 mb-3">
-                            <span class="flex items-center">
-                                <i class="fas fa-calendar mr-1"></i>
-                                10 Jul 2023
-                            </span>
-                            <span class="flex items-center">
-                                <i class="fas fa-eye mr-1"></i>
-                                412 views
-                            </span>
-                            <span class="flex items-center">
-                                <i class="fas fa-clock mr-1"></i>
-                                4 min
-                            </span>
-                        </div>
-                        <h3
-                            class="text-lg font-bold text-gray-900 dark:text-white mb-3 line-clamp-2 hover:text-amber-500 transition duration-300">
-                            <a href="#">PELUNCURAN APLIKASI MOBILE KPRI UNEJ</a>
-                        </h3>
-                        <p class="text-gray-600 dark:text-gray-300 text-sm mb-4 line-clamp-3">
-                            Aplikasi mobile KPRI UNEJ resmi diluncurkan untuk memberikan kemudahan akses layanan koperasi
-                            bagi seluruh anggota kapan saja dan dimana saja...
-                        </p>
-                        <div class="flex items-center justify-between">
-                            <div class="flex items-center space-x-2">
-                                <span class="text-sm text-gray-600 dark:text-gray-400">Developer</span>
-                            </div>
-                            <a href="#"
-                                class="text-amber-500 hover:text-amber-600 font-medium text-sm transition duration-300">
-                                Baca →
-                            </a>
-                        </div>
-                    </div>
-                </article>
             </div>
 
             <div class="text-center mt-12">
@@ -471,151 +130,213 @@
 
     <script>
         document.addEventListener('DOMContentLoaded', function() {
+            const articlesContainer = document.getElementById('articlesContainer');
             const searchInput = document.getElementById('searchInput');
             const categoryFilter = document.getElementById('categoryFilter');
             const sortFilter = document.getElementById('sortFilter');
+            const articleCount = document.getElementById('articleCount');
+            const loadMoreBtn = document.getElementById('loadMoreBtn');
+            const noResults = document.getElementById('noResults');
             const gridView = document.getElementById('gridView');
             const listView = document.getElementById('listView');
-            const articlesContainer = document.getElementById('articlesContainer');
-            const articleCount = document.getElementById('articleCount');
-            const noResults = document.getElementById('noResults');
-            const loadMoreBtn = document.getElementById('loadMoreBtn');
 
-            let articles = Array.from(document.querySelectorAll('.article-card'));
-            let visibleArticles = 6;
+            let allArticles = [];
+            let visibleCount = 6;
 
-            searchInput.addEventListener('input', function() {
-                filterArticles();
-            });
-
-            categoryFilter.addEventListener('change', function() {
-                filterArticles();
-            });
-
-            sortFilter.addEventListener('change', function() {
-                sortArticles();
-            });
-
-            gridView.addEventListener('click', function() {
-                setGridView();
-            });
-
-            listView.addEventListener('click', function() {
-                setListView();
-            });
-
-            loadMoreBtn.addEventListener('click', function() {
-                visibleArticles += 6;
-                showArticles();
-            });
-
-            function filterArticles() {
-                const searchTerm = searchInput.value.toLowerCase();
-                const selectedCategory = categoryFilter.value;
-
-                let filteredArticles = articles.filter(article => {
-                    const title = article.dataset.title.toLowerCase();
-                    const category = article.dataset.category;
-
-                    const matchesSearch = title.includes(searchTerm);
-                    const matchesCategory = !selectedCategory || category === selectedCategory;
-
-                    return matchesSearch && matchesCategory;
-                });
-
-                showFilteredArticles(filteredArticles);
+            function fetchArticles() {
+                fetch('https://6264-180-245-74-56.ngrok-free.app/api/articles')
+                    .then(res => res.json())
+                    .then(data => {
+                        if (data.status === 'success') {
+                            allArticles = data.data;
+                            updateStatsInfo(allArticles);
+                            sortAndRenderArticles();
+                            renderFeaturedArticle();
+                        }
+                    });
             }
 
-            function sortArticles() {
-                const sortBy = sortFilter.value;
+            function renderFeaturedArticle() {
+                if (allArticles.length === 0) return;
 
-                articles.sort((a, b) => {
-                    switch (sortBy) {
-                        case 'newest':
-                            return new Date(b.dataset.date) - new Date(a.dataset.date);
-                        case 'oldest':
-                            return new Date(a.dataset.date) - new Date(b.dataset.date);
-                        case 'title':
-                            return a.dataset.title.localeCompare(b.dataset.title);
-                        case 'popular':
-                            return Math.random() - 0.5;
-                        default:
-                            return 0;
-                    }
-                });
+                const featured = [...allArticles]
+                    .filter(a => a.release_date)
+                    .sort((a, b) => new Date(b.release_date) - new Date(a.release_date))[0];
 
-                filterArticles();
+                const container = document.getElementById('featuredArticle');
+                container.innerHTML = `
+        <div class="p-8 lg:p-12 text-white">
+            <div class="mb-4">
+                <span class="inline-block bg-white bg-opacity-20 text-white text-xs px-3 py-1 rounded-full mb-4">
+                    <i class="fas fa-star mr-1"></i>
+                    Artikel Terbaru
+                </span>
+            </div>
+            <h3 class="text-2xl lg:text-3xl font-bold mb-4 leading-tight">
+                ${featured.title}
+            </h3>
+            <p class="text-orange-100 mb-6 leading-relaxed">
+                ${featured.excerpt}
+            </p>
+            <div class="flex items-center space-x-6 mb-6 text-sm text-orange-100">
+                <span class="flex items-center">
+                    <i class="fas fa-user mr-2"></i>
+                    ${featured.author || 'Admin'}
+                </span>
+                <span class="flex items-center">
+                    <i class="fas fa-calendar mr-2"></i>
+                    ${formatDate(featured.release_date)}
+                </span>
+            </div>
+            <a href="/artikel/${featured.id}"
+                class="inline-flex items-center bg-white text-amber-600 font-semibold py-3 px-6 rounded-lg hover:bg-gray-100 transition duration-300">
+                Baca Selengkapnya
+                <i class="fas fa-arrow-right ml-2"></i>
+            </a>
+        </div>
+        <div class="relative">
+            <img src="${featured.thumbnail || '/images/hero.png'}" alt="Featured Article" class="w-full h-full object-cover">
+            <div class="absolute inset-0 bg-gradient-to-t from-black via-transparent to-transparent opacity-30"></div>
+        </div>
+    `;
             }
 
-            function showFilteredArticles(filteredArticles) {
-                articles.forEach(article => {
-                    article.style.display = 'none';
+            function updateStatsInfo(articles) {
+                const articleCountText = document.getElementById('articleCountText');
+                const totalViewsText = document.getElementById('totalViewsText');
+                const latestUpdateText = document.getElementById('latestUpdateText');
+
+                const totalArticles = articles.length;
+                const totalViews = articles.reduce((sum, article) => sum + (article.views || 0), 0);
+                const latestDate = articles
+                    .filter(a => a.release_date)
+                    .map(a => new Date(a.release_date))
+                    .sort((a, b) => b - a)[0];
+
+                articleCountText.textContent = `${totalArticles} Artikel`;
+                totalViewsText.textContent = `${totalViews.toLocaleString('id-ID')} Pembaca`;
+                latestUpdateText.textContent = latestDate ?
+                    latestDate.toLocaleDateString('id-ID', {
+                        year: 'numeric',
+                        month: 'short',
+                        day: 'numeric'
+                    }) :
+                    '-';
+            }
+
+
+
+            function renderArticles(articles) {
+                articlesContainer.innerHTML = '';
+                articles.slice(0, visibleCount).forEach(article => {
+                    const card = document.createElement('article');
+                    card.className =
+                        `article-card bg-white dark:bg-gray-700 rounded-xl shadow-lg overflow-hidden transition-all duration-300 hover:shadow-2xl hover:transform hover:scale-105`;
+                    card.setAttribute('data-title', article.title.toLowerCase());
+                    card.setAttribute('data-category', article.category?.toLowerCase() || '');
+                    card.setAttribute('data-date', article.created_at);
+
+                    card.innerHTML = `
+                        <div class="relative">
+                            <img src="${article.thumbnail || '{{ asset('images/hero.png') }}'}" alt="Article" class="w-full h-48 object-cover">
+                            <div class="absolute top-4 left-4">
+                                <span class="bg-amber-500 text-white text-xs px-3 py-1 rounded-full">${article.tags || 'Lainnya'}</span>
+                            </div>
+                            <div class="absolute top-4 right-4">
+                                <button class="bg-white bg-opacity-80 hover:bg-opacity-100 text-gray-700 p-2 rounded-full transition duration-300">
+                                    <i class="fas fa-bookmark"></i>
+                                </button>
+                            </div>
+                        </div>
+                        <div class="p-6">
+                            <div class="flex items-center space-x-4 text-xs text-gray-500 dark:text-gray-400 mb-3">
+                                <span class="flex items-center"><i class="fas fa-calendar mr-1"></i>${formatDate(article.release_date)}</span>
+                                <span class="flex items-center"><i class="fas fa-eye mr-1"></i>${article.views || 0} views</span>
+                            </div>
+                            <h3 class="text-lg font-bold text-gray-900 dark:text-white mb-3 line-clamp-2 hover:text-amber-500 transition duration-300">
+                                <a href="/artikel/${article.slug}">${article.title}</a>
+                            </h3>
+                            <p class="text-gray-600 dark:text-gray-300 text-sm mb-4 line-clamp-3">
+                                ${article.excerpt || ''}
+                            </p>
+                            <div class="flex items-center justify-between">
+                                <div class="flex items-center space-x-2">
+                                    <span class="text-sm text-gray-600 dark:text-gray-400">${article.author || 'Admin'}</span>
+                                </div>
+                                <a href="/artikel/${article.id}" class="text-amber-500 hover:text-amber-600 font-medium text-sm transition duration-300">
+                                    Baca →
+                                </a>
+                            </div>
+                        </div>
+                    `;
+                    articlesContainer.appendChild(card);
                 });
 
-                filteredArticles.slice(0, visibleArticles).forEach(article => {
-                    article.style.display = 'block';
+                articleCount.textContent = articles.length;
+                noResults.classList.toggle('hidden', articles.length > 0);
+                loadMoreBtn.style.display = articles.length > visibleCount ? 'inline-flex' : 'none';
+            }
+
+            function sortAndRenderArticles() {
+                let filtered = allArticles.filter(article => {
+                    const searchTerm = searchInput.value.toLowerCase();
+                    const category = categoryFilter.value.toLowerCase();
+                    const matchesTitle = article.title.toLowerCase().includes(searchTerm);
+                    const matchesCategory = !category || (article.category?.toLowerCase() === category);
+                    return matchesTitle && matchesCategory;
                 });
 
-                articleCount.textContent = filteredArticles.length;
-
-                if (filteredArticles.length === 0) {
-                    noResults.classList.remove('hidden');
-                    loadMoreBtn.style.display = 'none';
-                } else {
-                    noResults.classList.add('hidden');
-                    loadMoreBtn.style.display = filteredArticles.length > visibleArticles ? 'inline-flex' : 'none';
+                switch (sortFilter.value) {
+                    case 'newest':
+                        filtered.sort((a, b) => new Date(b.created_at) - new Date(a.created_at));
+                        break;
+                    case 'oldest':
+                        filtered.sort((a, b) => new Date(a.created_at) - new Date(b.created_at));
+                        break;
+                    case 'title':
+                        filtered.sort((a, b) => a.title.localeCompare(b.title));
+                        break;
+                    case 'popular':
+                        filtered.sort((a, b) => (b.views || 0) - (a.views || 0));
+                        break;
                 }
+
+                renderArticles(filtered);
             }
 
-            function showArticles() {
-                filterArticles();
-            }
-
-            function setGridView() {
-                articlesContainer.className = 'grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8';
-                gridView.classList.add('text-amber-500', 'bg-amber-50', 'dark:bg-amber-900');
-                gridView.classList.remove('text-gray-500', 'dark:text-gray-400');
-                listView.classList.remove('text-amber-500', 'bg-amber-50', 'dark:bg-amber-900');
-                listView.classList.add('text-gray-500', 'dark:text-gray-400');
-            }
-
-            function setListView() {
-                articlesContainer.className = 'space-y-6';
-                listView.classList.add('text-amber-500', 'bg-amber-50', 'dark:bg-amber-900');
-                listView.classList.remove('text-gray-500', 'dark:text-gray-400');
-                gridView.classList.remove('text-amber-500', 'bg-amber-50', 'dark:bg-amber-900');
-                gridView.classList.add('text-gray-500', 'dark:text-gray-400');
-
-                articles.forEach(article => {
-                    if (listView.classList.contains('text-amber-500')) {
-                        article.classList.add('flex', 'flex-row');
-                        const img = article.querySelector('img');
-                        if (img) {
-                            img.parentElement.classList.add('w-1/3');
-                        }
-                        const content = article.querySelector('.p-6');
-                        if (content) {
-                            content.classList.add('w-2/3');
-                        }
-                    }
+            function formatDate(dateStr) {
+                const d = new Date(dateStr);
+                return d.toLocaleDateString('id-ID', {
+                    year: 'numeric',
+                    month: 'short',
+                    day: 'numeric'
                 });
             }
 
-            document.querySelectorAll('.fa-bookmark').forEach(bookmark => {
-                bookmark.addEventListener('click', function(e) {
-                    e.preventDefault();
-                    this.classList.toggle('fas');
-                    this.classList.toggle('far');
+            searchInput.addEventListener('input', sortAndRenderArticles);
+            categoryFilter.addEventListener('change', sortAndRenderArticles);
+            sortFilter.addEventListener('change', sortAndRenderArticles);
 
-                    if (this.classList.contains('fas')) {
-                        this.style.color = '#f59e0b';
-                    } else {
-                        this.style.color = '';
-                    }
-                });
+            loadMoreBtn.addEventListener('click', () => {
+                visibleCount += 6;
+                sortAndRenderArticles();
             });
 
-            showArticles();
+            gridView.addEventListener('click', () => {
+                articlesContainer.className = 'grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8';
+                gridView.classList.add('text-amber-500', 'bg-amber-50');
+                listView.classList.remove('text-amber-500', 'bg-amber-50');
+            });
+
+            listView.addEventListener('click', () => {
+                articlesContainer.className = 'space-y-6';
+                listView.classList.add('text-amber-500', 'bg-amber-50');
+                gridView.classList.remove('text-amber-500', 'bg-amber-50');
+            });
+
+            fetchArticles();
+            renderFeaturedArticle();
+
         });
     </script>
 @endsection

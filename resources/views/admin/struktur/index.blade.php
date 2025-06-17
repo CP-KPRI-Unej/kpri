@@ -66,12 +66,12 @@
             <div class="p-6">
                 <div class="flex justify-between items-center mb-4">
                     <h3 class="font-medium text-gray-800 dark:text-gray-200">Ketua</h3>
-                    <a href="{{ route('admin.struktur.create') }}?jabatan=Ketua" 
+                    <a href="{{ route('admin.struktur.create') }}?jabatan=Ketua"
                        class="text-blue-500 hover:text-blue-700 dark:text-blue-400 dark:hover:text-blue-300 text-sm font-medium flex items-center gap-1 ketua-add-link">
                         <i class="bi bi-plus-circle"></i> Tambah
                     </a>
                 </div>
-                
+
                 <div id="ketua-container" class="ketua-container">
                     <!-- Content will be loaded dynamically -->
                     <div class="flex items-center justify-center py-4 px-4 bg-gray-50 dark:bg-gray-900 rounded-lg">
@@ -84,12 +84,12 @@
             <div class="p-6">
                 <div class="flex justify-between items-center mb-4">
                     <h3 class="font-medium text-gray-800 dark:text-gray-200">Sekretaris</h3>
-                    <a href="{{ route('admin.struktur.create') }}?jabatan=Sekretaris" 
+                    <a href="{{ route('admin.struktur.create') }}?jabatan=Sekretaris"
                        class="text-blue-500 hover:text-blue-700 dark:text-blue-400 dark:hover:text-blue-300 text-sm font-medium flex items-center gap-1 sekretaris-add-link">
                         <i class="bi bi-plus-circle"></i> Tambah
                     </a>
                 </div>
-                
+
                 <div id="sekretaris-container" class="sekretaris-container">
                     <!-- Content will be loaded dynamically -->
                     <div class="flex items-center justify-center py-4 px-4 bg-gray-50 dark:bg-gray-900 rounded-lg">
@@ -102,12 +102,12 @@
             <div class="p-6">
                 <div class="flex justify-between items-center mb-4">
                     <h3 class="font-medium text-gray-800 dark:text-gray-200">Bendahara</h3>
-                    <a href="{{ route('admin.struktur.create') }}?jabatan=Bendahara" 
+                    <a href="{{ route('admin.struktur.create') }}?jabatan=Bendahara"
                        class="text-blue-500 hover:text-blue-700 dark:text-blue-400 dark:hover:text-blue-300 text-sm font-medium flex items-center gap-1 bendahara-add-link">
                         <i class="bi bi-plus-circle"></i> Tambah
                     </a>
                 </div>
-                
+
                 <div id="bendahara-container" class="bendahara-container">
                     <!-- Content will be loaded dynamically -->
                     <div class="flex items-center justify-center py-4 px-4 bg-gray-50 dark:bg-gray-900 rounded-lg">
@@ -120,12 +120,12 @@
             <div class="p-6">
                 <div class="flex justify-between items-center mb-4">
                     <h3 class="font-medium text-gray-800 dark:text-gray-200">Anggota</h3>
-                    <a href="{{ route('admin.struktur.create') }}?jabatan=Anggota" 
+                    <a href="{{ route('admin.struktur.create') }}?jabatan=Anggota"
                        class="text-blue-500 hover:text-blue-700 dark:text-blue-400 dark:hover:text-blue-300 text-sm font-medium flex items-center gap-1">
                         <i class="bi bi-plus-circle"></i> Tambah
                     </a>
                 </div>
-                
+
                 <div id="anggota-container" class="anggota-container">
                     <!-- Content will be loaded dynamically -->
                     <div class="flex items-center justify-center py-4 px-4 bg-gray-50 dark:bg-gray-900 rounded-lg">
@@ -138,12 +138,12 @@
             <div class="p-6">
                 <div class="flex justify-between items-center mb-4">
                     <h3 class="font-medium text-gray-800 dark:text-gray-200">Pengawas</h3>
-                    <a href="{{ route('admin.struktur.create') }}?jabatan=Pengawas" 
+                    <a href="{{ route('admin.struktur.create') }}?jabatan=Pengawas"
                        class="text-blue-500 hover:text-blue-700 dark:text-blue-400 dark:hover:text-blue-300 text-sm font-medium flex items-center gap-1">
                         <i class="bi bi-plus-circle"></i> Tambah
                     </a>
                 </div>
-                
+
                 <div id="pengawas-container" class="pengawas-container">
                     <!-- Content will be loaded dynamically -->
                     <div class="flex items-center justify-center py-4 px-4 bg-gray-50 dark:bg-gray-900 rounded-lg">
@@ -159,21 +159,21 @@
 document.addEventListener('DOMContentLoaded', function() {
     // Get access token from localStorage
     const token = localStorage.getItem('access_token');
-    
+
     if (!token) {
         // Redirect to login if no token
         window.location.href = '/admin/login';
         return;
     }
-    
+
     fetchStrukturData();
-    
+
     function fetchStrukturData() {
         // Show loading state
         document.getElementById('loading-state').classList.remove('hidden');
         document.getElementById('content-state').classList.add('hidden');
         document.getElementById('error-container').classList.add('hidden');
-        
+
         // Fetch data from API
         fetch('/api/admin/struktur', {
             method: 'GET',
@@ -192,7 +192,7 @@ document.addEventListener('DOMContentLoaded', function() {
             // Hide loading, show content
             document.getElementById('loading-state').classList.add('hidden');
             document.getElementById('content-state').classList.remove('hidden');
-            
+
             // Process the data
             if (data.success) {
                 renderStrukturData(data.data);
@@ -206,7 +206,7 @@ document.addEventListener('DOMContentLoaded', function() {
             showError('Tidak dapat memuat data. Silakan coba lagi nanti.');
         });
     }
-    
+
     function renderStrukturData(strukturData) {
         // Process data for each jabatan
         renderJabatanData('Ketua', strukturData['Ketua']);
@@ -214,30 +214,30 @@ document.addEventListener('DOMContentLoaded', function() {
         renderJabatanData('Bendahara', strukturData['Bendahara']);
         renderJabatanData('Anggota', strukturData['Anggota']);
         renderJabatanData('Pengawas', strukturData['Pengawas']);
-        
+
         // Hide add links for positions that already have data (except Anggota and Pengawas)
         if (strukturData['Ketua'] && strukturData['Ketua'].length > 0) {
             document.querySelector('.ketua-add-link').classList.add('hidden');
         }
-        
+
         if (strukturData['Sekretaris'] && strukturData['Sekretaris'].length > 0) {
             document.querySelector('.sekretaris-add-link').classList.add('hidden');
         }
-        
+
         if (strukturData['Bendahara'] && strukturData['Bendahara'].length > 0) {
             document.querySelector('.bendahara-add-link').classList.add('hidden');
         }
     }
-    
+
     function renderJabatanData(jabatan, data) {
         const containerId = jabatan.toLowerCase() + '-container';
         const container = document.getElementById(containerId);
-        
+
         if (!container) return;
-        
+
         // Clear container
         container.innerHTML = '';
-        
+
         // If no data, show empty state
         if (!data || data.length === 0) {
             container.innerHTML = `
@@ -247,21 +247,21 @@ document.addEventListener('DOMContentLoaded', function() {
             `;
             return;
         }
-        
+
         // For positions that can have multiple people (Anggota and Pengawas)
         if (jabatan === 'Anggota' || jabatan === 'Pengawas') {
             let html = '<div class="space-y-3">';
-            
+
             data.forEach(pengurus => {
                 html += `
                     <div class="flex items-center justify-between py-3 px-4 bg-gray-50 dark:bg-gray-900 rounded-lg">
                         <span class="text-gray-800 dark:text-gray-200 font-medium">${pengurus.nama_pengurus}</span>
                         <div class="flex items-center gap-3">
-                            <a href="/admin/struktur/${pengurus.id_pengurus}/edit" 
+                            <a href="/admin/struktur/${pengurus.id_pengurus}/edit"
                                class="text-gray-500 hover:text-blue-500 transition duration-300">
                                 <i class="bi bi-pencil"></i>
                             </a>
-                            <button type="button" 
+                            <button type="button"
                                   class="text-gray-500 hover:text-red-500 transition duration-300 delete-btn"
                                   data-id="${pengurus.id_pengurus}"
                                   data-name="${pengurus.nama_pengurus}">
@@ -271,10 +271,10 @@ document.addEventListener('DOMContentLoaded', function() {
                     </div>
                 `;
             });
-            
+
             html += '</div>';
             container.innerHTML = html;
-        } 
+        }
         // For positions that should have just one person (Ketua, Sekretaris, Bendahara)
         else {
             data.forEach(pengurus => {
@@ -282,11 +282,11 @@ document.addEventListener('DOMContentLoaded', function() {
                     <div class="flex items-center justify-between py-3 px-4 bg-gray-50 dark:bg-gray-900 rounded-lg">
                         <span class="text-gray-800 dark:text-gray-200 font-medium">${pengurus.nama_pengurus}</span>
                         <div class="flex items-center gap-3">
-                            <a href="/admin/struktur/${pengurus.id_pengurus}/edit" 
+                            <a href="/admin/struktur/${pengurus.id_pengurus}/edit"
                                class="text-gray-500 hover:text-blue-500 transition duration-300">
                                 <i class="bi bi-pencil"></i>
                             </a>
-                            <button type="button" 
+                            <button type="button"
                                   class="text-gray-500 hover:text-red-500 transition duration-300 delete-btn"
                                   data-id="${pengurus.id_pengurus}"
                                   data-name="${pengurus.nama_pengurus}">
@@ -297,20 +297,20 @@ document.addEventListener('DOMContentLoaded', function() {
                 `;
             });
         }
-        
+
         // Add event listeners to delete buttons
         document.querySelectorAll('.delete-btn').forEach(btn => {
             btn.addEventListener('click', function() {
                 const id = this.getAttribute('data-id');
                 const name = this.getAttribute('data-name');
-                
+
                 if (confirm(`Apakah Anda yakin ingin menghapus ${name} dari struktur kepengurusan?`)) {
                     deletePengurus(id);
                 }
             });
         });
     }
-    
+
     async function deletePengurus(id) {
         try {
             const response = await fetch(`/api/admin/struktur/${id}`, {
@@ -321,13 +321,13 @@ document.addEventListener('DOMContentLoaded', function() {
                     'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').getAttribute('content')
                 }
             });
-            
+
             const data = await response.json();
-            
+
             if (data.success) {
                 // Show success message
                 showError(['Data berhasil dihapus']);
-                
+
                 // Reload data after a short delay
                 setTimeout(() => {
                     fetchStrukturData();
@@ -340,7 +340,7 @@ document.addEventListener('DOMContentLoaded', function() {
             showError(['Terjadi kesalahan saat menghapus data. Silakan coba lagi nanti.']);
         }
     }
-    
+
     function showError(message) {
         const errorContainer = document.getElementById('error-container');
         document.getElementById('error-message').textContent = message;
@@ -348,4 +348,4 @@ document.addEventListener('DOMContentLoaded', function() {
     }
 });
 </script>
-@endsection 
+@endsection

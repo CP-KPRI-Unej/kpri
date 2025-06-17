@@ -10,30 +10,14 @@
                 class="w-full md:w-3/4 mb-4 object-cover p-0 md:p-8 rounded-s-3xl rounded-e-3xl m-auto" />
             <div class="w-3/4 m-auto flex flex-col gap-4 bg-white dark:bg-gray-900 p-8 rounded-lg">
                 <h1 class="text-4xl font-bold text-orange-500 mb-2">PRODUK</h1>
-                <div class="text-sm text-justify dark:text-white text-black space-y-2"
-                    x-html="$store.unitToko.produk"></div>
+                <div class="text-sm text-justify dark:text-white text-black space-y-2" x-html="$store.unitToko.produk"></div>
+            </div>
 
-                <h1 class="text-4xl font-bold mt-6 text-orange-500 mb-2">PROMO</h1>
-
-                <div id="produk-splide" class="splide">
-                    <div class="splide__track">
-                        <ul class="splide__list">
-                            @foreach ([['img' => 'produk.png', 'text' => 'Gula Pasir Rose Brand', 'harga' => 'Rp 15.000'], ['img' => 'produk-1.png', 'text' => 'Chi Sparkling Water', 'harga' => 'Rp 15.000'], ['img' => 'produk-2.png', 'text' => 'Minyak Goreng Bimoli', 'harga' => 'Rp 15.000']] as $item)
-                                <li class="splide__slide">
-                                    <div class="border-2 border-orange-400 rounded-lg py-4 px-2 flex flex-col items-center">
-                                        <img src="{{ asset('images/' . $item['img']) }}" alt="{{ $item['text'] }}"
-                                            class="w-full md:w-3/4 rounded shadow-md" />
-                                        <h2 class="text-center font-bold text-green-800 dark:text-white mt-2">
-                                            {{ $item['text'] }}</h2>
-                                        <h2 class="text-center font-bold text-black dark:text-white">{{ $item['harga'] }}
-                                        </h2>
-                                    </div>
-                                </li>
-                            @endforeach
-                        </ul>
-                    </div>
-                </div>
-
+            <div class="text-center mt-6">
+                <a href="{{ route('toko.index') }}"
+                    class="inline-block bg-orange-500 hover:bg-orange-600 text-white px-6 py-2 rounded-full transition duration-300 shadow-md">
+                    Lihat Semua Produk
+                </a>
             </div>
         </section>
         <a href="https://wa.me/6281234567890" target="_blank"
