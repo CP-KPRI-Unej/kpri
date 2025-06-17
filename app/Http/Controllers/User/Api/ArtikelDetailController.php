@@ -20,7 +20,7 @@ class ArtikelDetailController extends Controller
      *
      * @param  int  $id
      * @return \Illuminate\Http\JsonResponse
-     * 
+     *
      * @OA\Get(
      *     path="/articles/{id}",
      *     summary="Get article details",
@@ -82,14 +82,14 @@ class ArtikelDetailController extends Controller
             $query->where('status', 'approved')->orderBy('created_at', 'desc');
         }])->where('id_status', 2) // Only show published articles
         ->findOrFail($id);
-        
+
         $images = $artikel->images->map(function ($image) {
             return [
                 'id' => $image->id,
                 'url' => url(Storage::url($image->gambar))
             ];
         });
-        
+
         // Format comments
         $comments = $artikel->komentar->map(function ($komentar) {
             return [
@@ -99,7 +99,7 @@ class ArtikelDetailController extends Controller
                 'date' => $komentar->created_at->format('d M Y H:i')
             ];
         });
-        
+
         $data = [
             'id' => $artikel->id_artikel,
             'title' => $artikel->nama_artikel,
@@ -116,14 +116,14 @@ class ArtikelDetailController extends Controller
             'data' => $data
         ]);
     }
-    
+
     /**
      * Store a newly created comment for an article.
      *
      * @param  \Illuminate\Http\Request  $request
      * @param  int  $id
      * @return \Illuminate\Http\JsonResponse
-     * 
+     *
      * @OA\Post(
      *     path="/articles/{id}/comments",
      *     summary="Add a comment to an article",
@@ -162,21 +162,21 @@ class ArtikelDetailController extends Controller
     public function storeComment(Request $request, $id)
     {
         $artikel = Artikel::where('id_status', 2)->findOrFail($id);
-        
+
         $request->validate([
             'nama_pengomentar' => 'required|string|max:100',
             'isi_komentar' => 'required|string|max:255',
         ]);
-        
+
         $artikel->komentar()->create([
             'nama_pengomentar' => $request->nama_pengomentar,
             'isi_komentar' => $request->isi_komentar,
-            'status' => 'pending' 
+            'status' => 'pending'
         ]);
-        
+
         return response()->json([
             'status' => 'success',
             'message' => 'Komentar telah dikirim dan sedang menunggu persetujuan.'
         ]);
     }
-} 
+}

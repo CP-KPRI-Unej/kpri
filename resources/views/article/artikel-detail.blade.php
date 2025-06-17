@@ -65,10 +65,10 @@
     </section>
 
     <script>
-        const API_URL = 'https://6264-180-245-74-56.ngrok-free.app/api/articles/1';
+        const API_URL = 'https://b631-180-245-74-56.ngrok-free.app/api/articles/1';
 
         async function fetchArticle() {
-            const res = await fetch('https://6264-180-245-74-56.ngrok-free.app/api/articles/{{ $id }}');
+            const res = await fetch('https://b631-180-245-74-56.ngrok-free.app/api/articles/{{ $id }}');
             const {
                 data
             } = await res.json();
@@ -170,7 +170,7 @@
         async function fetchRelatedArticles(tags) {
             const tagParams = tags.split(',').map(t => t.trim()).join(',');
             const res = await fetch(
-                `https://6264-180-245-74-56.ngrok-free.app/api/articles?tags=${encodeURIComponent(tagParams)}`);
+                `https://b631-180-245-74-56.ngrok-free.app/api/articles/relevant?tags=${encodeURIComponent(tagParams)}`);
             const {
                 data
             } = await res.json();
@@ -203,32 +203,44 @@
 
         document.addEventListener('DOMContentLoaded', fetchArticle);
 
-        document.getElementById('comment-form').addEventListener('submit', function(e) {
+        document.getElementById('comment-form').addEventListener('submit', async function(e) {
             e.preventDefault();
-            const name = document.getElementById('name').value || 'Anonymous';
-            const content = document.getElementById('content').value;
 
-            if (!content.trim() || content.length > 1000) return;
+            const name = document.getElementById('name').value.trim() || 'Anonymous';
+            const content = document.getElementById('content').value.trim();
 
-            const now = new Date();
-            const formatted = now.toLocaleString('id-ID');
+            if (!content || content.length > 1000) return;
 
-            renderComments([{
-                name,
-                content,
-                date: formatted
-            }, ...Array.from(document.querySelectorAll('#comment-list > div')).map(div => ({
-                name: div.querySelector('h4').textContent,
-                content: div.querySelector('p').textContent,
-                date: div.querySelector('span').textContent
-            }))]);
+            try {
+                const response = await fetch(
+                    'https://b631-180-245-74-56.ngrok-free.app/api/articles/{{ $id }}/comments', {
+                        method: 'POST',
+                        headers: {
+                            'Content-Type': 'application/json',
+                            'Accept': 'application/json',
+                        },
+                        body: JSON.stringify({
+                            nama_pengomentar: name,
+                            isi_komentar: content
+                        })
+                    });
 
-            document.getElementById('success-message').classList.remove('hidden');
-            this.reset();
+                const result = await response.json();
 
-            setTimeout(() => {
-                document.getElementById('success-message').classList.add('hidden');
-            }, 3000);
+                if (response.ok && result.status === 'success') {
+                    document.getElementById('success-message').classList.remove('hidden');
+                    this.reset();
+
+                    setTimeout(() => {
+                        document.getElementById('success-message').classList.add('hidden');
+                    }, 3000);
+                } else {
+                    alert('Gagal mengirim komentar. Coba lagi nanti.');
+                }
+            } catch (error) {
+                console.error(error);
+                alert('Terjadi kesalahan saat mengirim komentar.');
+            }
         });
     </script>
 @endsection

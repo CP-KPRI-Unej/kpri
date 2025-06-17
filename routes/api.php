@@ -44,7 +44,7 @@ use App\Http\Controllers\Api\TokoApiController;
 // Authentication Routes
 Route::group(['prefix' => 'auth'], function () {
     Route::post('login', [AuthController::class, 'login']);
-    
+
     Route::group(['middleware' => 'auth:api'], function () {
         Route::post('logout', [AuthController::class, 'logout']);
         Route::post('refresh', [AuthController::class, 'refresh']);
@@ -62,7 +62,7 @@ Route::group(['middleware' => ['auth:api', 'role:kpri admin'], 'prefix' => 'admi
     Route::post('gallery/{id}', [AdminGalleryController::class, 'update']);
     Route::delete('gallery/{id}', [AdminGalleryController::class, 'destroy']);
     Route::get('gallery-statuses', [AdminGalleryController::class, 'getStatuses']);
-    
+
     // FAQ routes
     Route::get('faqs', [AdminFaqController::class, 'index']);
     Route::post('faqs', [AdminFaqController::class, 'store']);
@@ -76,7 +76,7 @@ Route::group(['middleware' => ['auth:api', 'role:kpri admin'], 'prefix' => 'admi
     Route::get('dashboard/monthly-chart/{year?}', [DashboardStatsController::class, 'getMonthlyChartData']);
     Route::get('dashboard/top-pages/{limit?}', [DashboardStatsController::class, 'getTopPages']);
     Route::get('dashboard/daily-trend/{days?}', [DashboardStatsController::class, 'getDailyTrend']);
-    
+
     // Download Items management
     Route::get('downloads', [AdminDownloadItemController::class, 'index']);
     Route::post('downloads', [AdminDownloadItemController::class, 'store']);
@@ -84,7 +84,7 @@ Route::group(['middleware' => ['auth:api', 'role:kpri admin'], 'prefix' => 'admi
     Route::get('downloads/{id}', [AdminDownloadItemController::class, 'show']);
     Route::post('downloads/{id}', [AdminDownloadItemController::class, 'update']);
     Route::delete('downloads/{id}', [AdminDownloadItemController::class, 'destroy']);
-    
+
     // Articles management
     Route::get('articles', [App\Http\Controllers\API\ArtikelController::class, 'index']);
     Route::post('articles', [App\Http\Controllers\API\ArtikelController::class, 'storeArticle']);
@@ -96,7 +96,7 @@ Route::group(['middleware' => ['auth:api', 'role:kpri admin'], 'prefix' => 'admi
     Route::delete('comments/{id}', [App\Http\Controllers\API\ArtikelController::class, 'deleteComment']);
     Route::delete('articles/{id}', [App\Http\Controllers\API\ArtikelController::class, 'deleteArticle']);
     Route::get('article-statuses', [App\Http\Controllers\API\ArtikelController::class, 'getStatuses']);
-    
+
     // Struktur Kepengurusan management
     Route::get('struktur', [App\Http\Controllers\API\StrukturController::class, 'index']);
     Route::get('struktur/{id}', [App\Http\Controllers\API\StrukturController::class, 'show']);
@@ -104,8 +104,8 @@ Route::group(['middleware' => ['auth:api', 'role:kpri admin'], 'prefix' => 'admi
     Route::post('struktur', [App\Http\Controllers\API\StrukturController::class, 'store']);
     Route::put('struktur/{id}', [App\Http\Controllers\API\StrukturController::class, 'update']);
     Route::delete('struktur/{id}', [App\Http\Controllers\API\StrukturController::class, 'destroy']);
-    
-   
+
+
     // Linktree management
     Route::get('linktree', [LinktreeController::class, 'getLinktreeProfile']);
     Route::get('linktree/links', [LinktreeController::class, 'getLinks']);
@@ -114,14 +114,14 @@ Route::group(['middleware' => ['auth:api', 'role:kpri admin'], 'prefix' => 'admi
     Route::put('linktree/links/{id}', [LinktreeController::class, 'updateLink']);
     Route::delete('linktree/links/{id}', [LinktreeController::class, 'deleteLink']);
     Route::post('linktree/links/positions', [LinktreeController::class, 'updatePositions']);
-    
+
     // Category management
     Route::get('categories', [App\Http\Controllers\API\KategoriProdukController::class, 'index']);
     Route::get('categories/{id}', [App\Http\Controllers\API\KategoriProdukController::class, 'show']);
     Route::post('categories', [App\Http\Controllers\API\KategoriProdukController::class, 'store']);
     Route::put('categories/{id}', [App\Http\Controllers\API\KategoriProdukController::class, 'update']);
     Route::delete('categories/{id}', [App\Http\Controllers\API\KategoriProdukController::class, 'destroy']);
-    
+
     // Product management
     Route::get('products', [AdminProductController::class, 'index']);
     Route::post('products', [AdminProductController::class, 'store']);
@@ -131,7 +131,7 @@ Route::group(['middleware' => ['auth:api', 'role:kpri admin'], 'prefix' => 'admi
     Route::get('product-categories', [AdminProductController::class, 'categories']);
     Route::post('products/{id}/promotions', [AdminProductController::class, 'addToPromotions']);
     Route::get('products/{id}/promotions', [AdminProductController::class, 'getPromotions']);
-    
+
     // Promotion management
     Route::get('promotions', [AdminPromotionController::class, 'index']);
     Route::post('promotions', [AdminPromotionController::class, 'store']);
@@ -148,7 +148,7 @@ Route::group(['middleware' => ['auth:api', 'role:kpri admin'], 'prefix' => 'admi
     Route::get('hero-banners/{id}', [AdminHeroBerandaController::class, 'show']);
     Route::post('hero-banners/{id}', [AdminHeroBerandaController::class, 'update']);
     Route::delete('hero-banners/{id}', [AdminHeroBerandaController::class, 'destroy']);
-    
+
     // Layanan (Service) management
     Route::get('layanan/jenis', [AdminLayananController::class, 'getJenisLayanan']);
     Route::get('layanan/jenis/{id}', [AdminLayananController::class, 'getJenisLayananById']);

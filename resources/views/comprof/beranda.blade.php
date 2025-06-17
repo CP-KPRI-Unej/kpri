@@ -184,7 +184,7 @@
             });
         });
 
-        fetch("https://6264-180-245-74-56.ngrok-free.app/api/articles")
+        fetch("https://b631-180-245-74-56.ngrok-free.app/api/articles")
             .then(res => res.json())
             .then(result => {
                 if (result.status === "success") {
