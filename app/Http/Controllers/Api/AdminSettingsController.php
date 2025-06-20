@@ -10,10 +10,56 @@ use Illuminate\Support\Facades\Validator;
 use Illuminate\Support\Facades\Log;
 use App\Models\User;
 
+/**
+ * @OA\Tag(
+ *     name="Admin Settings",
+ *     description="API Endpoints for Admin Profile and Settings management"
+ * )
+ */
 class AdminSettingsController extends Controller
 {
     /**
      * Get the authenticated user's profile
+     * 
+     * @OA\Get(
+     *     path="/admin/settings/profile",
+     *     summary="Get admin profile",
+     *     description="Retrieve the authenticated user's profile information",
+     *     tags={"Admin Settings"},
+     *     security={{"bearerAuth":{}}},
+     *     @OA\Response(
+     *         response=200,
+     *         description="Success",
+     *         @OA\JsonContent(
+     *             @OA\Property(property="status", type="string", example="success"),
+     *             @OA\Property(
+     *                 property="data",
+     *                 type="object",
+     *                 @OA\Property(property="id", type="integer", example=1),
+     *                 @OA\Property(property="nama", type="string", example="Admin User"),
+     *                 @OA\Property(property="username", type="string", example="admin"),
+     *                 @OA\Property(property="role", type="string", example="Administrator"),
+     *                 @OA\Property(property="last_login", type="string", format="date-time", example="2023-07-15 14:30:00")
+     *             ),
+     *             @OA\Property(property="message", type="string", example="Profile retrieved successfully")
+     *         )
+     *     ),
+     *     @OA\Response(
+     *         response=401,
+     *         description="Unauthorized",
+     *         @OA\JsonContent(
+     *             @OA\Property(property="message", type="string", example="Unauthenticated")
+     *         )
+     *     ),
+     *     @OA\Response(
+     *         response=500,
+     *         description="Server Error",
+     *         @OA\JsonContent(
+     *             @OA\Property(property="status", type="string", example="error"),
+     *             @OA\Property(property="message", type="string", example="Failed to retrieve profile")
+     *         )
+     *     )
+     * )
      * 
      * @return \Illuminate\Http\JsonResponse
      */
@@ -44,6 +90,66 @@ class AdminSettingsController extends Controller
 
     /**
      * Update the authenticated user's profile
+     * 
+     * @OA\Post(
+     *     path="/admin/settings/profile",
+     *     summary="Update admin profile",
+     *     description="Update the authenticated user's profile information",
+     *     tags={"Admin Settings"},
+     *     security={{"bearerAuth":{}}},
+     *     @OA\RequestBody(
+     *         required=true,
+     *         @OA\JsonContent(
+     *             required={"nama_user", "username"},
+     *             @OA\Property(property="nama_user", type="string", example="Updated Name", description="User's full name"),
+     *             @OA\Property(property="username", type="string", example="newusername", description="User's username")
+     *         )
+     *     ),
+     *     @OA\Response(
+     *         response=200,
+     *         description="Success",
+     *         @OA\JsonContent(
+     *             @OA\Property(property="status", type="string", example="success"),
+     *             @OA\Property(
+     *                 property="data",
+     *                 type="object",
+     *                 @OA\Property(property="id", type="integer", example=1),
+     *                 @OA\Property(property="nama", type="string", example="Updated Name"),
+     *                 @OA\Property(property="username", type="string", example="newusername"),
+     *                 @OA\Property(property="role", type="string", example="Administrator")
+     *             ),
+     *             @OA\Property(property="message", type="string", example="Profile updated successfully")
+     *         )
+     *     ),
+     *     @OA\Response(
+     *         response=422,
+     *         description="Validation Error",
+     *         @OA\JsonContent(
+     *             @OA\Property(property="status", type="string", example="error"),
+     *             @OA\Property(
+     *                 property="errors", 
+     *                 type="object",
+     *                 @OA\Property(property="nama_user", type="array", @OA\Items(type="string", example="The nama user field is required.")),
+     *                 @OA\Property(property="username", type="array", @OA\Items(type="string", example="The username has already been taken."))
+     *             )
+     *         )
+     *     ),
+     *     @OA\Response(
+     *         response=401,
+     *         description="Unauthorized",
+     *         @OA\JsonContent(
+     *             @OA\Property(property="message", type="string", example="Unauthenticated")
+     *         )
+     *     ),
+     *     @OA\Response(
+     *         response=500,
+     *         description="Server Error",
+     *         @OA\JsonContent(
+     *             @OA\Property(property="status", type="string", example="error"),
+     *             @OA\Property(property="message", type="string", example="Failed to update profile")
+     *         )
+     *     )
+     * )
      * 
      * @param \Illuminate\Http\Request $request
      * @return \Illuminate\Http\JsonResponse
@@ -104,6 +210,64 @@ class AdminSettingsController extends Controller
 
     /**
      * Update the authenticated user's password
+     * 
+     * @OA\Post(
+     *     path="/admin/settings/password",
+     *     summary="Update admin password",
+     *     description="Update the authenticated user's password",
+     *     tags={"Admin Settings"},
+     *     security={{"bearerAuth":{}}},
+     *     @OA\RequestBody(
+     *         required=true,
+     *         @OA\JsonContent(
+     *             required={"current_password", "new_password", "new_password_confirmation"},
+     *             @OA\Property(property="current_password", type="string", format="password", example="current123", description="Current password"),
+     *             @OA\Property(property="new_password", type="string", format="password", example="newpassword123", description="New password"),
+     *             @OA\Property(property="new_password_confirmation", type="string", format="password", example="newpassword123", description="Confirm new password")
+     *         )
+     *     ),
+     *     @OA\Response(
+     *         response=200,
+     *         description="Success",
+     *         @OA\JsonContent(
+     *             @OA\Property(property="status", type="string", example="success"),
+     *             @OA\Property(property="message", type="string", example="Password updated successfully")
+     *         )
+     *     ),
+     *     @OA\Response(
+     *         response=422,
+     *         description="Validation Error or Invalid Current Password",
+     *         @OA\JsonContent(
+     *             @OA\Property(property="status", type="string", example="error"),
+     *             @OA\Property(
+     *                 property="message",
+     *                 type="string",
+     *                 example="Current password is incorrect"
+     *             ),
+     *             @OA\Property(
+     *                 property="errors",
+     *                 type="object",
+     *                 @OA\Property(property="current_password", type="array", @OA\Items(type="string", example="The current password field is required.")),
+     *                 @OA\Property(property="new_password", type="array", @OA\Items(type="string", example="The new password must be at least 8 characters."))
+     *             )
+     *         )
+     *     ),
+     *     @OA\Response(
+     *         response=401,
+     *         description="Unauthorized",
+     *         @OA\JsonContent(
+     *             @OA\Property(property="message", type="string", example="Unauthenticated")
+     *         )
+     *     ),
+     *     @OA\Response(
+     *         response=500,
+     *         description="Server Error",
+     *         @OA\JsonContent(
+     *             @OA\Property(property="status", type="string", example="error"),
+     *             @OA\Property(property="message", type="string", example="Failed to update password")
+     *         )
+     *     )
+     * )
      * 
      * @param \Illuminate\Http\Request $request
      * @return \Illuminate\Http\JsonResponse

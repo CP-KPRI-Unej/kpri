@@ -1,5 +1,7 @@
 @extends('admin.layouts.app')
 
+@section('title', 'Tambah Notifikasi Baru')
+
 @section('styles')
 <style>
     .preview-container {
@@ -30,14 +32,58 @@
         border-radius: 50%;
         margin-right: 8px;
     }
+    /* Input field styles with stroke */
+    .input-stroke {
+        border: 2px solid #e5e7eb;
+        transition: border-color 0.2s ease;
+    }
+    .input-stroke:focus {
+        border-color: #f97316;
+        box-shadow: 0 0 0 2px rgba(249, 115, 22, 0.2);
+    }
+    .dark .input-stroke {
+        border-color: #4b5563;
+    }
+    .dark .input-stroke:focus {
+        border-color: #f97316;
+        box-shadow: 0 0 0 2px rgba(249, 115, 22, 0.3);
+    }
 </style>
 @endsection
 
 @section('content')
-<div class="container-fluid px-4 py-4 mx-auto">
-    <div class="mb-4">
-        <h1 class="text-2xl font-semibold">Buat Notifikasi Baru</h1>
-        <p class="text-sm text-gray-500 dark:text-gray-400">Isi form di bawah untuk mengirim atau menjadwalkan notifikasi.</p>
+<div class="container mx-auto px-4 py-6">
+    <div class="flex items-center justify-between mb-6">
+        <div>
+            <h1 class="text-2xl font-semibold text-gray-800 dark:text-gray-200">Tambah Notifikasi Baru</h1>
+            <p class="text-sm text-gray-500 dark:text-gray-400">Isi form di bawah untuk mengirim atau menjadwalkan notifikasi.</p>
+        </div>
+        <a href="{{ route('admin.notification.index') }}" class="px-4 py-2 bg-orange-500 text-white rounded-md hover:bg-orange-600 transition-colors flex items-center">
+            <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 mr-1" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 19l-7-7m0 0l7-7m-7 7h18" />
+            </svg>
+            Kembali
+        </a>
+    </div>
+
+    <div id="alert-success" class="bg-green-100 border border-green-400 text-green-700 px-4 py-3 rounded relative mb-4 hidden" role="alert">
+        <span class="block sm:inline" id="success-message"></span>
+        <button type="button" class="absolute top-0 bottom-0 right-0 px-4 py-3" onclick="hideAlert('alert-success')" aria-label="Close">
+            <span class="sr-only">Close</span>
+            <svg class="h-4 w-4" fill="currentColor" viewBox="0 0 20 20">
+                <path d="M4.293 4.293a1 1 0 011.414 0L10 8.586l4.293-4.293a1 1 0 111.414 1.414L11.414 10l4.293 4.293a1 1 0 01-1.414 1.414L10 11.414l-4.293 4.293a1 1 0 01-1.414-1.414L8.586 10 4.293 5.707a1 1 0 010-1.414z" clip-rule="evenodd" fill-rule="evenodd"></path>
+            </svg>
+        </button>
+    </div>
+
+    <div id="alert-error" class="bg-red-100 border border-red-400 text-red-700 px-4 py-3 rounded relative mb-4 hidden" role="alert">
+        <span class="block sm:inline" id="error-message"></span>
+        <button type="button" class="absolute top-0 bottom-0 right-0 px-4 py-3" onclick="hideAlert('alert-error')" aria-label="Close">
+            <span class="sr-only">Close</span>
+            <svg class="h-4 w-4" fill="currentColor" viewBox="0 0 20 20">
+                <path d="M4.293 4.293a1 1 0 011.414 0L10 8.586l4.293-4.293a1 1 0 111.414 1.414L11.414 10l4.293 4.293a1 1 0 01-1.414 1.414L10 11.414l-4.293 4.293a1 1 0 01-1.414-1.414L8.586 10 4.293 5.707a1 1 0 010-1.414z" clip-rule="evenodd" fill-rule="evenodd"></path>
+            </svg>
+        </button>
     </div>
 
     <div class="bg-white dark:bg-gray-800 shadow rounded-lg p-6">
@@ -46,50 +92,38 @@
                 <!-- Title -->
                 <div>
                     <label for="title" class="block text-sm font-medium text-gray-700 dark:text-gray-300">Judul <span class="text-red-500">*</span></label>
-                    <input type="text" name="title" id="title" required class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-orange-500 focus:ring-orange-500 sm:text-sm dark:bg-gray-700 dark:border-gray-600">
+                    <input type="text" name="title" id="title" required class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-orange-500 focus:ring-orange-500 sm:text-sm dark:bg-gray-700 dark:border-gray-600 input-stroke">
                     <p class="mt-1 text-xs text-gray-500 dark:text-gray-400" id="title-error"></p>
                 </div>
                 
                 <!-- Message -->
                 <div class="md:col-span-2">
                     <label for="message" class="block text-sm font-medium text-gray-700 dark:text-gray-300">Pesan <span class="text-red-500">*</span></label>
-                    <textarea name="message" id="message" rows="4" required class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-orange-500 focus:ring-orange-500 sm:text-sm dark:bg-gray-700 dark:border-gray-600"></textarea>
+                    <textarea name="message" id="message" rows="4" required class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-orange-500 focus:ring-orange-500 sm:text-sm dark:bg-gray-700 dark:border-gray-600 input-stroke"></textarea>
                     <p class="mt-1 text-xs text-gray-500 dark:text-gray-400" id="message-error"></p>
                 </div>
 
                 <!-- Target URL -->
                 <div>
                     <label for="target_url" class="block text-sm font-medium text-gray-700 dark:text-gray-300">Target URL (Opsional)</label>
-                    <input type="url" name="target_url" id="target_url" class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-orange-500 focus:ring-orange-500 sm:text-sm dark:bg-gray-700 dark:border-gray-600" placeholder="https://example.com">
+                    <input type="url" name="target_url" id="target_url" class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-orange-500 focus:ring-orange-500 sm:text-sm dark:bg-gray-700 dark:border-gray-600 input-stroke" placeholder="https://example.com">
                     <p class="mt-1 text-xs text-gray-500 dark:text-gray-400" id="target_url-error"></p>
                 </div>
 
                 <!-- Icon Upload -->
                 <div>
                     <label for="icon" class="block text-sm font-medium text-gray-700 dark:text-gray-300">Icon (Opsional)</label>
-                    <input type="file" name="icon" id="icon" accept="image/*" class="mt-1 block w-full text-sm text-gray-500 dark:text-gray-400 file:mr-4 file:py-2 file:px-4 file:rounded-md file:border-0 file:text-sm file:font-semibold file:bg-orange-50 file:text-orange-700 hover:file:bg-orange-100 dark:file:bg-gray-700 dark:file:text-gray-300">
+                    <input type="file" name="icon" id="icon" accept="image/*" class="mt-1 block w-full text-sm text-gray-500 dark:text-gray-400 file:mr-4 file:py-2 file:px-4 file:rounded-md file:border-0 file:text-sm file:font-semibold file:bg-orange-50 file:text-orange-700 hover:file:bg-orange-100 dark:file:bg-gray-700 dark:file:text-gray-300 input-stroke">
                     <p class="mt-1 text-xs text-gray-500 dark:text-gray-400">Format: JPG, PNG, GIF, SVG. Maks: 2MB</p>
                     <p class="mt-1 text-xs text-gray-500 dark:text-gray-400" id="icon-error"></p>
-                    
-                    <!-- URL Fallback for icon -->
-                    <div class="mt-2">
-                        <label for="icon_url" class="block text-xs font-medium text-gray-500 dark:text-gray-400">Atau gunakan URL</label>
-                        <input type="url" name="icon_url" id="icon_url" class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-orange-500 focus:ring-orange-500 sm:text-xs dark:bg-gray-700 dark:border-gray-600" placeholder="https://example.com/icon.png">
-                    </div>
                 </div>
 
                 <!-- Image Upload -->
                 <div>
                     <label for="image" class="block text-sm font-medium text-gray-700 dark:text-gray-300">Gambar (Opsional)</label>
-                    <input type="file" name="image" id="image" accept="image/*" class="mt-1 block w-full text-sm text-gray-500 dark:text-gray-400 file:mr-4 file:py-2 file:px-4 file:rounded-md file:border-0 file:text-sm file:font-semibold file:bg-orange-50 file:text-orange-700 hover:file:bg-orange-100 dark:file:bg-gray-700 dark:file:text-gray-300">
+                    <input type="file" name="image" id="image" accept="image/*" class="mt-1 block w-full text-sm text-gray-500 dark:text-gray-400 file:mr-4 file:py-2 file:px-4 file:rounded-md file:border-0 file:text-sm file:font-semibold file:bg-orange-50 file:text-orange-700 hover:file:bg-orange-100 dark:file:bg-gray-700 dark:file:text-gray-300 input-stroke">
                     <p class="mt-1 text-xs text-gray-500 dark:text-gray-400">Format: JPG, PNG, GIF, SVG. Maks: 2MB</p>
                     <p class="mt-1 text-xs text-gray-500 dark:text-gray-400" id="image-error"></p>
-                    
-                    <!-- URL Fallback for image -->
-                    <div class="mt-2">
-                        <label for="image_url" class="block text-xs font-medium text-gray-500 dark:text-gray-400">Atau gunakan URL</label>
-                        <input type="url" name="image_url" id="image_url" class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-orange-500 focus:ring-orange-500 sm:text-xs dark:bg-gray-700 dark:border-gray-600" placeholder="https://example.com/image.jpg">
-                    </div>
                 </div>
 
                 <!-- Preview -->
@@ -131,15 +165,15 @@
                 <!-- Scheduled At -->
                 <div id="schedule-container">
                     <label for="scheduled_at" class="block text-sm font-medium text-gray-700 dark:text-gray-300">Jadwalkan Untuk <span class="text-red-500 scheduled-required">*</span></label>
-                    <input type="datetime-local" name="scheduled_at" id="scheduled_at" class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-orange-500 focus:ring-orange-500 sm:text-sm dark:bg-gray-700 dark:border-gray-600">
+                    <input type="datetime-local" name="scheduled_at" id="scheduled_at" class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-orange-500 focus:ring-orange-500 sm:text-sm dark:bg-gray-700 dark:border-gray-600 input-stroke">
                     <p class="mt-1 text-xs text-gray-500 dark:text-gray-400" id="scheduled_at-error"></p>
                 </div>
             </div>
 
             <!-- Actions -->
             <div class="flex justify-end gap-3 mt-8">
-                <a href="{{ route('admin.notification.index') }}" class="px-4 py-2 bg-gray-200 text-gray-800 rounded-md hover:bg-gray-300 dark:bg-gray-600 dark:text-white dark:hover:bg-gray-500">Batal</a>
-                <button type="submit" id="save-button" class="px-4 py-2 bg-indigo-800 text-white rounded-md hover:bg-indigo-900 flex items-center">
+                <a href="{{ route('admin.notification.index') }}" class="px-4 py-2 border border-orange-500 text-orange-500 rounded-md hover:bg-orange-500 hover:text-white transition-colors">Batal</a>
+                <button type="submit" id="save-button" class="px-4 py-2 bg-orange-500 text-white rounded-md hover:bg-orange-600 transition-colors flex items-center">
                     <span id="save-button-text">Simpan Notifikasi</span>
                     <svg id="loading-spinner" class="animate-spin -mr-1 ml-3 h-5 w-5 text-white hidden" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
                         <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
@@ -175,9 +209,7 @@ document.addEventListener('DOMContentLoaded', function () {
     const titleInput = document.getElementById('title');
     const messageInput = document.getElementById('message');
     const iconInput = document.getElementById('icon');
-    const iconUrlInput = document.getElementById('icon_url');
     const imageInput = document.getElementById('image');
-    const imageUrlInput = document.getElementById('image_url');
     const previewTitle = document.getElementById('preview-title');
     const previewMessage = document.getElementById('preview-message');
     const previewIcon = document.getElementById('preview-icon');
@@ -219,12 +251,7 @@ document.addEventListener('DOMContentLoaded', function () {
             }
             reader.readAsDataURL(iconInput.files[0]);
         } 
-        // If URL is provided
-        else if (iconUrlInput.value && isValidUrl(iconUrlInput.value)) {
-            previewIcon.src = iconUrlInput.value;
-            previewIconContainer.classList.remove('hidden');
-        } 
-        // Hide if neither is provided
+        // Hide if not provided
         else {
             previewIconContainer.classList.add('hidden');
         }
@@ -240,12 +267,7 @@ document.addEventListener('DOMContentLoaded', function () {
             }
             reader.readAsDataURL(imageInput.files[0]);
         } 
-        // If URL is provided
-        else if (imageUrlInput.value && isValidUrl(imageUrlInput.value)) {
-            previewImage.src = imageUrlInput.value;
-            previewImageContainer.classList.remove('hidden');
-        } 
-        // Hide if neither is provided
+        // Hide if not provided
         else {
             previewImageContainer.classList.add('hidden');
         }
@@ -278,9 +300,7 @@ document.addEventListener('DOMContentLoaded', function () {
     titleInput.addEventListener('input', updatePreview);
     messageInput.addEventListener('input', updatePreview);
     iconInput.addEventListener('change', updateIconPreview);
-    iconUrlInput.addEventListener('input', updateIconPreview);
     imageInput.addEventListener('change', updateImagePreview);
-    imageUrlInput.addEventListener('input', updateImagePreview);
 
     form.addEventListener('submit', function (e) {
         e.preventDefault();
@@ -388,6 +408,28 @@ document.addEventListener('DOMContentLoaded', function () {
             saveButton.disabled = false;
             saveButtonText.textContent = 'Simpan Notifikasi';
             loadingSpinner.classList.add('hidden');
+        }
+    }
+
+    function showAlert(message, type = 'success') {
+        const alertId = type === 'success' ? 'alert-success' : 'alert-error';
+        const alertEl = document.getElementById(alertId);
+        const messageEl = alertId === 'alert-success' ? document.getElementById('success-message') : document.getElementById('error-message');
+        
+        if (alertEl && messageEl) {
+            messageEl.textContent = message;
+            alertEl.classList.remove('hidden');
+            
+            setTimeout(() => {
+                alertEl.classList.add('hidden');
+            }, 5000);
+        }
+    }
+    
+    function hideAlert(alertId) {
+        const alertEl = document.getElementById(alertId);
+        if (alertEl) {
+            alertEl.classList.add('hidden');
         }
     }
 

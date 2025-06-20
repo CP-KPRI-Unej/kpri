@@ -15,6 +15,14 @@
     .gallery-image:hover {
         transform: scale(1.05);
     }
+
+    .bulk-actions-container {
+        display: none;
+    }
+    
+    .bulk-actions-container.active {
+        display: flex;
+    }
 </style>
 @endsection
 
@@ -55,8 +63,28 @@
             </div>
         </div>
         
+        <!-- Bulk actions -->
+        <div id="bulkActionsContainer" class="bulk-actions-container items-center bg-gray-100 dark:bg-gray-700 px-3 py-2 rounded-md mr-auto">
+            <span class="text-sm mr-2"><span id="selectedCount">0</span> terpilih</span>
+            <div x-data="{ open: false, posStyle: {} }">
+                <button @click="open = !open; if (open) posStyle = getPopupPosition($event)" class="flex items-center text-sm bg-white dark:bg-gray-800 px-3 py-1 rounded border">
+                    Aksi Massal
+                    <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 ml-1" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7" />
+                    </svg>
+                </button>
+                <div x-show="open" @click.away="open = false" x-cloak :style="posStyle" class="fixed rounded-md shadow-lg bg-white dark:bg-gray-800 ring-1 ring-black ring-opacity-5 z-50">
+                    <div class="py-1" role="menu" aria-orientation="vertical">
+                        <button onclick="deleteBulkItems()" class="w-full text-left block px-4 py-2 text-sm text-red-700 dark:text-red-400 hover:bg-gray-100 dark:hover:bg-gray-700" role="menuitem">
+                            <i class="bi bi-trash mr-2"></i> Hapus Terpilih
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
         <div class="flex space-x-2 w-full md:w-auto justify-end">
-            <a href="{{ route('admin.galeri.create') }}" class="bg-indigo-800 text-white px-4 py-2 rounded-md text-sm flex items-center">
+            <a href="{{ route('admin.galeri.create') }}" class="bg-orange-500 text-white px-4 py-2 rounded-md text-sm flex items-center hover:bg-orange-600 transition-colors">
                 <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 mr-1" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4" />
                 </svg>
@@ -72,7 +100,7 @@
                     <tr>
                         <th scope="col" class="px-3 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">
                             <div class="flex items-center">
-                                <input type="checkbox" class="form-checkbox h-4 w-4 text-orange-500 rounded border-gray-300">
+                                <input type="checkbox" id="selectAllCheckbox" class="form-checkbox h-4 w-4 text-orange-500 rounded border-gray-300">
                             </div>
                         </th>
                         <th scope="col" class="px-3 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">
@@ -87,8 +115,8 @@
                         <th scope="col" class="px-3 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider hidden sm:table-cell">
                             Tanggal Upload
                         </th>
-                        <th scope="col" class="px-3 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider hidden md:table-cell">
-                            Uploader
+                        <th scope="col" class="px-3 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider hidden sm:table-cell">
+                            Ditambahkan Oleh
                         </th>
                         <th scope="col" class="relative px-3 py-3">
                             <span class="sr-only">Actions</span>
@@ -109,10 +137,10 @@
             </table>
         </div>
         <div class="bg-white dark:bg-gray-800 px-4 py-3 flex items-center justify-between border-t border-gray-200 dark:border-gray-700 sm:px-6">
-            <div class=" sm:items-center sm:justify-between">
+            <div class="hidden sm:flex-1 sm:flex sm:items-center sm:justify-between">
                 <div>
                     <p class="text-sm text-gray-700 dark:text-gray-400">
-                        Showing <span class="font-medium" id="galleryCountFooter">0</span> photos
+                        Menampilkan <span class="font-medium" id="galleryCountFooter">0</span> foto
                     </p>
                 </div>
             </div>
@@ -175,6 +203,25 @@
                 });
             });
         }
+        
+        // Select all checkbox functionality
+        const selectAllCheckbox = document.getElementById('selectAllCheckbox');
+        if (selectAllCheckbox) {
+            selectAllCheckbox.addEventListener('change', function() {
+                const checkboxes = document.querySelectorAll('#galleryList input[type="checkbox"]');
+                checkboxes.forEach(checkbox => {
+                    checkbox.checked = this.checked;
+                });
+                updateSelectedCount();
+            });
+        }
+        
+        // Event delegation for checkbox changes in the table body
+        document.getElementById('galleryList').addEventListener('change', function(e) {
+            if (e.target && e.target.type === 'checkbox') {
+                updateSelectedCount();
+            }
+        });
     });
     
     // Check authentication status
@@ -257,13 +304,13 @@
             
             // Get status class based on status name
             let statusClass = '';
-            let statusText = gallery.status ? gallery.status.nama_status : 'Unknown';
+            let statusText = gallery.status ? gallery.status.nama_status : 'Tidak diketahui';
             
-            if (statusText && statusText.toLowerCase() === 'aktif') {
-                statusClass = 'bg-green-100 text-green-800 dark:bg-green-900 dark:text-green-300';
-            } else {
-                statusClass = 'bg-gray-100 text-gray-800 dark:bg-gray-700 dark:text-gray-300';
-            }
+            // Use different colors for different statuses - simplify to match download section
+            const statusLower = statusText.toLowerCase();
+            statusClass = (statusLower === 'aktif' || statusLower === 'active' || statusLower === 'published')
+                ? 'bg-green-100 text-green-800 dark:bg-green-900 dark:text-green-300'
+                : 'bg-gray-100 text-gray-800 dark:bg-gray-700 dark:text-gray-300';
             
             // Format date
             const uploadDate = new Date(gallery.tgl_upload);
@@ -272,7 +319,7 @@
             row.innerHTML = `
                 <td class="px-3 py-4 whitespace-nowrap">
                     <div class="flex items-center">
-                        <input type="checkbox" class="form-checkbox h-4 w-4 text-orange-500 rounded border-gray-300">
+                        <input type="checkbox" class="gallery-checkbox form-checkbox h-4 w-4 text-orange-500 rounded border-gray-300" value="${gallery.id_galeri}">
                     </div>
                 </td>
                 <td class="px-3 py-4 whitespace-nowrap">
@@ -289,17 +336,17 @@
                 <td class="px-3 py-4 whitespace-nowrap text-sm text-gray-500 dark:text-gray-400 hidden sm:table-cell">
                     ${formattedDate}
                 </td>
-                <td class="px-3 py-4 whitespace-nowrap text-sm text-gray-500 dark:text-gray-400 hidden md:table-cell">
-                    ${gallery.user ? gallery.user.nama_user : 'Unknown'}
+                <td class="px-3 py-4 whitespace-nowrap text-sm text-gray-500 dark:text-gray-400 hidden sm:table-cell">
+                    ${gallery.user ? gallery.user.nama_user : 'Tidak diketahui'}
                 </td>
                 <td class="px-3 py-4 whitespace-nowrap text-right text-sm font-medium">
-                    <div class="relative" x-data="{ open: false }">
-                        <button @click="open = !open" class="text-gray-400 hover:text-gray-500">
+                    <div class="relative" x-data="{ open: false, posStyle: {} }">
+                        <button @click="open = !open; if (open) posStyle = getActionPopupPosition($event)" class="text-gray-400 hover:text-gray-500">
                             <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" viewBox="0 0 20 20" fill="currentColor">
                                 <path d="M10 6a2 2 0 110-4 2 2 0 010 4zM10 12a2 2 0 110-4 2 2 0 010 4zM10 18a2 2 0 110-4 2 2 0 010 4z" />
                             </svg>
                         </button>
-                        <div x-show="open" @click.away="open = false" x-cloak class="origin-top-right absolute right-0 mt-2 w-48 rounded-md shadow-lg bg-white dark:bg-gray-800 ring-1 ring-black ring-opacity-5 z-40">
+                        <div x-show="open" @click.away="open = false" x-cloak :style="posStyle" class="fixed rounded-md shadow-lg bg-white dark:bg-gray-800 ring-1 ring-black ring-opacity-5 z-40">
                             <div class="py-1" role="menu" aria-orientation="vertical">
                                 <a href="/admin/galeri/${gallery.id_galeri}/edit" class="block px-4 py-2 text-sm text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700" role="menuitem">
                                     <i class="bi bi-pencil mr-2"></i> Edit
@@ -315,6 +362,9 @@
             
             galleryList.appendChild(row);
         });
+        
+        // Reset selected count after rendering
+        updateSelectedCount();
     }
     
     // Show delete confirmation modal
@@ -348,6 +398,106 @@
                 showAlert('error', 'Error deleting gallery item: ' + (error.response?.data?.message || error.message));
                 closeDeleteModal();
             });
+    }
+    
+    // Update selected count
+    function updateSelectedCount() {
+        const selectedCheckboxes = document.querySelectorAll('#galleryList input[type="checkbox"]:checked');
+        const count = selectedCheckboxes.length;
+        document.getElementById('selectedCount').textContent = count;
+        
+        const bulkActionsContainer = document.getElementById('bulkActionsContainer');
+        if (count > 0) {
+            bulkActionsContainer.classList.add('active');
+        } else {
+            bulkActionsContainer.classList.remove('active');
+            // Uncheck the select all checkbox if no items are selected
+            document.getElementById('selectAllCheckbox').checked = false;
+        }
+    }
+    
+    // Function to handle bulk delete
+    function deleteBulkItems() {
+        const selectedCheckboxes = document.querySelectorAll('#galleryList input[type="checkbox"]:checked');
+        const selectedIds = Array.from(selectedCheckboxes).map(checkbox => checkbox.value);
+        
+        if (selectedIds.length === 0) {
+            alert('Tidak ada foto yang dipilih');
+            return;
+        }
+        
+        if (confirm(`Apakah Anda yakin ingin menghapus ${selectedIds.length} foto yang dipilih?`)) {
+            // Use Promise.all for parallel requests
+            const deletePromises = selectedIds.map(id => 
+                axios.delete(`/api/admin/gallery/${id}`)
+                .then(response => {
+                    if (!response.data || response.data.status !== 'success') {
+                        throw new Error(`Failed to delete item ${id}`);
+                    }
+                    return response.data;
+                })
+            );
+            
+            Promise.all(deletePromises)
+                .then(() => {
+                    // Refresh the gallery list
+                    fetchGalleryData();
+                    showAlert('success', `${selectedIds.length} foto berhasil dihapus`);
+                })
+                .catch(error => {
+                    console.error('Error deleting items:', error);
+                    showAlert('error', 'Gagal menghapus beberapa foto. Silakan coba lagi.');
+                    // Refresh anyway to show the current state
+                    fetchGalleryData();
+                });
+        }
+    }
+    
+    // Function to get popup position
+    function getPopupPosition(event) {
+        const button = event.currentTarget;
+        const rect = button.getBoundingClientRect();
+        const popupWidth = 192; // w-48 = 12rem = 192px
+        
+        // Make sure popup doesn't go off the right edge of the screen
+        let leftPos = rect.right - popupWidth;
+        if (leftPos < 10) leftPos = 10; // Give a little margin if too far left
+        
+        return {
+            position: 'fixed',
+            top: `${rect.bottom + 5}px`, // 5px offset from button
+            left: `${leftPos}px`,
+            width: `${popupWidth}px`
+        };
+    }
+    
+    // Function to get action popup position
+    function getActionPopupPosition(event) {
+        const button = event.currentTarget;
+        const rect = button.getBoundingClientRect();
+        const popupWidth = 192; // Width of the popup (w-48 = 12rem = 192px)
+        const windowWidth = window.innerWidth;
+        
+        // Default to placing the popup to the left of the button
+        let leftPos = rect.right - popupWidth;
+        
+        // If this would place the popup off the left edge, position it differently
+        if (leftPos < 10) {
+            leftPos = 10; // Minimum 10px from left edge
+        }
+        
+        // If the popup would go off the right edge, position it to the left of the button
+        if (rect.left + popupWidth > windowWidth - 10) {
+            leftPos = Math.max(10, windowWidth - popupWidth - 10);
+        }
+        
+        return {
+            position: 'fixed',
+            top: `${rect.bottom + 5}px`, // 5px offset from button
+            left: `${leftPos}px`,
+            width: `${popupWidth}px`,
+            zIndex: '50'
+        };
     }
     
     // Show alert messages

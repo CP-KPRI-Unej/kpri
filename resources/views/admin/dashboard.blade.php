@@ -98,6 +98,7 @@
             </div>
             <div class="bg-gray-100 dark:bg-gray-700 rounded-lg p-1">
                 <select id="chartYear" class="bg-transparent border-0 text-gray-700 dark:text-gray-300 font-medium rounded focus:outline-none text-sm">
+                    <option value="2025">2025</option>
                     <option value="2024">2024</option>
                     <option value="2023">2023</option>
                 </select>
@@ -112,7 +113,7 @@
     <div class="bg-white dark:bg-gray-800 rounded-xl shadow-lg overflow-hidden mb-8">
         <div class="px-6 py-5 border-b border-gray-100 dark:border-gray-700">
             <h2 class="text-xl font-semibold text-gray-800 dark:text-white">Aktivitas Pengunjung Terbaru</h2>
-            <p class="text-sm text-gray-500 dark:text-gray-400 mt-1">10 pengunjung terakhir yang mengakses linktree</p>
+            <p class="text-sm text-gray-500 dark:text-gray-400 mt-1">10 pengunjung terakhir yang mengakses website</p>
         </div>
         <div class="p-6">
             <div class="overflow-x-auto">
@@ -120,43 +121,11 @@
                     <thead>
                         <tr class="border-b dark:border-gray-700">
                             <th class="px-6 py-3 text-left text-xs font-semibold text-gray-500 dark:text-gray-400 uppercase tracking-wider">IP Address</th>
-                            <th class="px-6 py-3 text-left text-xs font-semibold text-gray-500 dark:text-gray-400 uppercase tracking-wider">Halaman</th>
                             <th class="px-6 py-3 text-left text-xs font-semibold text-gray-500 dark:text-gray-400 uppercase tracking-wider">Waktu</th>
                         </tr>
                     </thead>
                     <tbody id="recent-visitors-table" class="divide-y divide-gray-200 dark:divide-gray-700">
                         <tr id="loading-row">
-                            <td colspan="3" class="px-6 py-4 text-center">
-                                <div class="animate-pulse flex justify-center">
-                                    <div class="h-4 w-4 bg-gray-200 dark:bg-gray-700 rounded-full"></div>
-                                    <div class="h-4 w-4 bg-gray-300 dark:bg-gray-600 rounded-full mx-1"></div>
-                                    <div class="h-4 w-4 bg-gray-200 dark:bg-gray-700 rounded-full"></div>
-                                </div>
-                            </td>
-                        </tr>
-                    </tbody>
-                </table>
-            </div>
-        </div>
-    </div>
-
-    <!-- Most Visited Pages Section -->
-    <div class="bg-white dark:bg-gray-800 rounded-xl shadow-lg overflow-hidden mb-8">
-        <div class="px-6 py-5 border-b border-gray-100 dark:border-gray-700">
-            <h2 class="text-xl font-semibold text-gray-800 dark:text-white">Halaman Paling Populer</h2>
-            <p class="text-sm text-gray-500 dark:text-gray-400 mt-1">Halaman yang paling banyak dikunjungi</p>
-        </div>
-        <div class="p-6">
-            <div class="overflow-x-auto">
-                <table class="min-w-full bg-white dark:bg-gray-800">
-                    <thead>
-                        <tr class="border-b dark:border-gray-700">
-                            <th class="px-6 py-3 text-left text-xs font-semibold text-gray-500 dark:text-gray-400 uppercase tracking-wider">Halaman</th>
-                            <th class="px-6 py-3 text-left text-xs font-semibold text-gray-500 dark:text-gray-400 uppercase tracking-wider">Jumlah Kunjungan</th>
-                        </tr>
-                    </thead>
-                    <tbody id="top-pages-table" class="divide-y divide-gray-200 dark:divide-gray-700">
-                        <tr id="loading-pages-row">
                             <td colspan="2" class="px-6 py-4 text-center">
                                 <div class="animate-pulse flex justify-center">
                                     <div class="h-4 w-4 bg-gray-200 dark:bg-gray-700 rounded-full"></div>
@@ -170,6 +139,8 @@
             </div>
         </div>
     </div>
+
+
 </div>
 @endsection
 
@@ -205,7 +176,25 @@
 
         // Set current year as default
         const currentYear = new Date().getFullYear();
-        document.getElementById('chartYear').value = currentYear;
+        const yearSelector = document.getElementById('chartYear');
+        
+        // Check if current year is in options, if not add it
+        let yearExists = false;
+        for (let i = 0; i < yearSelector.options.length; i++) {
+            if (yearSelector.options[i].value == currentYear) {
+                yearExists = true;
+                break;
+            }
+        }
+        
+        if (!yearExists) {
+            const option = document.createElement('option');
+            option.value = currentYear;
+            option.text = currentYear;
+            yearSelector.add(option, 0);
+        }
+        
+        yearSelector.value = currentYear;
         document.getElementById('chart-year').textContent = currentYear;
     });
 
@@ -444,7 +433,7 @@
             const emptyRow = document.createElement('tr');
             emptyRow.className = 'text-gray-700 dark:text-gray-300';
             emptyRow.innerHTML = `
-                <td colspan="3" class="px-6 py-4 text-center">Belum ada data kunjungan</td>
+                <td colspan="2" class="px-6 py-4 text-center">Belum ada data kunjungan</td>
             `;
             tableBody.appendChild(emptyRow);
             return;
@@ -456,7 +445,6 @@
             row.className = 'text-gray-700 dark:text-gray-300 hover:bg-gray-50 dark:hover:bg-gray-700 transition-colors';
             row.innerHTML = `
                 <td class="px-6 py-4 whitespace-nowrap">${visitor.ip_address || 'Unknown'}</td>
-                <td class="px-6 py-4 whitespace-nowrap">${visitor.page_visited || '/'}</td>
                 <td class="px-6 py-4 whitespace-nowrap">
                     <span title="${visitor.visited_at}">${visitor.time_ago}</span>
                 </td>
@@ -494,21 +482,23 @@
             const emptyRow = document.createElement('tr');
             emptyRow.className = 'text-gray-700 dark:text-gray-300';
             emptyRow.innerHTML = `
-                <td colspan="2" class="px-6 py-4 text-center">Belum ada data halaman</td>
+                <td colspan="2" class="px-6 py-4 text-center">Belum ada data statistik</td>
             `;
             tableBody.appendChild(emptyRow);
             return;
         }
 
-        // Add page rows
+        // Add page rows with generic categories
+        let counter = 1;
         pages.forEach(page => {
             const row = document.createElement('tr');
             row.className = 'text-gray-700 dark:text-gray-300 hover:bg-gray-50 dark:hover:bg-gray-700 transition-colors';
             row.innerHTML = `
-                <td class="px-6 py-4">${page.page_visited || '/'}</td>
+                <td class="px-6 py-4">Kategori ${counter}</td>
                 <td class="px-6 py-4">${formatNumber(page.visit_count)}</td>
             `;
             tableBody.appendChild(row);
+            counter++;
         });
     }
 

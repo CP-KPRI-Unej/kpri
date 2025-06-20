@@ -28,7 +28,7 @@ class StrukturKepengurusan extends Model
      *
      * @var bool
      */
-    public $timestamps = false;
+    public $timestamps = true;
 
     /**
      * The attributes that are mass assignable.
@@ -37,6 +37,7 @@ class StrukturKepengurusan extends Model
      */
     protected $fillable = [
         'id_jabatan',
+        'id_periode',
         'nama_pengurus',
     ];
 
@@ -46,5 +47,13 @@ class StrukturKepengurusan extends Model
     public function jabatan()
     {
         return $this->belongsTo(Jabatan::class, 'id_jabatan', 'id_jabatan');
+    }
+
+    /**
+     * Get the periode that owns the pengurus.
+     */
+    public function periode()
+    {
+        return $this->belongsTo(PeriodeKepengurusan::class, 'id_periode', 'id_periode');
     }
 } 

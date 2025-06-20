@@ -1,5 +1,7 @@
 @extends('admin.layouts.app')
 
+@section('title', 'Manajemen Notifikasi')
+
 @section('styles')
 <style>
     .status-sent {
@@ -18,6 +20,30 @@
         background-color: #7c2d12;
         color: #ffedd5;
     }
+    .bulk-actions-container {
+        display: none;
+    }
+    
+    .bulk-actions-container.active {
+        display: flex;
+    }
+    
+    /* Input field styles with stroke */
+    .input-stroke {
+        border: 2px solid #e5e7eb;
+        transition: border-color 0.2s ease;
+    }
+    .input-stroke:focus {
+        border-color: #f97316;
+        box-shadow: 0 0 0 2px rgba(249, 115, 22, 0.2);
+    }
+    .dark .input-stroke {
+        border-color: #4b5563;
+    }
+    .dark .input-stroke:focus {
+        border-color: #f97316;
+        box-shadow: 0 0 0 2px rgba(249, 115, 22, 0.3);
+    }
 </style>
 @endsection
 
@@ -28,12 +54,30 @@
         <p class="text-sm text-gray-500 dark:text-gray-400">Kelola notifikasi push untuk user.</p>
     </div>
 
-    <div id="notification-alert" class="hidden"></div>
+    <div id="alert-success" class="bg-green-100 border border-green-400 text-green-700 px-4 py-3 rounded relative mb-4 hidden" role="alert">
+        <span class="block sm:inline" id="success-message"></span>
+        <button type="button" class="absolute top-0 bottom-0 right-0 px-4 py-3" onclick="hideAlert('alert-success')" aria-label="Close">
+            <span class="sr-only">Close</span>
+            <svg class="h-4 w-4" fill="currentColor" viewBox="0 0 20 20">
+                <path d="M4.293 4.293a1 1 0 011.414 0L10 8.586l4.293-4.293a1 1 0 111.414 1.414L11.414 10l4.293 4.293a1 1 0 01-1.414 1.414L10 11.414l-4.293 4.293a1 1 0 01-1.414-1.414L8.586 10 4.293 5.707a1 1 0 010-1.414z" clip-rule="evenodd" fill-rule="evenodd"></path>
+            </svg>
+        </button>
+    </div>
+
+    <div id="alert-error" class="bg-red-100 border border-red-400 text-red-700 px-4 py-3 rounded relative mb-4 hidden" role="alert">
+        <span class="block sm:inline" id="error-message"></span>
+        <button type="button" class="absolute top-0 bottom-0 right-0 px-4 py-3" onclick="hideAlert('alert-error')" aria-label="Close">
+            <span class="sr-only">Close</span>
+            <svg class="h-4 w-4" fill="currentColor" viewBox="0 0 20 20">
+                <path d="M4.293 4.293a1 1 0 011.414 0L10 8.586l4.293-4.293a1 1 0 111.414 1.414L11.414 10l4.293 4.293a1 1 0 01-1.414 1.414L10 11.414l-4.293 4.293a1 1 0 01-1.414-1.414L8.586 10 4.293 5.707a1 1 0 010-1.414z" clip-rule="evenodd" fill-rule="evenodd"></path>
+            </svg>
+        </button>
+    </div>
 
     <div class="flex flex-col md:flex-row justify-between items-center gap-4 mb-4">
         <div class="flex items-center gap-2">
             <div class="relative w-full md:w-64">
-                <input id="search-input" type="text" class="border rounded-md p-2 w-full pl-10 text-sm focus:outline-none focus:ring-2 focus:ring-orange-500" placeholder="Cari notifikasi...">
+                <input id="search-input" type="text" class="border rounded-md p-2 w-full pl-10 text-sm focus:outline-none focus:ring-2 focus:ring-orange-500 input-stroke" placeholder="Cari notifikasi...">
                 <div class="absolute left-3 top-2.5">
                     <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 text-gray-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
@@ -42,41 +86,42 @@
             </div>
             <div class="flex rounded-md shadow-sm" role="group">
               <button type="button" data-status="" class="status-filter-btn px-4 py-2 text-sm font-medium text-gray-900 bg-white border border-gray-200 rounded-l-lg hover:bg-gray-100 focus:z-10 focus:ring-2 focus:ring-orange-500 dark:bg-gray-700 dark:border-gray-600 dark:text-white dark:hover:text-white dark:hover:bg-gray-600 dark:focus:ring-orange-500 dark:focus:text-white ring-2 ring-orange-500">
-                All
+                Semua
               </button>
               <button type="button" data-status="sent" class="status-filter-btn px-4 py-2 text-sm font-medium text-gray-900 bg-white border-t border-b border-gray-200 hover:bg-gray-100 focus:z-10 focus:ring-2 focus:ring-orange-500 dark:bg-gray-700 dark:border-gray-600 dark:text-white dark:hover:text-white dark:hover:bg-gray-600 dark:focus:ring-orange-500 dark:focus:text-white">
-                Sent
+                Terkirim
               </button>
               <button type="button" data-status="scheduled" class="status-filter-btn px-4 py-2 text-sm font-medium text-gray-900 bg-white border border-gray-200 rounded-r-md hover:bg-gray-100 focus:z-10 focus:ring-2 focus:ring-orange-500 dark:bg-gray-700 dark:border-gray-600 dark:text-white dark:hover:text-white dark:hover:bg-gray-600 dark:focus:ring-orange-500 dark:focus:text-white">
-                Scheduled
+                Terjadwal
               </button>
             </div>
         </div>
         
-        <div class="flex space-x-2 w-full md:w-auto justify-end">
-            <div id="bulk-actions" class="hidden mr-2">
-                <div class="flex space-x-2">
-                    <button id="bulk-send-btn" class="bg-green-600 hover:bg-green-700 text-white px-4 py-2 rounded-md text-sm flex items-center">
-                        <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 mr-1" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 10V3L4 14h7v7l9-11h-7z" />
-                        </svg>
-                        Send Selected
-                    </button>
-                    <button id="bulk-delete-btn" class="bg-red-600 hover:bg-red-700 text-white px-4 py-2 rounded-md text-sm flex items-center">
-                        <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 mr-1" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" />
-                        </svg>
-                        Delete Selected
-                    </button>
+        <!-- Bulk actions -->
+        <div id="bulkActionsContainer" class="bulk-actions-container items-center bg-gray-100 dark:bg-gray-700 px-3 py-2 rounded-md mr-auto">
+            <span class="text-sm mr-2"><span id="selectedCount">0</span> terpilih</span>
+            <div x-data="{ open: false, posStyle: {} }">
+                <button @click="open = !open; if (open) posStyle = getPopupPosition($event)" class="flex items-center text-sm bg-white dark:bg-gray-800 px-3 py-1 rounded border">
+                    Aksi Massal
+                    <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 ml-1" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7" />
+                    </svg>
+                </button>
+                <div x-show="open" @click.away="open = false" x-cloak :style="posStyle" class="fixed rounded-md shadow-lg bg-white dark:bg-gray-800 ring-1 ring-black ring-opacity-5 z-50">
+                    <div class="py-1" role="menu" aria-orientation="vertical">
+                        <button id="bulk-send-btn" class="w-full text-left block px-4 py-2 text-sm text-green-700 dark:text-green-400 hover:bg-gray-100 dark:hover:bg-gray-700" role="menuitem">
+                            <i class="bi bi-send mr-2"></i> Kirim Terpilih
+                        </button>
+                        <button id="bulk-delete-btn" class="w-full text-left block px-4 py-2 text-sm text-red-700 dark:text-red-400 hover:bg-gray-100 dark:hover:bg-gray-700" role="menuitem">
+                            <i class="bi bi-trash mr-2"></i> Hapus Terpilih
+                        </button>
+                    </div>
                 </div>
             </div>
-            <button id="process-due-btn" class="bg-green-600 text-white px-4 py-2 rounded-md text-sm flex items-center">
-                <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 mr-1" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 10V3L4 14h7v7l9-11h-7z" />
-                </svg>
-                Proses Jadwal
-            </button>
-            <a href="/admin/notifications/create" class="bg-indigo-800 text-white px-4 py-2 rounded-md text-sm flex items-center">
+        </div>
+        
+        <div class="flex space-x-2 w-full md:w-auto justify-end">
+            <a href="{{ route('admin.notification.create') }}" class="bg-orange-500 text-white px-4 py-2 rounded-md text-sm flex items-center hover:bg-orange-600 transition-colors">
                 <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 mr-1" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4" />
                 </svg>
@@ -99,16 +144,52 @@
                         <th scope="col" class="px-3 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider hidden md:table-cell">Pesan</th>
                         <th scope="col" class="px-3 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">Status</th>
                         <th scope="col" class="px-3 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider hidden sm:table-cell">Tanggal Terjadwal</th>
-                        <th scope="col" class="relative px-3 py-3"><span class="sr-only">Actions</span></th>
+                        <th scope="col" class="px-3 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider hidden sm:table-cell">Dibuat Oleh</th>
+                        <th scope="col" class="relative px-3 py-3"><span class="sr-only">Aksi</span></th>
                     </tr>
                 </thead>
                 <tbody id="notifications-table-body" class="bg-white dark:bg-gray-800 divide-y divide-gray-200 dark:divide-gray-700">
                     <!-- Loading state -->
-                    <tr><td colspan="6" class="px-3 py-4 text-center"><div class="animate-pulse flex justify-center items-center"><svg class="animate-spin h-5 w-5 text-gray-500" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24"><circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle><path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path></svg><span class="ml-2">Loading notifications...</span></div></td></tr>
+                    <tr id="loading-row">
+                        <td colspan="7" class="px-3 py-4 text-center">
+                            <svg class="inline-block animate-spin h-5 w-5 text-orange-500 mr-2" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
+                                <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
+                                <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
+                            </svg>
+                            Memuat...
+                        </td>
+                    </tr>
                 </tbody>
             </table>
         </div>
-        <div id="pagination-controls" class="bg-white dark:bg-gray-800 px-4 py-3 flex items-center justify-between border-t border-gray-200 dark:border-gray-700 sm:px-6"></div>
+        <div id="pagination-controls" class="bg-white dark:bg-gray-800 px-4 py-3 flex items-center justify-between border-t border-gray-200 dark:border-gray-700 sm:px-6">
+            <div class="hidden sm:flex-1 sm:flex sm:items-center sm:justify-between">
+                <div>
+                    <p class="text-sm text-gray-700 dark:text-gray-400">
+                        Menampilkan <span class="font-medium" id="items-count-footer">0</span> item
+                    </p>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Delete Confirmation Modal -->
+<div id="deleteModal" class="fixed inset-0 bg-black bg-opacity-50 z-50 flex items-center justify-center hidden">
+    <div class="bg-white dark:bg-gray-800 rounded-lg max-w-md w-full">
+        <div class="p-6">
+            <h3 class="text-lg font-medium text-gray-900 dark:text-white mb-4">Konfirmasi Penghapusan</h3>
+            <p class="text-sm text-gray-500 dark:text-gray-400 mb-4">Apakah Anda yakin ingin menghapus notifikasi ini? Tindakan ini tidak dapat dibatalkan.</p>
+            
+            <div class="flex justify-end space-x-3">
+                <button type="button" onclick="closeDeleteModal()" class="px-4 py-2 bg-gray-200 text-gray-800 rounded-md text-sm">
+                    Batal
+                </button>
+                <button type="button" id="confirmDeleteBtn" class="px-4 py-2 bg-red-600 text-white rounded-md text-sm">
+                    Hapus
+                </button>
+            </div>
+        </div>
     </div>
 </div>
 @endsection
@@ -122,6 +203,29 @@ document.addEventListener('DOMContentLoaded', function() {
         return;
     }
 
+    // Alpine.js helper function for positioning dropdowns
+    window.getPopupPosition = function(event) {
+        const button = event.currentTarget;
+        const rect = button.getBoundingClientRect();
+        const popupWidth = 192; // w-48 = 12rem = 192px
+        
+        // Calculate position to ensure the popup is fully visible
+        let leftPos = rect.left;
+        
+        // Check if popup would go off the right edge of the screen
+        if (leftPos + popupWidth > window.innerWidth - 10) {
+            leftPos = window.innerWidth - popupWidth - 10; // 10px margin from right edge
+        }
+        
+        return {
+            position: 'fixed',
+            top: `${rect.bottom + 5}px`, // 5px offset from button
+            left: `${leftPos}px`,
+            width: `${popupWidth}px`,
+            zIndex: 50
+        };
+    };
+
     const API_URL = '/api/admin/notifications';
     let currentPage = 1;
     let currentSearch = '';
@@ -133,13 +237,16 @@ document.addEventListener('DOMContentLoaded', function() {
     const notificationCountEl = document.getElementById('notificationCount');
     const paginationControls = document.getElementById('pagination-controls');
     const filterButtons = document.querySelectorAll('.status-filter-btn');
-    const processDueBtn = document.getElementById('process-due-btn');
+    const itemsCountFooter = document.getElementById('items-count-footer');
+    const bulkActionsContainer = document.getElementById('bulkActionsContainer');
+    const selectedCountEl = document.getElementById('selectedCount');
+    
 
     // Check for success message in URL
     const urlParams = new URLSearchParams(window.location.search);
     const successMessage = urlParams.get('success');
     if (successMessage) {
-        showAlert(decodeURIComponent(successMessage));
+        showAlert(decodeURIComponent(successMessage), 'success');
         // Remove the success parameter from URL without refreshing
         const url = new URL(window.location);
         url.searchParams.delete('success');
@@ -181,6 +288,7 @@ document.addEventListener('DOMContentLoaded', function() {
                 renderTable(data.data.data || []);
                 renderPagination(data.data);
                 notificationCountEl.textContent = data.data.total || 0;
+                itemsCountFooter.textContent = data.data.total || 0;
             } else {
                 throw new Error(data.message || 'Failed to fetch notifications');
             }
@@ -194,7 +302,7 @@ document.addEventListener('DOMContentLoaded', function() {
     function renderTable(notifications) {
         tableBody.innerHTML = '';
         if (!notifications || notifications.length === 0) {
-            tableBody.innerHTML = `<tr><td colspan="6" class="px-3 py-4 text-center text-sm text-gray-500">Tidak ada data notifikasi</td></tr>`;
+            tableBody.innerHTML = `<tr><td colspan="7" class="px-3 py-4 text-center text-sm text-gray-500">Tidak ada data notifikasi</td></tr>`;
             return;
         }
 
@@ -203,8 +311,8 @@ document.addEventListener('DOMContentLoaded', function() {
             row.className = 'hover:bg-gray-50 dark:hover:bg-gray-700';
 
             const statusBadge = notification.is_sent 
-                ? `<span class="px-2 inline-flex text-xs leading-5 font-semibold rounded-full status-sent">Sent</span>`
-                : `<span class="px-2 inline-flex text-xs leading-5 font-semibold rounded-full status-scheduled">Scheduled</span>`;
+                ? `<span class="px-2 inline-flex text-xs leading-5 font-semibold rounded-full status-sent">Terkirim</span>`
+                : `<span class="px-2 inline-flex text-xs leading-5 font-semibold rounded-full status-scheduled">Terjadwal</span>`;
             
             const title = notification.title || 'No Title';
             const message = notification.message || 'No Message';
@@ -228,16 +336,21 @@ document.addEventListener('DOMContentLoaded', function() {
                 <td class="px-3 py-4 whitespace-nowrap text-sm text-gray-500 dark:text-gray-400 hidden sm:table-cell">
                     ${notification.scheduled_at ? formatDate(notification.scheduled_at) : 'N/A'}
                 </td>
+                <td class="px-3 py-4 whitespace-nowrap text-sm text-gray-500 dark:text-gray-400 hidden sm:table-cell">
+                    ${notification.user ? notification.user.nama_user : 'N/A'}
+                </td>
                 <td class="px-3 py-4 whitespace-nowrap text-right text-sm font-medium">
-                    <div class="relative" x-data="{ open: false }">
-                        <button @click="open = !open" class="text-gray-400 hover:text-gray-500">
+                    <div class="relative" x-data="{ open: false, posStyle: {} }">
+                        <button @click="open = !open; if (open) posStyle = getPopupPosition($event)" class="text-gray-400 hover:text-gray-500">
                             <svg class="h-5 w-5" viewBox="0 0 20 20" fill="currentColor"><path d="M10 6a2 2 0 110-4 2 2 0 010 4zM10 12a2 2 0 110-4 2 2 0 010 4zM10 18a2 2 0 110-4 2 2 0 010 4z" /></svg>
                         </button>
-                        <div x-show="open" @click.away="open = false" x-cloak class="origin-top-right absolute right-0 mt-2 w-48 rounded-md shadow-lg bg-white dark:bg-gray-800 ring-1 ring-black ring-opacity-5 z-40">
+                        <div x-show="open" @click.away="open = false" x-cloak :style="posStyle" class="fixed rounded-md shadow-lg bg-white dark:bg-gray-800 ring-1 ring-black ring-opacity-5 z-40">
                             <div class="py-1" role="menu" aria-orientation="vertical">
-                                <a href="/admin/notifications/${notification.id}/edit" class="block px-4 py-2 text-sm text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700" role="menuitem"><i class="bi bi-pencil mr-2"></i> Edit</a>
-                                ${!notification.is_sent ? `<button onclick="sendNow(${notification.id})" class="w-full text-left block px-4 py-2 text-sm text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700" role="menuitem"><i class="bi bi-send mr-2"></i> Send Now</button>` : `<button onclick="rescheduleNotification(${notification.id})" class="w-full text-left block px-4 py-2 text-sm text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700" role="menuitem"><i class="bi bi-calendar mr-2"></i> Reschedule</button>`}
-                                <button onclick="deleteNotification(${notification.id})" class="w-full text-left block px-4 py-2 text-sm text-red-700 dark:text-red-400 hover:bg-gray-100 dark:hover:bg-gray-700" role="menuitem"><i class="bi bi-trash mr-2"></i> Delete</button>
+                                ${notification.is_sent 
+                                    ? `<a href="/admin/notification/${notification.id}/edit?reschedule=true" class="block px-4 py-2 text-sm text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700" role="menuitem"><i class="bi bi-calendar mr-2"></i> Jadwalkan Ulang</a>` 
+                                    : `<a href="/admin/notification/${notification.id}/edit" class="block px-4 py-2 text-sm text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700" role="menuitem"><i class="bi bi-pencil mr-2"></i> Edit</a>
+                                       <button onclick="sendNow(${notification.id})" class="w-full text-left block px-4 py-2 text-sm text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700" role="menuitem"><i class="bi bi-send mr-2"></i> Kirim Sekarang</button>`}
+                                <button onclick="deleteNotification(${notification.id})" class="w-full text-left block px-4 py-2 text-sm text-red-700 dark:text-red-400 hover:bg-gray-100 dark:hover:bg-gray-700" role="menuitem"><i class="bi bi-trash mr-2"></i> Hapus</button>
                             </div>
                         </div>
                     </div>
@@ -260,7 +373,7 @@ document.addEventListener('DOMContentLoaded', function() {
         if (paginationData.total <= paginationData.per_page) {
             paginationControls.innerHTML = `
                 <div class="hidden sm:flex-1 sm:flex sm:items-center sm:justify-between">
-                    <div><p class="text-sm text-gray-700 dark:text-gray-400">Showing <span class="font-medium">${paginationData.total}</span> results</p></div>
+                    <div><p class="text-sm text-gray-700 dark:text-gray-400">Menampilkan <span class="font-medium">${paginationData.total}</span> hasil</p></div>
                 </div>
             `;
             return;
@@ -280,22 +393,22 @@ document.addEventListener('DOMContentLoaded', function() {
 
         paginationControls.innerHTML = `
             <div class="flex-1 flex justify-between sm:hidden">
-                <button data-page="${paginationData.current_page - 1}" ${!paginationData.prev_page_url ? 'disabled' : ''} class="relative inline-flex items-center px-4 py-2 border border-gray-300 text-sm font-medium rounded-md text-gray-700 bg-white hover:bg-gray-50 ${!paginationData.prev_page_url ? 'opacity-50 cursor-not-allowed' : ''}">Previous</button>
-                <button data-page="${paginationData.current_page + 1}" ${!paginationData.next_page_url ? 'disabled' : ''} class="ml-3 relative inline-flex items-center px-4 py-2 border border-gray-300 text-sm font-medium rounded-md text-gray-700 bg-white hover:bg-gray-50 ${!paginationData.next_page_url ? 'opacity-50 cursor-not-allowed' : ''}">Next</button>
+                <button data-page="${paginationData.current_page - 1}" ${!paginationData.prev_page_url ? 'disabled' : ''} class="relative inline-flex items-center px-4 py-2 border border-gray-300 text-sm font-medium rounded-md text-gray-700 bg-white hover:bg-gray-50 ${!paginationData.prev_page_url ? 'opacity-50 cursor-not-allowed' : ''}">Sebelumnya</button>
+                <button data-page="${paginationData.current_page + 1}" ${!paginationData.next_page_url ? 'disabled' : ''} class="ml-3 relative inline-flex items-center px-4 py-2 border border-gray-300 text-sm font-medium rounded-md text-gray-700 bg-white hover:bg-gray-50 ${!paginationData.next_page_url ? 'opacity-50 cursor-not-allowed' : ''}">Selanjutnya</button>
             </div>
             <div class="hidden sm:flex-1 sm:flex sm:items-center sm:justify-between">
-                <div><p class="text-sm text-gray-700 dark:text-gray-400">Showing <span class="font-medium">${paginationData.from || 0}</span> to <span class="font-medium">${paginationData.to || 0}</span> of <span class="font-medium">${paginationData.total}</span> results</p></div>
+                <div><p class="text-sm text-gray-700 dark:text-gray-400">Menampilkan <span class="font-medium">${paginationData.from || 0}</span> sampai <span class="font-medium">${paginationData.to || 0}</span> dari <span class="font-medium">${paginationData.total}</span> hasil</p></div>
                 <div><nav class="relative z-0 inline-flex rounded-md shadow-sm -space-x-px" aria-label="Pagination">${links}</nav></div>
             </div>
         `;
     }
     
     function showLoadingState() {
-        tableBody.innerHTML = `<tr><td colspan="6" class="px-3 py-4 text-center"><div class="animate-pulse flex justify-center items-center"><svg class="animate-spin h-5 w-5 text-gray-500" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24"><circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle><path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path></svg><span class="ml-2">Loading notifications...</span></div></td></tr>`;
+        tableBody.innerHTML = `<tr><td colspan="7" class="px-3 py-4 text-center"><div class="animate-pulse flex justify-center items-center"><svg class="animate-spin h-5 w-5 text-gray-500" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24"><circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle><path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path></svg><span class="ml-2">Memuat notifikasi...</span></div></td></tr>`;
     }
 
-    function showErrorState(message = 'Error loading notifications. Please try again later.') {
-        tableBody.innerHTML = `<tr><td colspan="6" class="px-3 py-4 text-center text-sm text-red-500">${message}</td></tr>`;
+    function showErrorState(message = 'Gagal memuat notifikasi. Silakan coba lagi nanti.') {
+        tableBody.innerHTML = `<tr><td colspan="7" class="px-3 py-4 text-center text-sm text-red-500">${message}</td></tr>`;
     }
 
     function formatDate(dateString) {
@@ -321,16 +434,25 @@ document.addEventListener('DOMContentLoaded', function() {
     }
     
     function showAlert(message, type = 'success') {
-        const alertEl = document.getElementById('notification-alert');
-        const bgColor = type === 'success' ? 'bg-green-100 border-green-400 text-green-700' : 'bg-red-100 border-red-400 text-red-700';
-        alertEl.className = `${bgColor} border px-4 py-3 rounded relative mb-4`;
-        alertEl.innerHTML = `<span class="block sm:inline">${message}</span><button type="button" onclick="this.parentElement.style.display='none'" class="absolute top-0 bottom-0 right-0 px-4 py-3">&times;</button>`;
-        alertEl.style.display = 'block';
-        setTimeout(() => {
-            if (alertEl.style.display !== 'none') {
-                alertEl.style.display = 'none';
-            }
-        }, 5000);
+        const alertId = type === 'success' ? 'alert-success' : 'alert-error';
+        const alertEl = document.getElementById(alertId);
+        const messageEl = alertId === 'alert-success' ? document.getElementById('success-message') : document.getElementById('error-message');
+        
+        if (alertEl && messageEl) {
+            messageEl.textContent = message;
+            alertEl.classList.remove('hidden');
+            
+            setTimeout(() => {
+                alertEl.classList.add('hidden');
+            }, 5000);
+        }
+    }
+
+    function hideAlert(alertId) {
+        const alertEl = document.getElementById(alertId);
+        if (alertEl) {
+            alertEl.classList.add('hidden');
+        }
     }
 
     // Event Listeners
@@ -364,47 +486,10 @@ document.addEventListener('DOMContentLoaded', function() {
         }
     });
     
-    // Process due notifications
-    processDueBtn.addEventListener('click', function() {
-        const originalText = this.innerHTML;
-        this.innerHTML = `<svg class="animate-spin h-4 w-4 mr-1" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24"><circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle><path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path></svg> Processing...`;
-        this.disabled = true;
-        
-        fetch(`${API_URL}/process-due`, {
-            method: 'POST',
-            headers: {
-                'Authorization': `Bearer ${token}`,
-                'Content-Type': 'application/json',
-                'Accept': 'application/json'
-            }
-        })
-        .then(response => {
-            if (!response.ok) {
-                if (response.status === 401) {
-                    localStorage.removeItem('access_token');
-                    window.location.href = '/admin/login';
-                }
-                return response.json().then(err => { throw new Error(err.message || 'Failed to process notifications') });
-            }
-            return response.json();
-        })
-        .then(data => {
-            showAlert(data.message || `Processed ${data.data?.count || 0} notifications successfully`);
-            fetchNotifications();
-        })
-        .catch(error => {
-            console.error('Error processing notifications:', error);
-            showAlert(error.message || 'Failed to process notifications', 'error');
-        })
-        .finally(() => {
-            this.innerHTML = originalText;
-            this.disabled = false;
-        });
-    });
-
+   
     // Global functions for actions
     window.deleteNotification = function(id) {
-        if (!confirm('Are you sure you want to delete this notification?')) return;
+        if (!confirm('Apakah Anda yakin ingin menghapus notifikasi ini? Tindakan ini tidak dapat dibatalkan.')) return;
 
         fetch(`${API_URL}/${id}`, {
             method: 'DELETE',
@@ -421,22 +506,22 @@ document.addEventListener('DOMContentLoaded', function() {
                 return;
             }
             if (!response.ok) {
-                 return response.json().then(err => { throw new Error(err.message || 'Failed to delete notification') });
+                 return response.json().then(err => { throw new Error(err.message || 'Gagal menghapus notifikasi') });
             }
             return response.json();
         })
         .then(data => {
-            showAlert(data.message || 'Notification deleted successfully.');
+            showAlert(data.message || 'Notifikasi berhasil dihapus.');
             fetchNotifications();
         })
         .catch(error => {
             console.error('Error deleting notification:', error);
-            showAlert(error.message || 'Failed to delete notification.', 'error');
+            showAlert(error.message || 'Gagal menghapus notifikasi.', 'error');
         });
     };
     
     window.sendNow = function(id) {
-        if (!confirm('Are you sure you want to send this notification now?')) return;
+        if (!confirm('Apakah Anda yakin ingin mengirim notifikasi ini sekarang?')) return;
 
         fetch(`${API_URL}/${id}/send-now`, {
             method: 'POST',
@@ -453,25 +538,28 @@ document.addEventListener('DOMContentLoaded', function() {
                 return;
             }
             if (!response.ok) {
-                 return response.json().then(err => { throw new Error(err.message || 'Failed to send notification') });
+                 return response.json().then(err => { throw new Error(err.message || 'Gagal mengirim notifikasi') });
             }
             return response.json();
         })
         .then(data => {
-            showAlert(data.message || 'Notification sent successfully.');
+            showAlert(data.message || 'Notifikasi berhasil dikirim.');
             fetchNotifications();
         })
         .catch(error => {
             console.error('Error sending notification:', error);
-            showAlert(error.message || 'Failed to send notification.', 'error');
+            showAlert(error.message || 'Gagal mengirim notifikasi.', 'error');
         });
     };
 
-    // Add these functions at the end of the DOMContentLoaded event handler
+    window.rescheduleNotification = function(id) {
+        window.location.href = `/admin/notification/${id}/edit?reschedule=true`;
+    };
+
+    // Setup checkboxes and bulk actions
     function setupCheckboxes() {
         const selectAllCheckbox = document.getElementById('select-all-checkbox');
         const notificationCheckboxes = document.querySelectorAll('.notification-checkbox');
-        const bulkActionsDiv = document.getElementById('bulk-actions');
         const bulkSendBtn = document.getElementById('bulk-send-btn');
         const bulkDeleteBtn = document.getElementById('bulk-delete-btn');
         
@@ -499,11 +587,11 @@ document.addEventListener('DOMContentLoaded', function() {
         bulkSendBtn.addEventListener('click', function() {
             const selectedIds = getSelectedNotificationIds(false); // Only get unsent notifications
             if (selectedIds.length === 0) {
-                showAlert('No unsent notifications selected', 'error');
+                showAlert('Tidak ada notifikasi terjadwal yang dipilih', 'error');
                 return;
             }
             
-            if (!confirm(`Are you sure you want to send ${selectedIds.length} notifications now?`)) return;
+            if (!confirm(`Apakah Anda yakin ingin mengirim ${selectedIds.length} notifikasi sekarang?`)) return;
             
             bulkSend(selectedIds);
         });
@@ -516,20 +604,20 @@ document.addEventListener('DOMContentLoaded', function() {
                 return;
             }
             
-            if (!confirm(`Are you sure you want to delete ${selectedIds.length} notifications?`)) return;
+            if (!confirm(`Apakah Anda yakin ingin menghapus ${selectedIds.length} notifikasi?`)) return;
             
             bulkDelete(selectedIds);
         });
     }
     
     function toggleBulkActions() {
-        const bulkActionsDiv = document.getElementById('bulk-actions');
         const selectedCount = document.querySelectorAll('.notification-checkbox:checked').length;
+        selectedCountEl.textContent = selectedCount;
         
         if (selectedCount > 0) {
-            bulkActionsDiv.classList.remove('hidden');
+            bulkActionsContainer.classList.add('active');
         } else {
-            bulkActionsDiv.classList.add('hidden');
+            bulkActionsContainer.classList.remove('active');
         }
     }
     
@@ -546,7 +634,7 @@ document.addEventListener('DOMContentLoaded', function() {
     
     function bulkSend(ids) {
         const originalBtnText = document.getElementById('bulk-send-btn').innerHTML;
-        document.getElementById('bulk-send-btn').innerHTML = `<svg class="animate-spin h-4 w-4 mr-1" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24"><circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle><path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path></svg> Sending...`;
+        document.getElementById('bulk-send-btn').innerHTML = `<svg class="animate-spin h-4 w-4 mr-1" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24"><circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle><path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path></svg> Mengirim...`;
         document.getElementById('bulk-send-btn').disabled = true;
         
         const promises = ids.map(id => 
@@ -560,7 +648,7 @@ document.addEventListener('DOMContentLoaded', function() {
             })
             .then(response => {
                 if (!response.ok) {
-                    return response.json().then(err => { throw new Error(`Failed to send notification #${id}: ${err.message || 'Unknown error'}`) });
+                    return response.json().then(err => { throw new Error(`Gagal mengirim notifikasi #${id}: ${err.message || 'Kesalahan tidak diketahui'}`) });
                 }
                 return response.json();
             })
@@ -568,12 +656,12 @@ document.addEventListener('DOMContentLoaded', function() {
         
         Promise.all(promises)
             .then(() => {
-                showAlert(`Successfully sent ${ids.length} notifications`);
+                showAlert(`Berhasil mengirim ${ids.length} notifikasi`);
                 fetchNotifications();
             })
             .catch(error => {
                 console.error('Error sending notifications:', error);
-                showAlert(error.message || 'Failed to send some notifications', 'error');
+                showAlert(error.message || 'Gagal mengirim beberapa notifikasi', 'error');
             })
             .finally(() => {
                 document.getElementById('bulk-send-btn').innerHTML = originalBtnText;
@@ -583,7 +671,7 @@ document.addEventListener('DOMContentLoaded', function() {
     
     function bulkDelete(ids) {
         const originalBtnText = document.getElementById('bulk-delete-btn').innerHTML;
-        document.getElementById('bulk-delete-btn').innerHTML = `<svg class="animate-spin h-4 w-4 mr-1" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24"><circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle><path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path></svg> Deleting...`;
+        document.getElementById('bulk-delete-btn').innerHTML = `<svg class="animate-spin h-4 w-4 mr-1" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24"><circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle><path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path></svg> Menghapus...`;
         document.getElementById('bulk-delete-btn').disabled = true;
         
         const promises = ids.map(id => 
@@ -597,7 +685,7 @@ document.addEventListener('DOMContentLoaded', function() {
             })
             .then(response => {
                 if (!response.ok) {
-                    return response.json().then(err => { throw new Error(`Failed to delete notification #${id}: ${err.message || 'Unknown error'}`) });
+                    return response.json().then(err => { throw new Error(`Gagal menghapus notifikasi #${id}: ${err.message || 'Kesalahan tidak diketahui'}`) });
                 }
                 return response.json();
             })
@@ -605,12 +693,12 @@ document.addEventListener('DOMContentLoaded', function() {
         
         Promise.all(promises)
             .then(() => {
-                showAlert(`Successfully deleted ${ids.length} notifications`);
+                showAlert(`Berhasil menghapus ${ids.length} notifikasi`);
                 fetchNotifications();
             })
             .catch(error => {
                 console.error('Error deleting notifications:', error);
-                showAlert(error.message || 'Failed to delete some notifications', 'error');
+                showAlert(error.message || 'Gagal menghapus beberapa notifikasi', 'error');
             })
             .finally(() => {
                 document.getElementById('bulk-delete-btn').innerHTML = originalBtnText;

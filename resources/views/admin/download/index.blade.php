@@ -25,7 +25,7 @@
         cursor: grab;
     }
     .sort-handle:hover {
-        color: #4f46e5;
+        color: #f59e0b;
     }
     .file-icon {
         font-size: 1.5rem;
@@ -38,13 +38,21 @@
     .default-icon { color: #6c757d; }
     
     @keyframes pulse-highlight {
-        0% { box-shadow: 0 0 0 0 rgba(79, 70, 229, 0.7); }
-        70% { box-shadow: 0 0 0 5px rgba(79, 70, 229, 0); }
-        100% { box-shadow: 0 0 0 0 rgba(79, 70, 229, 0); }
+        0% { box-shadow: 0 0 0 0 rgba(245, 158, 11, 0.7); }
+        70% { box-shadow: 0 0 0 5px rgba(245, 158, 11, 0); }
+        100% { box-shadow: 0 0 0 0 rgba(245, 158, 11, 0); }
     }
     
     .save-order-button {
         animation: pulse-highlight 1.5s infinite;
+    }
+    
+    .bulk-actions-container {
+        display: none;
+    }
+    
+    .bulk-actions-container.active {
+        display: flex;
     }
 </style>
 @endsection
@@ -78,11 +86,31 @@
 
     <div class="flex flex-col md:flex-row justify-between items-center gap-4 mb-4">
         <div class="relative w-full md:w-64">
-            <input id="searchDownload" type="text" class="border rounded-md p-2 w-full pl-10 text-sm focus:outline-none focus:ring-2 focus:ring-indigo-500" placeholder="Cari Item Download">
+            <input id="searchDownload" type="text" class="border rounded-md p-2 w-full pl-10 text-sm focus:outline-none focus:ring-2 focus:ring-orange-500" placeholder="Cari Item Download">
             <div class="absolute left-3 top-2.5">
                 <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 text-gray-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
                 </svg>
+            </div>
+        </div>
+        
+        <!-- Bulk actions -->
+        <div id="bulkActionsContainer" class="bulk-actions-container items-center bg-gray-100 dark:bg-gray-700 px-3 py-2 rounded-md mr-auto">
+            <span class="text-sm mr-2"><span id="selectedCount">0</span> terpilih</span>
+            <div x-data="{ open: false, posStyle: {} }">
+                <button @click="open = !open; if (open) posStyle = getPopupPosition($event)" class="flex items-center text-sm bg-white dark:bg-gray-800 px-3 py-1 rounded border">
+                    Aksi Massal
+                    <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 ml-1" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7" />
+                    </svg>
+                </button>
+                <div x-show="open" @click.away="open = false" x-cloak :style="posStyle" class="fixed rounded-md shadow-lg bg-white dark:bg-gray-800 ring-1 ring-black ring-opacity-5 z-50">
+                    <div class="py-1" role="menu" aria-orientation="vertical">
+                        <button onclick="deleteBulkItems()" class="w-full text-left block px-4 py-2 text-sm text-red-700 dark:text-red-400 hover:bg-gray-100 dark:hover:bg-gray-700" role="menuitem">
+                            <i class="bi bi-trash mr-2"></i> Hapus Terpilih
+                        </button>
+                    </div>
+                </div>
             </div>
         </div>
         
@@ -96,7 +124,7 @@
                 </button>
             </div>
             
-            <a href="{{ route('admin.download.create') }}" class="bg-indigo-800 text-white px-4 py-2 rounded-md text-sm flex items-center">
+            <a href="{{ route('admin.download.create') }}" class="bg-orange-500 text-white px-4 py-2 rounded-md text-sm flex items-center hover:bg-orange-600 transition-colors">
                 <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 mr-1" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4" />
                 </svg>
@@ -112,7 +140,7 @@
                     <tr>
                         <th scope="col" class="px-3 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">
                             <div class="flex items-center">
-                                <input type="checkbox" class="form-checkbox h-4 w-4 text-indigo-500 rounded border-gray-300">
+                                <input type="checkbox" id="selectAllCheckbox" class="form-checkbox h-4 w-4 text-orange-500 rounded border-gray-300">
                             </div>
                         </th>
                         <th scope="col" class="px-3 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">
@@ -135,6 +163,9 @@
                         <th scope="col" class="px-3 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider hidden sm:table-cell">
                             Tanggal Upload
                         </th>
+                        <th scope="col" class="px-3 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider hidden sm:table-cell">
+                            Ditambahkan Oleh
+                        </th>
                         <th scope="col" class="relative px-3 py-3">
                             <span class="sr-only">Actions</span>
                         </th>
@@ -144,7 +175,7 @@
                     <!-- Items will be loaded here via API -->
                     <tr id="loading-row">
                         <td colspan="7" class="px-3 py-4 text-center text-sm text-gray-500 dark:text-gray-400">
-                            <svg class="inline-block animate-spin h-5 w-5 text-indigo-500 mr-2" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
+                            <svg class="inline-block animate-spin h-5 w-5 text-orange-500 mr-2" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
                                 <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
                                 <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
                             </svg>
@@ -155,10 +186,10 @@
             </table>
         </div>
         <div class="bg-white dark:bg-gray-800 px-4 py-3 flex items-center justify-between border-t border-gray-200 dark:border-gray-700 sm:px-6">
-            <div class="sm:items-center sm:justify-between">
+            <div class="hidden sm:flex-1 sm:flex sm:items-center sm:justify-between">
                 <div>
                     <p class="text-sm text-gray-700 dark:text-gray-400">
-                        Showing <span class="font-medium" id="items-count-footer">0</span> items
+                        Menampilkan <span class="font-medium" id="items-count-footer">0</span> items
                     </p>
                 </div>
             </div>
@@ -293,7 +324,11 @@
             }
             
             // Determine status class
-            const statusClass = item.status === 'Active' 
+            const statusName = item.status ? item.status.nama_status : 'Unknown';
+            
+            // Use different colors for different statuses - match gallery implementation
+            const statusLower = statusName.toLowerCase();
+            const statusClass = (statusLower === 'aktif' || statusLower === 'active' || statusLower === 'published')
                 ? 'bg-green-100 text-green-800 dark:bg-green-900 dark:text-green-300'
                 : 'bg-gray-100 text-gray-800 dark:bg-gray-700 dark:text-gray-300';
             
@@ -308,7 +343,7 @@
             tr.innerHTML = `
                         <td class="px-3 py-4 whitespace-nowrap">
                             <div class="flex items-center">
-                                <input type="checkbox" class="form-checkbox h-4 w-4 text-indigo-500 rounded border-gray-300">
+                                <input type="checkbox" class="download-checkbox form-checkbox h-4 w-4 text-orange-500 rounded border-gray-300" value="${item.id_download_item}">
                             </div>
                         </td>
                         <td class="px-3 py-4 whitespace-nowrap">
@@ -325,27 +360,30 @@
                         <td class="px-3 py-4 hidden md:table-cell">
                             <div class="flex items-center text-sm text-gray-500 dark:text-gray-400">
                         <i class="bi bi-${icon} ${iconClass} mr-2"></i>
-                        <a href="/storage/${item.path_file}" target="_blank" class="hover:text-indigo-600 dark:hover:text-indigo-400">
+                        <a href="/storage/${item.path_file}" target="_blank" class="hover:text-orange-600 dark:hover:text-orange-400">
                             ${getFileName(item.path_file)}
                                 </a>
                             </div>
                         </td>
                         <td class="px-3 py-4 whitespace-nowrap">
                     <span class="px-2 inline-flex text-xs leading-5 font-semibold rounded-full ${statusClass}">
-                        ${item.status}
+                        ${statusName}
                             </span>
                         </td>
                         <td class="px-3 py-4 whitespace-nowrap text-sm text-gray-500 dark:text-gray-400 hidden sm:table-cell">
                     ${formattedDate}
                         </td>
+                        <td class="px-3 py-4 whitespace-nowrap text-sm text-gray-500 dark:text-gray-400 hidden sm:table-cell">
+                    ${item.user ? item.user.nama_user : 'Tidak diketahui'}
+                        </td>
                         <td class="px-3 py-4 whitespace-nowrap text-right text-sm font-medium">
-                            <div class="relative" x-data="{ open: false }">
-                                <button @click="open = !open" class="text-gray-400 hover:text-gray-500">
+                            <div class="relative" x-data="{ open: false, posStyle: {} }">
+                                <button @click="open = !open; if (open) posStyle = getActionPopupPosition($event)" class="text-gray-400 hover:text-gray-500">
                                     <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" viewBox="0 0 20 20" fill="currentColor">
                                         <path d="M10 6a2 2 0 110-4 2 2 0 010 4zM10 12a2 2 0 110-4 2 2 0 010 4zM10 18a2 2 0 110-4 2 2 0 010 4z" />
                                     </svg>
                                 </button>
-                                <div x-show="open" @click.away="open = false" x-cloak class="origin-top-right absolute right-0 mt-2 w-48 rounded-md shadow-lg bg-white dark:bg-gray-800 ring-1 ring-black ring-opacity-5 z-40">
+                                <div x-show="open" @click.away="open = false" x-cloak :style="posStyle" class="fixed rounded-md shadow-lg bg-white dark:bg-gray-800 ring-1 ring-black ring-opacity-5 z-40">
                                     <div class="py-1" role="menu" aria-orientation="vertical">
                                 <a href="/storage/${item.path_file}" target="_blank" class="block px-4 py-2 text-sm text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700" role="menuitem">
                                             <i class="bi bi-download mr-2"></i> Download
@@ -363,6 +401,9 @@
             `;
             tbody.appendChild(tr);
                 });
+        
+        // Reset the selected count after rendering
+        updateSelectedCount();
     }
 
     function initializeSortable() {
@@ -513,6 +554,40 @@
             }
         });
     });
+        
+        // Select all checkbox functionality
+        const selectAllCheckbox = document.getElementById('selectAllCheckbox');
+        if (selectAllCheckbox) {
+            selectAllCheckbox.addEventListener('change', function() {
+                const checkboxes = document.querySelectorAll('#sortableList input[type="checkbox"]');
+                checkboxes.forEach(checkbox => {
+                    checkbox.checked = this.checked;
+                });
+                updateSelectedCount();
+            });
+        }
+        
+        // Event delegation for checkbox changes in the table body
+        document.getElementById('sortableList').addEventListener('change', function(e) {
+            if (e.target && e.target.type === 'checkbox') {
+                updateSelectedCount();
+            }
+        });
+    }
+    
+    function updateSelectedCount() {
+        const selectedCheckboxes = document.querySelectorAll('#sortableList input[type="checkbox"]:checked');
+        const count = selectedCheckboxes.length;
+        document.getElementById('selectedCount').textContent = count;
+        
+        const bulkActionsContainer = document.getElementById('bulkActionsContainer');
+        if (count > 0) {
+            bulkActionsContainer.classList.add('active');
+        } else {
+            bulkActionsContainer.classList.remove('active');
+            // Uncheck the select all checkbox if no items are selected
+            document.getElementById('selectAllCheckbox').checked = false;
+        }
     }
 
     function showDeleteModal(id) {
@@ -530,5 +605,91 @@
         document.getElementById('deleteModal').classList.add('hidden');
         deleteItemId = null;
     }
+    
+    // Function to get action popup position
+    function getActionPopupPosition(event) {
+        const button = event.currentTarget;
+        const rect = button.getBoundingClientRect();
+        const popupWidth = 192; // Width of the popup (w-48 = 12rem = 192px)
+        const windowWidth = window.innerWidth;
+        
+        // Default to placing the popup to the left of the button
+        let leftPos = rect.right - popupWidth;
+        
+        // If this would place the popup off the left edge, position it differently
+        if (leftPos < 10) {
+            leftPos = 10; // Minimum 10px from left edge
+        }
+        
+        // If the popup would go off the right edge, position it to the left of the button
+        if (rect.left + popupWidth > windowWidth - 10) {
+            leftPos = Math.max(10, windowWidth - popupWidth - 10);
+        }
+        
+        return {
+            position: 'fixed',
+            top: `${rect.bottom + 5}px`, // 5px offset from button
+            left: `${leftPos}px`,
+            width: `${popupWidth}px`,
+            zIndex: '50'
+        };
+    }
+    
+    // Function to get bulk actions popup position
+    function getPopupPosition(event) {
+        const button = event.currentTarget;
+        const rect = button.getBoundingClientRect();
+        const popupWidth = 192; // w-48 = 12rem = 192px
+        
+        // Make sure popup doesn't go off the right edge of the screen
+        let leftPos = rect.right - popupWidth;
+        if (leftPos < 10) leftPos = 10; // Give a little margin if too far left
+        
+        return {
+            position: 'fixed',
+            top: `${rect.bottom + 5}px`, // 5px offset from button
+            left: `${leftPos}px`,
+            width: `${popupWidth}px`
+        };
+    }
+    
+    // Function to handle bulk delete
+    window.deleteBulkItems = function() {
+        const selectedCheckboxes = document.querySelectorAll('#sortableList input[type="checkbox"]:checked');
+        const selectedIds = Array.from(selectedCheckboxes).map(checkbox => checkbox.value);
+        
+        if (selectedIds.length === 0) {
+            alert('Tidak ada item yang dipilih');
+            return;
+        }
+        
+        if (confirm(`Apakah Anda yakin ingin menghapus ${selectedIds.length} item yang dipilih?`)) {
+            const token = localStorage.getItem('access_token');
+            
+            // Use Promise.all for parallel requests
+            const deletePromises = selectedIds.map(id => 
+                axios.delete(`/api/admin/downloads/${id}`)
+                .then(response => {
+                    if (!response.data || response.data.status !== 'success') {
+                        throw new Error(`Failed to delete item ${id}`);
+                    }
+                    return response.data;
+                })
+            );
+            
+            Promise.all(deletePromises)
+                .then(() => {
+                    // Refresh the download list
+                    fetchDownloadItems();
+                    showAlert('success', `${selectedIds.length} item berhasil dihapus`);
+                })
+                .catch(error => {
+                    console.error('Error deleting items:', error);
+                    showAlert('error', 'Gagal menghapus beberapa item. Silakan coba lagi.');
+                    // Refresh anyway to show the current state
+                    fetchDownloadItems();
+                });
+        }
+    };
 </script>
 @endpush

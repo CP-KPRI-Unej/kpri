@@ -225,7 +225,7 @@
                 if (linktree.logo) {
                     img.src = `/storage/${linktree.logo}`;
                 } else {
-                    img.src = "{{ asset('images/logo.png') }}";
+                    img.src = "{{ asset('images/fasilkom_logo.png') }}";
                 }
                 img.alt = linktree.title;
                 

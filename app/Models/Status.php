@@ -39,13 +39,7 @@ class Status extends Model
         'nama_status',
     ];
 
-    /**
-     * Get the articles for the status.
-     */
-    public function artikels()
-    {
-        return $this->hasMany(Artikel::class, 'id_status', 'id_status');
-    }
+
 
     /**
      * Get the gallery items with this status.
@@ -53,5 +47,13 @@ class Status extends Model
     public function galleries()
     {
         return $this->hasMany(Gallery::class, 'id_status', 'id_status');
+    }
+
+    /**
+     * Get the FAQs with this status.
+     */
+    public function faqs()
+    {
+        return $this->hasMany(Faq::class, 'id_status', 'id_status');
     }
 } 

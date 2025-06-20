@@ -9,6 +9,46 @@
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.0/font/bootstrap-icons.css">
 </head>
 <body class="h-full bg-white">
+    <script>
+    // Check if the user is already logged in with a valid token
+    document.addEventListener('DOMContentLoaded', function() {
+        const token = localStorage.getItem('access_token');
+        const role = localStorage.getItem('user_role');
+        
+        if (token) {
+            // Verify token validity by making a request to the me endpoint
+            fetch('/api/auth/me', {
+                method: 'GET',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'Authorization': `Bearer ${token}`
+                }
+            })
+            .then(res => {
+                if (res.ok) {
+                    // Token is valid, redirect to the appropriate dashboard
+                    if (role === 'kpri admin') {
+                        window.location.href = '/admin/dashboard';
+                    } else if (role === 'admin shop') {
+                        window.location.href = '/admin/shop-dashboard';
+                    } else {
+                        window.location.href = '/admin';
+                    }
+                } else {
+                    // Token is invalid, clear it from localStorage
+                    localStorage.removeItem('access_token');
+                    localStorage.removeItem('user_role');
+                }
+            })
+            .catch(error => {
+                console.error('Error verifying token:', error);
+                localStorage.removeItem('access_token');
+                localStorage.removeItem('user_role');
+            });
+        }
+    });
+    </script>
+
     <div class="flex h-screen">
         <!-- Left: Login form -->
         <div class="w-full md:w-1/2 flex flex-col justify-center px-10 lg:px-24">
@@ -87,18 +127,44 @@
                         }
                     } else {
                         errorContainer.classList.remove('hidden');
-                        const errors = data.errors || [data.error];
-                        errors.forEach(err => {
+                        errorList.innerHTML = '';
+                        
+                        // Custom Indonesian error messages
+                        if (data.error === 'Unauthorized') {
                             const item = document.createElement('li');
-                            item.textContent = err;
+                            item.textContent = 'Username atau password tidak valid. Silakan coba lagi.';
                             errorList.appendChild(item);
-                        });
+                        } else if (data.errors) {
+                            // Map validation errors to Indonesian
+                            const errorMessages = {
+                                'username.required': 'Username wajib diisi.',
+                                'password.required': 'Password wajib diisi.',
+                                'username.string': 'Username harus berupa teks.',
+                                'password.string': 'Password harus berupa teks.',
+                                'username.exists': 'Username tidak terdaftar dalam sistem.'
+                            };
+                            
+                            Object.keys(data.errors).forEach(field => {
+                                data.errors[field].forEach(error => {
+                                    const item = document.createElement('li');
+                                    // Use custom message if available, otherwise use the original error
+                                    const key = `${field}.${error.split('.').pop()}`;
+                                    item.textContent = errorMessages[key] || error;
+                                    errorList.appendChild(item);
+                                });
+                            });
+                        } else {
+                            const item = document.createElement('li');
+                            item.textContent = data.error || 'Terjadi kesalahan saat login. Silakan coba lagi.';
+                            errorList.appendChild(item);
+                        }
                     }
                 })
                 .catch(error => {
                     errorContainer.classList.remove('hidden');
+                    errorList.innerHTML = '';
                     const item = document.createElement('li');
-                    item.textContent = 'Terjadi kesalahan. Coba lagi nanti.';
+                    item.textContent = 'Terjadi kesalahan pada server. Silakan coba beberapa saat lagi.';
                     errorList.appendChild(item);
                     console.error(error);
                 });

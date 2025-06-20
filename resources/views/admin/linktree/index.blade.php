@@ -1,31 +1,46 @@
 @extends('admin.layouts.app')
 
-@section('title', 'Linktree Management')
+@section('title', 'Pengelolaan Pohon Tautan')
 
 @section('styles')
 <style>
     [x-cloak] { display: none !important; }
+    .input-with-stroke {
+        border-width: 2px !important;
+    }
 </style>
 @endsection
 
 @section('content')
 <div class="container mx-auto px-4 py-6">
-    <h1 class="text-2xl font-bold mb-6 text-gray-800 dark:text-white">Linktree Management</h1>
+    <div class="mb-4">
+        <h1 class="text-2xl font-semibold">Pengelolaan Pohon Tautan</h1>
+        <p class="text-sm text-gray-500 dark:text-gray-400">Kelola tautan dan profil pohon tautan</p>
+    </div>
 
     <div id="flash-message" class="bg-green-100 dark:bg-green-800 border border-green-400 dark:border-green-700 text-green-700 dark:text-green-100 px-4 py-3 rounded relative mb-4 hidden">
         <span id="flash-message-text"></span>
         <button type="button" onclick="document.getElementById('flash-message').classList.add('hidden')" class="absolute top-0 bottom-0 right-0 px-4 py-3">
-            <span class="sr-only">Close</span>
+            <span class="sr-only">Tutup</span>
             <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" />
             </svg>
         </button>
-        </div>
+    </div>
+
+    <div class="flex justify-end mb-4">
+        <button id="add-new-link-btn" class="bg-orange-500 text-white px-4 py-2 rounded-md text-sm flex items-center hover:bg-orange-600 transition-colors">
+            <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 mr-1" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4" />
+            </svg>
+            Tautan Baru
+        </button>
+    </div>
 
     <div class="flex flex-col md:flex-row gap-6">
         <!-- Profile Settings -->
         <div class="w-full md:w-1/3 bg-white dark:bg-gray-800 rounded-lg shadow p-6">
-            <h2 class="text-xl font-bold mb-4 text-gray-800 dark:text-white">Profile Settings</h2>
+            <h2 class="text-xl font-bold mb-4 text-gray-800 dark:text-white">Pengaturan Profil</h2>
             
             <form id="profile-form" class="profile-form">
                 <input type="hidden" name="_token" value="{{ csrf_token() }}">
@@ -34,9 +49,7 @@
                 <div class="mb-6">
                     <div class="flex items-center justify-center mb-4">
                         <div id="logo-container" class="w-32 h-32 rounded-full overflow-hidden bg-gray-200 dark:bg-gray-700 flex items-center justify-center">
-                                <div class="w-full h-full flex items-center justify-center border-2 border-dashed border-gray-300 dark:border-gray-600 rounded-full">
-                                    <img src="{{ asset('images/logo.png') }}" alt="Default Logo" class="w-20 h-20 object-contain" id="logo-preview-default">
-                                </div>
+                                
                         </div>
                     </div>
                     
@@ -56,17 +69,17 @@
                 
                 <!-- Profile Title -->
                 <div class="mb-4">
-                    <label for="title" class="block text-sm font-bold text-gray-700 dark:text-gray-300 mb-2">Profile Title</label>
+                    <label for="title" class="block text-sm font-bold text-gray-700 dark:text-gray-300 mb-2">Judul Profil</label>
                     <input type="text" id="title" name="title" required
-                        class="block w-full rounded-md border-gray-300 dark:border-gray-600 dark:bg-gray-700 dark:text-white shadow-sm py-2 px-3 focus:ring-orange-500 focus:border-orange-500 dark:focus:ring-orange-600 dark:focus:border-orange-600">
+                        class="input-with-stroke block w-full rounded-md border-gray-300 dark:border-gray-600 dark:bg-gray-700 dark:text-white shadow-sm py-2 px-3 focus:ring-orange-500 focus:border-orange-500 dark:focus:ring-orange-600 dark:focus:border-orange-600">
                     <p class="text-red-500 dark:text-red-400 text-xs mt-1 hidden" id="title-error"></p>
                 </div>
                 
                 <!-- Bio -->
                 <div class="mb-4">
-                    <label for="bio" class="block text-sm font-bold text-gray-700 dark:text-gray-300 mb-2">Bio <span class="text-xs text-gray-500 dark:text-gray-400">(Max 80 characters)</span></label>
+                    <label for="bio" class="block text-sm font-bold text-gray-700 dark:text-gray-300 mb-2">Bio <span class="text-xs text-gray-500 dark:text-gray-400">(Maksimal 80 karakter)</span></label>
                     <textarea id="bio" name="bio" rows="3" maxlength="80"
-                        class="block w-full rounded-md border-gray-300 dark:border-gray-600 dark:bg-gray-700 dark:text-white shadow-sm py-2 px-3 focus:ring-orange-500 focus:border-orange-500 dark:focus:ring-orange-600 dark:focus:border-orange-600"></textarea>
+                        class="input-with-stroke block w-full rounded-md border-gray-300 dark:border-gray-600 dark:bg-gray-700 dark:text-white shadow-sm py-2 px-3 focus:ring-orange-500 focus:border-orange-500 dark:focus:ring-orange-600 dark:focus:border-orange-600"></textarea>
                     <div class="text-xs text-gray-500 dark:text-gray-400 mt-1 text-right">
                         <span id="bio-counter">0</span> / 80
                     </div>
@@ -75,7 +88,7 @@
                 
                 <div class="mt-6">
                     <button type="submit" class="w-full bg-orange-500 hover:bg-orange-600 dark:bg-orange-600 dark:hover:bg-orange-700 text-white py-2 px-4 rounded-md">
-                        Save Changes
+                        Simpan Perubahan
                     </button>
                 </div>
             </form>
@@ -83,54 +96,23 @@
         
         <!-- Links Management -->
         <div class="w-full md:w-2/3 bg-white dark:bg-gray-800 rounded-lg shadow p-6">
-            <h2 class="text-xl font-bold mb-4 text-gray-800 dark:text-white">Links Management</h2>
-            
-            <!-- Add New Link Form -->
-            <div class="mb-6 p-4 border border-gray-200 dark:border-gray-700 rounded-lg dark:bg-gray-750">
-                <h3 class="text-lg font-semibold mb-3 text-gray-800 dark:text-white">Add New Link</h3>
-                
-                <form id="add-link-form" class="space-y-4">
-                    <input type="hidden" name="_token" value="{{ csrf_token() }}">
-                    
-                    <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
-                        <div>
-                            <label for="link-title" class="block text-sm font-bold text-gray-700 dark:text-gray-300 mb-2">Judul</label>
-                            <input type="text" id="link-title" name="title" required
-                                class="block w-full rounded-md border-gray-300 dark:border-gray-600 dark:bg-gray-700 dark:text-white shadow-sm py-2 px-3 focus:ring-orange-500 focus:border-orange-500 dark:focus:ring-orange-600 dark:focus:border-orange-600">
-                            <p class="text-red-500 dark:text-red-400 text-xs mt-1 hidden" id="link-title-error"></p>
-                        </div>
-                        
-                        <div>
-                            <label for="link-url" class="block text-sm font-bold text-gray-700 dark:text-gray-300 mb-2">Link</label>
-                            <input type="url" id="link-url" name="url" required
-                                class="block w-full rounded-md border-gray-300 dark:border-gray-600 dark:bg-gray-700 dark:text-white shadow-sm py-2 px-3 focus:ring-orange-500 focus:border-orange-500 dark:focus:ring-orange-600 dark:focus:border-orange-600">
-                            <p class="text-red-500 dark:text-red-400 text-xs mt-1 hidden" id="link-url-error"></p>
-                        </div>
-                    </div>
-                    
-                    <div class="text-right">
-                        <button type="submit" class="px-4 py-2 bg-orange-500 hover:bg-orange-600 dark:bg-orange-600 dark:hover:bg-orange-700 text-white rounded-md">
-                            Tambahkan Link
-                        </button>
-                    </div>
-                </form>
-            </div>
+            <h2 class="text-xl font-bold mb-4 text-gray-800 dark:text-white">Pengelolaan Tautan</h2>
             
             <!-- Link List -->
             <div>
-                <h3 class="text-lg font-semibold mb-3 text-gray-800 dark:text-white">Your Links</h3>
+                <h3 class="text-lg font-semibold mb-3 text-gray-800 dark:text-white">Tautan Anda</h3>
                 
                     <div id="link-list" class="space-y-4">
                     <!-- Links will be dynamically loaded here -->
                     <div id="loading-links" class="text-center py-8">
                         <div class="inline-block animate-spin rounded-full h-8 w-8 border-t-2 border-b-2 border-orange-500"></div>
-                        <p class="mt-2 text-gray-500 dark:text-gray-400">Loading links...</p>
+                        <p class="mt-2 text-gray-500 dark:text-gray-400">Memuat tautan...</p>
                     </div>
                 </div>
                 
                 <div id="no-links" class="text-center py-8 bg-gray-50 dark:bg-gray-700 rounded-lg border border-gray-200 dark:border-gray-600 hidden">
-                        <p class="text-gray-500 dark:text-gray-300">No links added yet.</p>
-                        <p class="text-sm text-gray-400 dark:text-gray-400 mt-1">Add your first link using the form above.</p>
+                        <p class="text-gray-500 dark:text-gray-300">Belum ada tautan yang ditambahkan.</p>
+                        <p class="text-sm text-gray-400 dark:text-gray-400 mt-1">Tambahkan tautan pertama Anda menggunakan tombol di atas.</p>
                     </div>
             </div>
         </div>
@@ -140,7 +122,7 @@
 <!-- Edit Link Modal -->
 <div id="edit-modal" class="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center hidden z-50">
     <div class="bg-white dark:bg-gray-800 rounded-lg p-6 w-full max-w-md">
-        <h3 class="text-lg font-bold mb-4 text-gray-800 dark:text-white">Edit Link</h3>
+        <h3 class="text-lg font-bold mb-4 text-gray-800 dark:text-white">Edit Tautan</h3>
         
         <form id="edit-form" class="space-y-4">
             <input type="hidden" name="_token" value="{{ csrf_token() }}">
@@ -149,23 +131,57 @@
             <div>
                 <label for="edit-title" class="block text-sm font-bold text-gray-700 dark:text-gray-300 mb-2">Judul</label>
                 <input type="text" id="edit-title" name="title" required
-                    class="block w-full rounded-md border-gray-300 dark:border-gray-600 dark:bg-gray-700 dark:text-white shadow-sm py-2 px-3 focus:ring-orange-500 focus:border-orange-500 dark:focus:ring-orange-600 dark:focus:border-orange-600">
+                    class="input-with-stroke block w-full rounded-md border-gray-300 dark:border-gray-600 dark:bg-gray-700 dark:text-white shadow-sm py-2 px-3 focus:ring-orange-500 focus:border-orange-500 dark:focus:ring-orange-600 dark:focus:border-orange-600">
                 <p class="text-red-500 dark:text-red-400 text-xs mt-1 hidden" id="edit-title-error"></p>
             </div>
             
             <div>
-                <label for="edit-url" class="block text-sm font-bold text-gray-700 dark:text-gray-300 mb-2">Link</label>
+                <label for="edit-url" class="block text-sm font-bold text-gray-700 dark:text-gray-300 mb-2">Tautan</label>
                 <input type="url" id="edit-url" name="url" required
-                    class="block w-full rounded-md border-gray-300 dark:border-gray-600 dark:bg-gray-700 dark:text-white shadow-sm py-2 px-3 focus:ring-orange-500 focus:border-orange-500 dark:focus:ring-orange-600 dark:focus:border-orange-600">
+                    class="input-with-stroke block w-full rounded-md border-gray-300 dark:border-gray-600 dark:bg-gray-700 dark:text-white shadow-sm py-2 px-3 focus:ring-orange-500 focus:border-orange-500 dark:focus:ring-orange-600 dark:focus:border-orange-600">
                 <p class="text-red-500 dark:text-red-400 text-xs mt-1 hidden" id="edit-url-error"></p>
             </div>
             
             <div class="flex justify-end space-x-3 mt-6">
                 <button type="button" onclick="closeEditModal()" class="px-4 py-2 bg-gray-200 hover:bg-gray-300 dark:bg-gray-700 dark:hover:bg-gray-600 text-gray-800 dark:text-gray-200 rounded-md">
-                    Cancel
+                    Batal
                 </button>
                 <button type="submit" class="px-4 py-2 bg-orange-500 hover:bg-orange-600 dark:bg-orange-600 dark:hover:bg-orange-700 text-white rounded-md">
-                    Save Changes
+                    Simpan Perubahan
+                </button>
+            </div>
+        </form>
+    </div>
+</div>
+
+<!-- Add New Link Modal -->
+<div id="add-modal" class="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center hidden z-50">
+    <div class="bg-white dark:bg-gray-800 rounded-lg p-6 w-full max-w-md">
+        <h3 class="text-lg font-bold mb-4 text-gray-800 dark:text-white">Tambah Tautan Baru</h3>
+        
+        <form id="add-link-form" class="space-y-4">
+            <input type="hidden" name="_token" value="{{ csrf_token() }}">
+            
+            <div>
+                <label for="link-title" class="block text-sm font-bold text-gray-700 dark:text-gray-300 mb-2">Judul</label>
+                <input type="text" id="link-title" name="title" required
+                    class="input-with-stroke block w-full rounded-md border-gray-300 dark:border-gray-600 dark:bg-gray-700 dark:text-white shadow-sm py-2 px-3 focus:ring-orange-500 focus:border-orange-500 dark:focus:ring-orange-600 dark:focus:border-orange-600">
+                <p class="text-red-500 dark:text-red-400 text-xs mt-1 hidden" id="link-title-error"></p>
+            </div>
+            
+            <div>
+                <label for="link-url" class="block text-sm font-bold text-gray-700 dark:text-gray-300 mb-2">Tautan</label>
+                <input type="url" id="link-url" name="url" required
+                    class="input-with-stroke block w-full rounded-md border-gray-300 dark:border-gray-600 dark:bg-gray-700 dark:text-white shadow-sm py-2 px-3 focus:ring-orange-500 focus:border-orange-500 dark:focus:ring-orange-600 dark:focus:border-orange-600">
+                <p class="text-red-500 dark:text-red-400 text-xs mt-1 hidden" id="link-url-error"></p>
+            </div>
+            
+            <div class="flex justify-end space-x-3 mt-6">
+                <button type="button" onclick="closeAddModal()" class="px-4 py-2 bg-gray-200 hover:bg-gray-300 dark:bg-gray-700 dark:hover:bg-gray-600 text-gray-800 dark:text-gray-200 rounded-md">
+                    Batal
+                </button>
+                <button type="submit" class="px-4 py-2 bg-orange-500 hover:bg-orange-600 dark:bg-orange-600 dark:hover:bg-orange-700 text-white rounded-md">
+                    Tambah Tautan
                 </button>
             </div>
         </form>
@@ -246,10 +262,8 @@
             defaultContainer.className = 'w-full h-full flex items-center justify-center border-2 border-dashed border-gray-300 dark:border-gray-600 rounded-full';
             
             const defaultImg = document.createElement('img');
-            defaultImg.src = '/images/logo.png';
-            defaultImg.alt = 'Default Logo';
-            defaultImg.className = 'w-20 h-20 object-contain';
-            defaultImg.id = 'logo-preview-default';
+ 
+           
             
             defaultContainer.appendChild(defaultImg);
             logoContainer.appendChild(defaultContainer);
@@ -258,7 +272,7 @@
             document.getElementById('remove-logo-btn').classList.add('hidden');
         }
         
-        // Fetch linktree profile data
+        // Fetch tautan profile data
         function fetchLinktreeProfile() {
             fetch('/api/admin/linktree', {
                 headers: {
@@ -274,7 +288,7 @@
                         window.location.href = '/admin/login';
                         return null;
                     }
-                    throw new Error('Failed to fetch linktree profile');
+                    throw new Error('Gagal memuat profil pohon tautan');
                 }
                 return response.json();
             })
@@ -304,12 +318,12 @@
                 }
             })
             .catch(error => {
-                console.error('Error fetching linktree profile:', error);
-                showFlashMessage('Failed to load profile data. Please try again later.', 'error');
+                console.error('Error fetching pohon tautan profile:', error);
+                showFlashMessage('Gagal memuat data profil. Silakan coba lagi nanti.', 'error');
             });
         }
         
-        // Fetch links
+        // Fetch tautan
         function fetchLinks() {
             fetch('/api/admin/linktree/links', {
                 headers: {
@@ -325,7 +339,7 @@
                         window.location.href = '/admin/login';
                         return null;
                     }
-                    throw new Error('Failed to fetch links');
+                    throw new Error('Failed to fetch tautan');
                 }
                 return response.json();
             })
@@ -344,13 +358,13 @@
                 }
             })
             .catch(error => {
-                console.error('Error fetching links:', error);
+                console.error('Error fetching tautan:', error);
                 document.getElementById('loading-links').classList.add('hidden');
-                showFlashMessage('Failed to load links. Please try again later.', 'error');
+                showFlashMessage('Gagal memuat tautan. Silakan coba lagi nanti.', 'error');
             });
         }
         
-        // Render links
+        // Render tautan
         function renderLinks(links) {
             const linkList = document.getElementById('link-list');
             linkList.innerHTML = '';
@@ -403,7 +417,7 @@
             
             document.querySelectorAll('.delete-link-btn').forEach(btn => {
                 btn.addEventListener('click', function() {
-                    if (confirm('Are you sure you want to delete this link?')) {
+                    if (confirm('Apakah Anda yakin ingin menghapus tautan ini?')) {
                         deleteLink(this.dataset.id);
                     }
                 });
@@ -449,11 +463,11 @@
                 return response.json();
             })
             .then(data => {
-                console.log('Positions updated successfully');
+                console.log('Posisi berhasil diperbarui');
             })
             .catch(error => {
                 console.error('Error updating positions:', error);
-                showFlashMessage('Failed to update link positions.', 'error');
+                showFlashMessage('Gagal memperbarui posisi tautan.', 'error');
             });
         }
         
@@ -490,72 +504,18 @@
                                 }
                             });
                         }
-                        throw new Error(data.message || 'Failed to update profile');
+                        throw new Error(data.message || 'Gagal memperbarui profil');
                     });
                 }
                 return response.json();
             })
             .then(data => {
-                showFlashMessage('Profile updated successfully!', 'success');
+                showFlashMessage('Profil berhasil diperbarui!', 'success');
                 fetchLinktreeProfile(); // Refresh data
             })
             .catch(error => {
                 console.error('Error updating profile:', error);
-                showFlashMessage(error.message || 'Failed to update profile.', 'error');
-            });
-        });
-        
-        // Add Link Form Submit
-        document.getElementById('add-link-form').addEventListener('submit', function(e) {
-            e.preventDefault();
-            
-            // Reset errors
-            document.querySelectorAll('.text-red-500').forEach(el => {
-                el.classList.add('hidden');
-            });
-            
-            const formData = new FormData(this);
-            const data = {
-                title: formData.get('title'),
-                url: formData.get('url')
-            };
-            
-            fetch('/api/admin/linktree/links', {
-                method: 'POST',
-                headers: {
-                    'Authorization': `Bearer ${token}`,
-                    'Content-Type': 'application/json',
-                    'Accept': 'application/json',
-                    'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').getAttribute('content')
-                },
-                body: JSON.stringify(data)
-            })
-            .then(response => {
-                if (!response.ok) {
-                    return response.json().then(data => {
-                        if (response.status === 422 && data.errors) {
-                            // Validation errors
-                            Object.keys(data.errors).forEach(field => {
-                                const errorElem = document.getElementById(`link-${field}-error`);
-                                if (errorElem) {
-                                    errorElem.textContent = data.errors[field][0];
-                                    errorElem.classList.remove('hidden');
-                                }
-                            });
-                        }
-                        throw new Error(data.message || 'Failed to add link');
-                    });
-                }
-                return response.json();
-            })
-            .then(data => {
-                this.reset();
-                showFlashMessage('Link added successfully!', 'success');
-                fetchLinks(); // Refresh links
-            })
-            .catch(error => {
-                console.error('Error adding link:', error);
-                showFlashMessage(error.message || 'Failed to add link.', 'error');
+                showFlashMessage(error.message || 'Gagal memperbarui profil.', 'error');
             });
         });
         
@@ -574,6 +534,18 @@
                 url: formData.get('url')
             };
             const linkId = document.getElementById('edit-link-id').value;
+            
+            // Disable submit button and show loading state
+            const submitBtn = this.querySelector('button[type="submit"]');
+            const originalBtnText = submitBtn.innerHTML;
+            submitBtn.disabled = true;
+            submitBtn.innerHTML = `
+                <svg class="animate-spin -ml-1 mr-2 h-4 w-4 text-white inline-block" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
+                    <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
+                    <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
+                </svg>
+                Menyimpan...
+            `;
             
             fetch(`/api/admin/linktree/links/${linkId}`, {
                 method: 'PUT',
@@ -598,24 +570,35 @@
                                 }
                             });
                         }
-                        throw new Error(data.message || 'Failed to update link');
+                        throw new Error('Gagal memperbarui tautan');
                     });
                 }
                 return response.json();
             })
             .then(data => {
                 closeEditModal();
-                showFlashMessage('Link updated successfully!', 'success');
-                fetchLinks(); // Refresh links
+                showFlashMessage('Tautan berhasil diperbarui!', 'success');
+                
+                // Show loading while fetching updated tautan
+                showLinkListLoading();
+                fetchLinks();
             })
             .catch(error => {
-                console.error('Error updating link:', error);
-                showFlashMessage(error.message || 'Failed to update link.', 'error');
+                console.error('Error updating tautan:', error);
+                showFlashMessage(error.message || 'Gagal memperbarui tautan.', 'error');
+            })
+            .finally(() => {
+                // Re-enable button and restore text
+                submitBtn.disabled = false;
+                submitBtn.innerHTML = originalBtnText;
             });
         });
         
-        // Delete Link
+        // Delete tautan with loading state
         function deleteLink(id) {
+            // Show loading on the tautan list while deleting
+            showLinkListLoading();
+            
             fetch(`/api/admin/linktree/links/${id}`, {
                 method: 'DELETE',
                 headers: {
@@ -627,17 +610,18 @@
             })
             .then(response => {
                 if (!response.ok) {
-                    throw new Error('Failed to delete link');
+                    throw new Error('Failed to delete tautan');
                 }
                 return response.json();
             })
             .then(data => {
-                showFlashMessage('Link deleted successfully!', 'success');
-                fetchLinks(); // Refresh links
+                showFlashMessage('Tautan berhasil dihapus!', 'success');
+                fetchLinks();
             })
             .catch(error => {
-                console.error('Error deleting link:', error);
-                showFlashMessage('Failed to delete link.', 'error');
+                console.error('Error deleting tautan:', error);
+                showFlashMessage('Gagal menghapus tautan.', 'error');
+                fetchLinks(); // Still refresh the list to ensure UI is in sync
             });
         }
         
@@ -651,6 +635,96 @@
         
         window.closeEditModal = function() {
             document.getElementById('edit-modal').classList.add('hidden');
+        };
+        
+        // Add New tautan button
+        document.getElementById('add-new-link-btn').addEventListener('click', function() {
+            // Show add modal
+            document.getElementById('add-modal').classList.remove('hidden');
+        });
+        
+        // Add tautan Form Submit
+        document.getElementById('add-link-form').addEventListener('submit', function(e) {
+            e.preventDefault();
+            
+            // Reset errors
+            document.querySelectorAll('.text-red-500').forEach(el => {
+                el.classList.add('hidden');
+            });
+            
+            const formData = new FormData(this);
+            const data = {
+                title: formData.get('title'),
+                url: formData.get('url')
+            };
+            
+            // Disable submit button and show loading state
+            const submitBtn = this.querySelector('button[type="submit"]');
+            const originalBtnText = submitBtn.innerHTML;
+            submitBtn.disabled = true;
+            submitBtn.innerHTML = `
+                <svg class="animate-spin -ml-1 mr-2 h-4 w-4 text-white inline-block" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
+                    <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
+                    <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
+                </svg>
+                Menambahkan...
+            `;
+            
+            fetch('/api/admin/linktree/links', {
+                method: 'POST',
+                headers: {
+                    'Authorization': `Bearer ${token}`,
+                    'Content-Type': 'application/json',
+                    'Accept': 'application/json',
+                    'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').getAttribute('content')
+                },
+                body: JSON.stringify(data)
+            })
+            .then(response => {
+                if (!response.ok) {
+                    return response.json().then(data => {
+                        if (response.status === 422 && data.errors) {
+                            // Validation errors
+                            Object.keys(data.errors).forEach(field => {
+                                const errorElem = document.getElementById(`link-${field}-error`);
+                                if (errorElem) {
+                                    errorElem.textContent = data.errors[field][0];
+                                    errorElem.classList.remove('hidden');
+                                }
+                            });
+                        }
+                        throw new Error('Gagal menambahkan tautan');
+                    });
+                }
+                return response.json();
+            })
+            .then(data => {
+                this.reset();
+                closeAddModal();
+                showFlashMessage('Tautan berhasil ditambahkan!', 'success');
+                
+                // Show loading while fetching updated tautan
+                showLinkListLoading();
+                fetchLinks();
+            })
+            .catch(error => {
+                console.error('Error adding tautan:', error);
+                showFlashMessage(error.message || 'Gagal menambahkan tautan.', 'error');
+            })
+            .finally(() => {
+                // Re-enable button and restore text
+                submitBtn.disabled = false;
+                submitBtn.innerHTML = originalBtnText;
+            });
+        });
+        
+        // Close Add Modal
+        window.closeAddModal = function() {
+            document.getElementById('add-modal').classList.add('hidden');
+            document.getElementById('add-link-form').reset();
+            document.querySelectorAll('#add-link-form .text-red-500').forEach(el => {
+                el.classList.add('hidden');
+            });
         };
         
         // Flash message
@@ -674,6 +748,19 @@
             setTimeout(() => {
                 flashMessage.classList.add('hidden');
             }, 5000);
+        }
+        
+        // Show loading state in tautan list
+        function showLinkListLoading() {
+            const linkList = document.getElementById('link-list');
+            document.getElementById('no-links').classList.add('hidden');
+            
+            linkList.innerHTML = `
+                <div id="loading-links" class="text-center py-8">
+                    <div class="inline-block animate-spin rounded-full h-8 w-8 border-t-2 border-b-2 border-orange-500"></div>
+                    <p class="mt-2 text-gray-500 dark:text-gray-400">Memuat tautan...</p>
+                </div>
+            `;
         }
     });
 </script>

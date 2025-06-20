@@ -85,23 +85,33 @@ class ArtikelSeeder extends Seeder
             'penghargaan, prestasi, rekognisi'
         ];
 
-        $statusIds = [1, 2]; // 1 = Draft, 2 = Published (adjust based on your status IDs)
+        // Menggunakan nilai enum status yang baru
+        $statusValues = ['draft', 'published', 'archived'];
         $articleCount = 0;
 
         foreach ($artikelTitles as $index => $title) {
-            $status = $statusIds[array_rand($statusIds)];
+            // Berikan status published untuk sebagian besar artikel, draft dan archived untuk sebagian kecil
+            $statusIndex = 0;
+            if ($index < 10) {
+                $statusIndex = 1; // published
+            } else if ($index < 13) {
+                $statusIndex = 0; // draft
+            } else {
+                $statusIndex = 2; // archived
+            }
+            
+            $status = $statusValues[$statusIndex];
             $user = $users->random();
             
-            // Release date is random date within last 1 year if published, null if draft
-            $releaseDate = null;
-            if ($status == 2) { // Published
+            // Tanggal rilis adalah tanggal acak dalam 1 tahun terakhir jika published/archived
+            // Atau tanggal saat ini jika draft
+            $releaseDate = Carbon::now()->format('Y-m-d'); // Default ke hari ini
+            if ($status === 'published' || $status === 'archived') {
                 $releaseDate = Carbon::now()->subDays(rand(1, 365))->format('Y-m-d');
-            } else { // Draft articles
-                $releaseDate = Carbon::now()->format('Y-m-d'); // Set current date for drafts
             }
             
             Artikel::create([
-                'id_status' => $status,
+                'status' => $status,
                 'id_user' => $user->id_user,
                 'nama_artikel' => $title,
                 'deskripsi_artikel' => $deskripsi[$index],

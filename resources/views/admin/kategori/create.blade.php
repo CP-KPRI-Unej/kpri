@@ -1,23 +1,45 @@
 @extends('admin.layouts.app')
 
+@section('title', 'Tambah Kategori Baru')
+
+@section('styles')
+<style>
+    .input-stroke {
+        border: 2px solid #e5e7eb;
+        transition: border-color 0.2s ease;
+    }
+    .input-stroke:focus {
+        border-color: #f97316;
+        box-shadow: 0 0 0 2px rgba(249, 115, 22, 0.2);
+    }
+    .dark .input-stroke {
+        border-color: #4b5563;
+    }
+    .dark .input-stroke:focus {
+        border-color: #f97316;
+        box-shadow: 0 0 0 2px rgba(249, 115, 22, 0.3);
+    }
+</style>
+@endsection
+
 @section('content')
-<div class="container-fluid px-4 py-4 mx-auto">
-    <div class="mb-4 flex items-center justify-between">
+<div class="container mx-auto px-4 py-6">
+    <div class="flex items-center justify-between mb-6">
         <div>
-            <h1 class="text-2xl font-semibold">Tambah Kategori Produk</h1>
+            <h1 class="text-2xl font-semibold text-gray-800 dark:text-gray-200">Tambah Kategori Baru</h1>
             <p class="text-sm text-gray-500 dark:text-gray-400">Buat kategori produk baru untuk digunakan di toko</p>
         </div>
-        <a href="{{ route('admin.kategori.index') }}" class="flex items-center px-3 py-2 text-sm text-gray-600 dark:text-gray-400 rounded-md border border-gray-300 dark:border-gray-600 hover:bg-gray-100 dark:hover:bg-gray-700 transition-colors duration-200">
-            <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 mr-2" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+        <a href="{{ route('admin.kategori.index') }}" class="px-4 py-2 bg-orange-500 text-white rounded-md hover:bg-orange-600 transition-colors flex items-center">
+            <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 mr-1" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 19l-7-7m0 0l7-7m-7 7h18" />
             </svg>
             Kembali
         </a>
     </div>
 
-    <div id="success-alert" class="bg-green-100 border border-green-400 text-green-700 px-4 py-3 rounded relative mb-4 hidden" role="alert">
-        <span class="block sm:inline" id="success-message">Operation successful</span>
-        <button type="button" class="absolute top-0 bottom-0 right-0 px-4 py-3" onclick="this.parentElement.classList.add('hidden')">
+    <div id="alert-success" class="bg-green-100 border border-green-400 text-green-700 px-4 py-3 rounded relative mb-4 hidden" role="alert">
+        <span class="block sm:inline" id="success-message"></span>
+        <button type="button" class="absolute top-0 bottom-0 right-0 px-4 py-3" onclick="hideAlert('alert-success')" aria-label="Close">
             <span class="sr-only">Close</span>
             <svg class="h-4 w-4" fill="currentColor" viewBox="0 0 20 20">
                 <path d="M4.293 4.293a1 1 0 011.414 0L10 8.586l4.293-4.293a1 1 0 111.414 1.414L11.414 10l4.293 4.293a1 1 0 01-1.414 1.414L10 11.414l-4.293 4.293a1 1 0 01-1.414-1.414L8.586 10 4.293 5.707a1 1 0 010-1.414z" clip-rule="evenodd" fill-rule="evenodd"></path>
@@ -25,9 +47,9 @@
         </button>
     </div>
 
-    <div id="error-alert" class="bg-red-100 border border-red-400 text-red-700 px-4 py-3 rounded relative mb-4 hidden" role="alert">
-        <span class="block sm:inline" id="error-message">An error occurred</span>
-        <button type="button" class="absolute top-0 bottom-0 right-0 px-4 py-3" onclick="this.parentElement.classList.add('hidden')">
+    <div id="alert-error" class="bg-red-100 border border-red-400 text-red-700 px-4 py-3 rounded relative mb-4 hidden" role="alert">
+        <span class="block sm:inline" id="error-message"></span>
+        <button type="button" class="absolute top-0 bottom-0 right-0 px-4 py-3" onclick="hideAlert('alert-error')" aria-label="Close">
             <span class="sr-only">Close</span>
             <svg class="h-4 w-4" fill="currentColor" viewBox="0 0 20 20">
                 <path d="M4.293 4.293a1 1 0 011.414 0L10 8.586l4.293-4.293a1 1 0 111.414 1.414L11.414 10l4.293 4.293a1 1 0 01-1.414 1.414L10 11.414l-4.293 4.293a1 1 0 01-1.414-1.414L8.586 10 4.293 5.707a1 1 0 010-1.414z" clip-rule="evenodd" fill-rule="evenodd"></path>
@@ -35,34 +57,29 @@
         </button>
     </div>
 
-    <div class="bg-white dark:bg-gray-800 shadow rounded-lg overflow-hidden">
-        <div class="px-6 py-4 border-b border-gray-200 dark:border-gray-700 bg-gray-50 dark:bg-gray-700">
-            <h3 class="text-lg font-medium text-gray-900 dark:text-gray-100">Form Kategori Produk</h3>
-        </div>
-        <div class="p-6">
-            <form id="createCategoryForm">
-                <div class="mb-6">
-                    <label for="kategori" class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">Nama Kategori <span class="text-red-500">*</span></label>
-                    <input type="text" class="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-md shadow-sm focus:ring-indigo-500 focus:border-indigo-500 dark:bg-gray-700 dark:text-white" 
-                        id="kategori" name="kategori" required maxlength="30" autofocus
-                        placeholder="Masukkan nama kategori">
-                    <p id="kategori_error" class="mt-1 text-sm text-red-500 hidden"></p>
-                    <p class="mt-1 text-sm text-gray-500 dark:text-gray-400">Maksimal 30 karakter.</p>
-                </div>
-                
-                <div class="flex justify-end space-x-3">
-                    <a href="{{ route('admin.kategori.index') }}" class="px-4 py-2 border border-gray-300 dark:border-gray-600 rounded-md text-sm font-medium text-gray-700 dark:text-gray-300 hover:bg-gray-50 dark:hover:bg-gray-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-gray-500">
-                        Batal
-                    </a>
-                    <button type="submit" id="submitBtn" class="px-4 py-2 bg-indigo-600 hover:bg-indigo-700 rounded-md text-sm font-medium text-white focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500 flex items-center">
-                        <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 mr-2" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7" />
-                        </svg>
-                        <span>Simpan Kategori</span>
-                    </button>
-                </div>
-            </form>
-        </div>
+    <div class="bg-white dark:bg-gray-800 rounded-lg shadow-md overflow-hidden p-6">
+        <form id="createCategoryForm">
+            <div class="mb-6">
+                <label for="kategori" class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Nama Kategori <span class="text-red-500">*</span></label>
+                <input type="text" class="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-md shadow-sm focus:outline-none focus:ring-2 focus:ring-orange-500 dark:bg-gray-700 dark:text-white input-stroke" 
+                    id="kategori" name="kategori" required maxlength="30" autofocus
+                    placeholder="Masukkan nama kategori">
+                <p id="kategori_error" class="mt-1 text-sm text-red-600 dark:text-red-400 hidden"></p>
+                <p class="mt-1 text-sm text-gray-500 dark:text-gray-400">Maksimal 30 karakter.</p>
+            </div>
+            
+            <div class="flex justify-end space-x-3">
+                <a href="{{ route('admin.kategori.index') }}" class="px-4 py-2 border border-orange-500 text-orange-500 rounded-md hover:bg-orange-500 hover:text-white transition-colors">
+                    Batal
+                </a>
+                <button type="submit" id="submitBtn" class="px-4 py-2 bg-orange-500 hover:bg-orange-600 rounded-md text-sm font-medium text-white focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-orange-500 flex items-center transition-colors">
+                    <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 mr-2" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7" />
+                    </svg>
+                    <span>Simpan Kategori</span>
+                </button>
+            </div>
+        </form>
     </div>
 </div>
 
@@ -121,7 +138,7 @@
                 
                 if (data.success) {
                     // Show success message
-                    showSuccess('Kategori berhasil ditambahkan!');
+                    showAlert('Kategori berhasil ditambahkan!', 'success');
                     
                     // Reset form
                     form.reset();
@@ -139,12 +156,12 @@
                         document.getElementById('kategori').classList.add('border-red-500');
                     } else {
                         // Show general error
-                        showError(data.message || 'Gagal menambahkan kategori');
+                        showAlert(data.message || 'Gagal menambahkan kategori', 'error');
                     }
                 }
             } catch (error) {
                 console.error('Error creating category:', error);
-                showError('Terjadi kesalahan saat menambahkan kategori');
+                showAlert('Terjadi kesalahan saat menambahkan kategori', 'error');
             } finally {
                 // Reset button state
                 submitBtn.innerHTML = originalBtnHTML;
@@ -160,24 +177,31 @@
             document.getElementById('kategori').classList.remove('border-red-500');
             
             // Hide alerts
-            document.getElementById('success-alert').classList.add('hidden');
-            document.getElementById('error-alert').classList.add('hidden');
+            document.getElementById('alert-success').classList.add('hidden');
+            document.getElementById('alert-error').classList.add('hidden');
         }
         
-        function showSuccess(message) {
-            const successAlert = document.getElementById('success-alert');
-            const successMessage = document.getElementById('success-message');
+        function showAlert(message, type = 'success') {
+            const alertId = type === 'success' ? 'alert-success' : 'alert-error';
+            const alertEl = document.getElementById(alertId);
+            const messageEl = type === 'success' ? document.getElementById('success-message') : document.getElementById('error-message');
             
-            successMessage.textContent = message;
-            successAlert.classList.remove('hidden');
+            if (alertEl && messageEl) {
+                messageEl.textContent = message;
+                alertEl.classList.remove('hidden');
+                
+                setTimeout(() => {
+                    alertEl.classList.add('hidden');
+                }, type === 'success' ? 3000 : 5000);
+            }
         }
         
-        function showError(message) {
-            const errorAlert = document.getElementById('error-alert');
-            const errorMessage = document.getElementById('error-message');
-            
-            errorMessage.textContent = message;
-            errorAlert.classList.remove('hidden');
+        // Hide alert
+        window.hideAlert = function(alertId) {
+            const alertEl = document.getElementById(alertId);
+            if (alertEl) {
+                alertEl.classList.add('hidden');
+            }
         }
     });
 </script>

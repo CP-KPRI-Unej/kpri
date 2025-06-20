@@ -1,12 +1,12 @@
 @extends('admin.layouts.app')
 
-@section('title', 'Edit Deskripsi Layanan')
+@section('title', 'Edit Layanan')
 
 @section('content')
 <div class="container-fluid px-4 py-4 mx-auto">
     <div class="bg-white dark:bg-gray-800 shadow rounded-lg overflow-hidden">
         <div class="bg-orange-500 dark:bg-orange-600 px-4 py-3">
-            <h5 class="text-white font-medium text-lg" id="layanan-title">Edit Deskripsi Layanan</h5>
+            <h5 class="text-white font-medium text-lg" id="layanan-title">Edit Layanan</h5>
         </div>
         
         <div class="p-6">
@@ -26,22 +26,51 @@
                         <path d="M4.293 4.293a1 1 0 011.414 0L10 8.586l4.293-4.293a1 1 0 111.414 1.414L11.414 10l4.293 4.293a1 1 0 01-1.414 1.414L10 11.414l-4.293 4.293a1 1 0 01-1.414-1.414L8.586 10 4.293 5.707a1 1 0 010-1.414z"></path>
                     </svg>
                 </button>
-        </div>
+            </div>
         
             <!-- Tabs Navigation will be added dynamically here -->
             <div id="tabs-container" class="flex border-b border-gray-200 dark:border-gray-700 mb-4 hidden"></div>
             
-            <form id="layananForm" method="post">
+            <form id="layananForm" method="post" enctype="multipart/form-data">
                 <div class="mb-4">
                     <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Judul Layanan</label>
                     <div class="w-full px-3 py-2 border border-gray-300 rounded-md bg-gray-100 dark:bg-gray-700 dark:border-gray-600 dark:text-white" id="judul_layanan_display"></div>
                     <input type="hidden" id="judul_layanan" name="judul_layanan">
                 </div>
                 
-                <div class="mb-4">
+                <!-- Description editor - will be shown or hidden based on data -->
+                <div id="deskripsi-section" class="mb-4 hidden">
                     <label for="deskripsi_layanan" class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Deskripsi Layanan <span class="text-red-600">*</span></label>
-                    <textarea class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-orange-500 dark:bg-gray-700 dark:border-gray-600 dark:text-white" id="deskripsi_layanan" name="deskripsi_layanan" rows="10" required></textarea>
+                    <textarea class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-orange-500 dark:bg-gray-700 dark:border-gray-600 dark:text-white" id="deskripsi_layanan" name="deskripsi_layanan" rows="10"></textarea>
                     <p class="mt-1 text-sm text-red-600 dark:text-red-400" id="deskripsi_layanan-error"></p>
+                </div>
+                
+                <!-- Image upload - will be shown or hidden based on data -->
+                <div id="gambar-section" class="mb-4 hidden">
+                    <label for="gambar" class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Gambar Layanan <span class="text-red-600">*</span></label>
+                    
+                    <!-- Current image preview -->
+                    <div id="current-image-container" class="mb-3 hidden">
+                        <p class="text-sm text-gray-600 dark:text-gray-400 mb-2">Gambar Saat Ini:</p>
+                        <div class="relative w-full h-48 border border-gray-300 rounded-md overflow-hidden">
+                            <img id="current-image" src="" alt="Gambar Layanan" class="w-full h-full object-contain">
+                        </div>
+                    </div>
+                    
+                    <!-- Image upload input -->
+                    <div class="mt-2">
+                        <input type="file" id="gambar" name="gambar" accept="image/*" class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-orange-500 dark:bg-gray-700 dark:border-gray-600 dark:text-white">
+                        <p class="mt-1 text-sm text-gray-500 dark:text-gray-400">Format: JPG, PNG, atau GIF. Maksimal 2MB.</p>
+                        <p class="mt-1 text-sm text-red-600 dark:text-red-400" id="gambar-error"></p>
+                    </div>
+                    
+                    <!-- New image preview section for uploaded file -->
+                    <div id="upload-preview-container" class="mt-3 hidden">
+                        <p class="text-sm text-gray-600 dark:text-gray-400 mb-2">Pratinjau Gambar yang Dipilih:</p>
+                        <div class="relative w-full h-48 border border-gray-300 rounded-md overflow-hidden">
+                            <img id="upload-preview" src="" alt="Pratinjau Gambar" class="w-full h-full object-contain">
+                        </div>
+                    </div>
                 </div>
                 
                 <div class="flex justify-end space-x-3 mt-6">
@@ -66,6 +95,8 @@
     let currentLayanan = null;
     let editor;
     let jenisLayanan = null;
+    let hasDescription = false;
+    let hasImage = false;
 
     document.addEventListener('DOMContentLoaded', function() {
         console.log("DOM loaded, initializing...");
@@ -87,16 +118,8 @@
         const csrfToken = document.querySelector('meta[name="csrf-token"]').getAttribute('content');
         axios.defaults.headers.common['X-CSRF-TOKEN'] = csrfToken;
         
-        // Initialize CKEditor
-    ClassicEditor
-        .create(document.querySelector('#deskripsi_layanan'))
-            .then(newEditor => {
-                console.log("CKEditor initialized successfully");
-                editor = newEditor;
-            })
-            .catch(error => {
-                console.error("CKEditor initialization error:", error);
-            });
+        // Initialize CKEditor (but don't attach it yet - we'll do that conditionally)
+        // We'll initialize it after fetching the layanan data
         
         // Fetch layanan data
         fetchLayanan("{{ $id }}");
@@ -144,6 +167,28 @@
             console.log("Submit button clicked directly");
             updateLayanan(e);
         });
+
+        // Add an event listener for the file input to show preview immediately
+        // Add file upload preview
+        document.getElementById('gambar').addEventListener('change', function(e) {
+            const fileInput = e.target;
+            const previewContainer = document.getElementById('upload-preview-container');
+            const previewImage = document.getElementById('upload-preview');
+            
+            if (fileInput.files && fileInput.files[0]) {
+                const reader = new FileReader();
+                
+                reader.onload = function(e) {
+                    previewImage.src = e.target.result;
+                    previewContainer.classList.remove('hidden');
+                };
+                
+                reader.readAsDataURL(fileInput.files[0]);
+            } else {
+                previewContainer.classList.add('hidden');
+                previewImage.src = '';
+            }
+        });
     });
     
     // Check authentication status
@@ -174,6 +219,10 @@
                     console.log("Layanan data fetched successfully:", response.data);
                     currentLayanan = response.data.data;
                     
+                    // Determine what type of layanan this is
+                    hasDescription = currentLayanan.deskripsi_layanan && currentLayanan.deskripsi_layanan.trim() !== '';
+                    hasImage = currentLayanan.gambar && currentLayanan.gambar.trim() !== '';
+                    
                     // Fetch jenis layanan details to get all layanan in this category
                     fetchJenisLayananDetails(currentLayanan.id_jenis_layanan);
                     
@@ -198,7 +247,7 @@
                 if (response.data && response.data.data) {
                     console.log("Jenis layanan details fetched successfully:", response.data);
                     jenisLayanan = response.data.data;
-                    document.getElementById('layanan-title').textContent = `Edit Deskripsi - ${jenisLayanan.nama_layanan}`;
+                    document.getElementById('layanan-title').textContent = `Edit ${hasImage ? 'Gambar' : 'Deskripsi'} - ${jenisLayanan.nama_layanan}`;
                     
                     // Create tabs if there are multiple layanan in this category
                     if (jenisLayanan.layanan && jenisLayanan.layanan.length > 1) {
@@ -234,14 +283,53 @@
         document.getElementById('judul_layanan_display').textContent = layanan.judul_layanan;
         document.getElementById('judul_layanan').value = layanan.judul_layanan;
         
-        // Set CKEditor content if editor is initialized
-        if (editor) {
-            console.log("Setting CKEditor content");
-            editor.setData(layanan.deskripsi_layanan);
-        } else {
-            console.log("CKEditor not initialized yet, using fallback");
-            // Fallback to regular textarea
-            document.getElementById('deskripsi_layanan').value = layanan.deskripsi_layanan;
+        // Show the appropriate section based on the layanan type
+        if (hasDescription) {
+            document.getElementById('deskripsi-section').classList.remove('hidden');
+            
+            // Initialize CKEditor if we have description
+            ClassicEditor
+                .create(document.querySelector('#deskripsi_layanan'))
+                .then(newEditor => {
+                    console.log("CKEditor initialized successfully");
+                    editor = newEditor;
+                    // Set the content
+                    editor.setData(layanan.deskripsi_layanan || '');
+                })
+                .catch(error => {
+                    console.error("CKEditor initialization error:", error);
+                    // Fallback to regular textarea
+                    document.getElementById('deskripsi_layanan').value = layanan.deskripsi_layanan || '';
+                });
+        }
+        
+        if (hasImage) {
+            document.getElementById('gambar-section').classList.remove('hidden');
+            
+            // Show current image if available
+            if (layanan.gambar) {
+                document.getElementById('current-image-container').classList.remove('hidden');
+                // Check if the path already contains storage/ or not
+                const imagePath = layanan.gambar.startsWith('storage/') ? layanan.gambar : `storage/${layanan.gambar}`;
+                document.getElementById('current-image').src = `/${imagePath}`;
+            }
+        }
+        
+        // If neither description nor image, show both sections (new layanan)
+        if (!hasDescription && !hasImage) {
+            document.getElementById('deskripsi-section').classList.remove('hidden');
+            document.getElementById('gambar-section').classList.remove('hidden');
+            
+            // Initialize CKEditor for new layanan
+            ClassicEditor
+                .create(document.querySelector('#deskripsi_layanan'))
+                .then(newEditor => {
+                    console.log("CKEditor initialized successfully");
+                    editor = newEditor;
+                })
+                .catch(error => {
+                    console.error("CKEditor initialization error:", error);
+                });
         }
     }
     
@@ -252,6 +340,7 @@
         
         // Clear previous error messages
         document.getElementById('deskripsi_layanan-error').textContent = '';
+        document.getElementById('gambar-error').textContent = '';
         
         // Show loading state
         const submitBtn = document.getElementById('submitBtn');
@@ -259,33 +348,62 @@
         submitBtn.disabled = true;
         submitBtn.innerHTML = '<svg class="animate-spin -ml-1 mr-2 h-4 w-4 text-white inline" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24"><circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle><path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path></svg> Memperbarui...';
         
-        let deskripsiContent = "";
-        if (editor) {
-            deskripsiContent = editor.getData();
-            console.log("Getting content from CKEditor:", deskripsiContent);
+        // Create form data object for file uploads
+        const formData = new FormData();
+        formData.append('judul_layanan', document.getElementById('judul_layanan').value);
+        formData.append('id_jenis_layanan', currentLayanan.id_jenis_layanan);
+        
+        // Add description if the section is visible
+        if (!document.getElementById('deskripsi-section').classList.contains('hidden')) {
+            let deskripsiContent = "";
+            if (editor) {
+                deskripsiContent = editor.getData();
+                console.log("Getting content from CKEditor:", deskripsiContent);
+            } else {
+                deskripsiContent = document.getElementById('deskripsi_layanan').value;
+                console.log("Getting content from textarea:", deskripsiContent);
+            }
+            formData.append('deskripsi_layanan', deskripsiContent);
         } else {
-            deskripsiContent = document.getElementById('deskripsi_layanan').value;
-            console.log("Getting content from textarea:", deskripsiContent);
+            // Keep existing description if any
+            if (currentLayanan.deskripsi_layanan) {
+                formData.append('deskripsi_layanan', currentLayanan.deskripsi_layanan);
+            }
         }
         
-        const formData = {
-            judul_layanan: document.getElementById('judul_layanan').value,
-            deskripsi_layanan: deskripsiContent,
-            id_jenis_layanan: currentLayanan.id_jenis_layanan
-        };
+        // Add image if the section is visible and file is selected
+        if (!document.getElementById('gambar-section').classList.contains('hidden')) {
+            const imageFile = document.getElementById('gambar').files[0];
+            if (imageFile) {
+                formData.append('gambar', imageFile);
+            }
+        }
         
-        console.log("Sending data:", formData);
+        console.log("Sending data for update...");
         
-        axios.post(`/api/admin/layanan/{{ $id }}`, formData)
+        axios.post(`/api/admin/layanan/{{ $id }}`, formData, {
+            headers: {
+                'Content-Type': 'multipart/form-data'
+            }
+        })
             .then(response => {
                 console.log("Update response:", response.data);
                 if (response.data.status === 'success') {
-                    showAlert('success', 'Deskripsi layanan berhasil diperbarui.');
+                    showAlert('success', `${hasImage ? 'Gambar' : 'Deskripsi'} layanan berhasil diperbarui.`);
                     // Update current layanan data
                     currentLayanan = response.data.data;
                     // Reset button
                     submitBtn.disabled = false;
                     submitBtn.innerHTML = originalBtnText;
+                    
+                    // If image was updated, refresh the preview
+                    if (hasImage && currentLayanan.gambar) {
+                        document.getElementById('current-image-container').classList.remove('hidden');
+                        // Check if the path already contains storage/ or not
+                        const imagePath = currentLayanan.gambar.startsWith('storage/') ? currentLayanan.gambar : `storage/${currentLayanan.gambar}`;
+                        // Add cache-busting parameter to force reload
+                        document.getElementById('current-image').src = `/${imagePath}?t=${new Date().getTime()}`;
+                    }
                 } else {
                     submitBtn.disabled = false;
                     submitBtn.innerHTML = originalBtnText;

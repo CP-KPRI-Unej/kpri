@@ -13,12 +13,12 @@
         cursor: pointer;
     }
     .dropzone:hover {
-        border-color: #4f46e5;
+        border-color: #f59e0b;
         background-color: #f8fafc;
     }
     .dropzone.dragover {
-        border-color: #4f46e5;
-        background-color: rgba(79, 70, 229, 0.05);
+        border-color: #f59e0b;
+        background-color: rgba(245, 158, 11, 0.05);
     }
     .upload-icon {
         color: #6b7280;
@@ -60,7 +60,20 @@
 @endsection
 
 @section('content')
-<div class="container max-w-2xl mx-auto py-6 px-4 sm:px-6 lg:px-8">
+<div class="container mx-auto px-4 py-6">
+    <div class="flex items-center justify-between mb-6">
+        <div>
+            <h1 class="text-2xl font-semibold text-gray-800 dark:text-gray-200">Edit Item Download</h1>
+            <p class="text-sm text-gray-500 dark:text-gray-400">Ubah informasi item download</p>
+        </div>
+        <a href="{{ route('admin.download.index') }}" class="px-4 py-2 bg-orange-500 text-white rounded-md hover:bg-orange-600 transition-colors flex items-center">
+            <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 mr-1" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 19l-7-7m0 0l7-7m-7 7h18" />
+            </svg>
+            Kembali
+        </a>
+    </div>
+
     <div id="alert-success" class="bg-green-100 border border-green-400 text-green-700 px-4 py-3 rounded relative mb-4 hidden" role="alert">
         <span class="block sm:inline" id="success-message"></span>
         <button type="button" class="absolute top-0 bottom-0 right-0 px-4 py-3" onclick="hideAlert('alert-success')" aria-label="Close">
@@ -82,28 +95,19 @@
     </div>
 
     <div id="loading-spinner" class="flex justify-center items-center py-10">
-        <svg class="animate-spin h-10 w-10 text-indigo-500" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
+        <svg class="animate-spin h-10 w-10 text-orange-500" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
             <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
             <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
         </svg>
     </div>
 
-    <div id="content-area" class="bg-white dark:bg-gray-800 shadow rounded-lg overflow-hidden" style="display: none;">
-        <div class="px-6 py-4 border-b border-gray-200 dark:border-gray-700">
-            <div class="flex items-center justify-between">
-                <h2 class="text-xl font-semibold text-gray-800 dark:text-gray-200">Edit Item Download</h2>
-                <a href="{{ route('admin.download.index') }}" class="text-indigo-600 dark:text-indigo-400 hover:text-indigo-800 dark:hover:text-indigo-300 text-sm">
-                    Kembali ke daftar
-                </a>
-            </div>
-        </div>
-        
+    <div id="content-area" class="bg-white dark:bg-gray-800 rounded-lg shadow-md overflow-hidden p-6" style="display: none;">
         <form id="uploadForm" enctype="multipart/form-data">
             <input type="hidden" id="downloadItemId" value="{{ $id }}">
-            <div class="p-6">
+            <div class="grid grid-cols-1 gap-6">
                 <div class="mb-6">
                     <label for="nama_item" class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Nama File</label>
-                    <input type="text" class="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-md shadow-sm focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 dark:bg-gray-700 dark:text-white" 
+                    <input type="text" class="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-md shadow-sm focus:outline-none focus:ring-orange-500 focus:border-orange-500 dark:bg-gray-700 dark:text-white" 
                            id="nama_item" name="nama_item" required>
                     <p class="mt-1 text-sm text-red-600 dark:text-red-400 hidden" id="nama_item_error"></p>
                 </div>
@@ -113,7 +117,7 @@
                     <div class="current-file flex items-center">
                         <i id="currentFileIcon" class="text-2xl mr-3"></i>
                         <div>
-                            <a id="currentFileName" href="#" target="_blank" class="text-sm font-medium text-indigo-600 dark:text-indigo-400 hover:text-indigo-800 dark:hover:text-indigo-300"></a>
+                            <a id="currentFileName" href="#" target="_blank" class="text-sm font-medium text-orange-600 dark:text-orange-400 hover:text-orange-800 dark:hover:text-orange-300"></a>
                             <p id="currentFileDate" class="text-xs text-gray-500 dark:text-gray-400"></p>
                         </div>
                     </div>
@@ -146,23 +150,18 @@
                 </div>
                 
                 <div class="mb-6">
-                    <label for="status" class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Status</label>
-                    <select class="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-md shadow-sm focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 dark:bg-gray-700 dark:text-white" 
-                            id="status" name="status" required>
-                        <option value="Active">Active</option>
-                        <option value="Inactive">Inactive</option>
+                    <label for="id_status" class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Status</label>
+                    <select class="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-md shadow-sm focus:outline-none focus:ring-orange-500 focus:border-orange-500 dark:bg-gray-700 dark:text-white" 
+                            id="id_status" name="id_status" required>
+                        <option value="">Pilih Status</option>
                     </select>
-                    <p class="mt-1 text-sm text-red-600 dark:text-red-400 hidden" id="status_error"></p>
+                    <p class="mt-1 text-sm text-red-600 dark:text-red-400 hidden" id="id_status_error"></p>
                 </div>
             </div>
             
-            <div class="px-6 py-4 bg-gray-50 dark:bg-gray-700 text-right flex justify-end space-x-3">
-                <a href="{{ route('admin.download.index') }}" class="inline-flex justify-center py-2 px-4 border border-gray-300 dark:border-gray-600 shadow-sm text-sm font-medium rounded-md text-gray-700 dark:text-gray-300 bg-white dark:bg-gray-800 hover:bg-gray-50 dark:hover:bg-gray-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500">
-                    Cancel
-                </a>
-                <button type="submit" id="submitButton" class="inline-flex justify-center py-2 px-4 border border-transparent shadow-sm text-sm font-medium rounded-md text-white bg-indigo-800 hover:bg-indigo-900 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500">
-                    Update
-                </button>
+            <div class="mt-6 flex justify-end space-x-3">
+                <a href="{{ route('admin.download.index') }}" class="px-4 py-2 border border-orange-500 text-orange-500 rounded-md hover:bg-orange-500 hover:text-white transition-colors">Batal</a>
+                <button type="submit" id="submitButton" class="px-4 py-2 bg-orange-500 text-white rounded-md hover:bg-orange-600 transition-colors">Perbarui</button>
             </div>
         </form>
     </div>
@@ -181,6 +180,9 @@
         const token = localStorage.getItem('access_token');
         if (token) {
             axios.defaults.headers.common['Authorization'] = 'Bearer ' + token;
+            fetchStatuses().then(() => {
+                fetchDownloadItem(downloadItemId);
+            });
         } else {
             // If no token in localStorage, try to get it from the login process
             checkAuthentication();
@@ -256,7 +258,11 @@
         function populateForm(item) {
             // Set form values
             document.getElementById('nama_item').value = item.nama_item;
-            document.getElementById('status').value = item.status;
+            
+            // Set status if available
+            if (item.id_status && document.getElementById('id_status')) {
+                document.getElementById('id_status').value = item.id_status;
+            }
             
             // Set current file info
             const currentFileName = document.getElementById('currentFileName');
@@ -396,7 +402,7 @@
             // Create FormData and append form values
             const formData = new FormData();
             formData.append('nama_item', document.getElementById('nama_item').value);
-            formData.append('status', document.getElementById('status').value);
+            formData.append('id_status', document.getElementById('id_status').value);
             
             if (fileInput.files.length > 0) {
                 formData.append('file', fileInput.files[0]);
@@ -420,6 +426,11 @@
                         fileInfo.classList.remove('active');
                         fileInput.value = '';
                     }
+                    
+                    // Redirect to index page after 1.5 seconds
+                    setTimeout(() => {
+                        window.location.href = "{{ route('admin.download.index') }}";
+                    }, 1500);
                 }
             })
             .catch(error => {
@@ -508,19 +519,57 @@
         function checkAuthentication() {
             axios.get('/api/auth/me')
                 .then(response => {
-                    // Store the token for future requests
                     const token = response.data.access_token;
                     if (token) {
-                        localStorage.setItem('jwt_token', token);
+                        localStorage.setItem('access_token', token);
                         axios.defaults.headers.common['Authorization'] = 'Bearer ' + token;
+                        fetchStatuses().then(() => {
+                            fetchDownloadItem(downloadItemId);
+                        });
                     }
                 })
                 .catch(error => {
                     console.error('Authentication error:', error);
-                    // Redirect to login if unauthenticated
                     if (error.response && error.response.status === 401) {
                         window.location.href = '/admin/login';
                     }
+                });
+        }
+
+        // Fetch status options for dropdown
+        function fetchStatuses() {
+            return axios.get('/api/admin/status')
+                .then(response => {
+                    if (response.data.status === 'success') {
+                        populateStatusDropdown(response.data.data);
+                        return Promise.resolve();
+                    } else {
+                        showError('Failed to load status options');
+                        return Promise.reject('Failed to load status options');
+                    }
+                })
+                .catch(error => {
+                    console.error('Error fetching statuses:', error);
+                    showError('Error loading status options: ' + (error.response?.data?.message || error.message));
+                    return Promise.reject(error);
+                });
+        }
+        
+        // Populate status dropdown
+        function populateStatusDropdown(statuses) {
+            const dropdown = document.getElementById('id_status');
+            
+            // Clear existing options except the first one
+            while (dropdown.options.length > 1) {
+                dropdown.remove(1);
+            }
+            
+            // Add status options
+            statuses.forEach(status => {
+                const option = document.createElement('option');
+                option.value = status.id_status;
+                option.textContent = status.nama_status;
+                dropdown.appendChild(option);
                 });
         }
     });

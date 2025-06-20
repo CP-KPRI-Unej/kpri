@@ -36,6 +36,14 @@
     .dark .row-has-pending-comments:hover {
         background-color: rgba(120, 53, 15, 0.25) !important;
     }
+    
+    .bulk-actions-container {
+        display: none;
+    }
+    
+    .bulk-actions-container.active {
+        display: flex;
+    }
 </style>
 @endsection
 
@@ -68,20 +76,30 @@
             </div>
         </div>
         
-        <div class="flex space-x-2 w-full md:w-auto justify-end">
-            <div class="relative" x-data="{ open: false }">
-                <button @click="open = !open" class="flex items-center px-3 py-2 border rounded-md text-sm">
-                    <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 mr-1" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h7" />
+        <!-- Bulk actions -->
+        <div id="bulkActionsContainer" class="bulk-actions-container items-center bg-gray-100 dark:bg-gray-700 px-3 py-2 rounded-md mr-auto">
+            <span class="text-sm mr-2"><span id="selectedCount">0</span> terpilih</span>
+            <div x-data="{ open: false, posStyle: {} }">
+                <button @click="open = !open; if (open) posStyle = getPopupPosition($event)" class="flex items-center text-sm bg-white dark:bg-gray-800 px-3 py-1 rounded border">
+                    Aksi Massal
+                    <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 ml-1" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7" />
                     </svg>
-                    Columns
                 </button>
-                <div x-show="open" @click.away="open = false" x-cloak class="origin-top-right absolute right-0 mt-2 w-48 rounded-md shadow-lg bg-white dark:bg-gray-800 ring-1 ring-black ring-opacity-5 z-50">
-                    <!-- Column options would go here -->
+                <div x-show="open" @click.away="open = false" x-cloak :style="posStyle" class="fixed rounded-md shadow-lg bg-white dark:bg-gray-800 ring-1 ring-black ring-opacity-5 z-50">
+                    <div class="py-1" role="menu" aria-orientation="vertical">
+                        <button onclick="deleteBulkArticles()" class="w-full text-left block px-4 py-2 text-sm text-red-700 dark:text-red-400 hover:bg-gray-100 dark:hover:bg-gray-700" role="menuitem">
+                            <i class="bi bi-trash mr-2"></i> Hapus Terpilih
+                        </button>
+                    </div>
                 </div>
             </div>
+        </div>
+        
+        <div class="flex space-x-2 w-full md:w-auto justify-end">
+           
             
-            <a href="/admin/artikel/create" class="bg-indigo-800 text-white px-4 py-2 rounded-md text-sm flex items-center">
+            <a href="/admin/artikel/create" class="bg-orange-500 text-white px-4 py-2 rounded-md text-sm flex items-center hover:bg-orange-600 transition-colors">
                 <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 mr-1" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4" />
                 </svg>
@@ -97,7 +115,7 @@
                     <tr>
                         <th scope="col" class="px-3 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">
                             <div class="flex items-center">
-                                <input type="checkbox" class="form-checkbox h-4 w-4 text-orange-500 rounded border-gray-300">
+                                <input type="checkbox" id="selectAllCheckbox" class="form-checkbox h-4 w-4 text-orange-500 rounded border-gray-300">
                             </div>
                         </th>
                         <th scope="col" class="px-3 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">
@@ -108,6 +126,9 @@
                         </th>
                         <th scope="col" class="px-3 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">
                             Status
+                        </th>
+                        <th scope="col" class="px-3 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider hidden sm:table-cell">
+                            Oleh
                         </th>
                         <th scope="col" class="px-3 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider hidden sm:table-cell">
                             Tanggal
@@ -123,7 +144,7 @@
                 <tbody id="artikelTableBody" class="bg-white dark:bg-gray-800 divide-y divide-gray-200 dark:divide-gray-700">
                     <!-- Table rows will be dynamically inserted here -->
                     <tr>
-                        <td colspan="7" class="px-3 py-4 text-center">
+                        <td colspan="8" class="px-3 py-4 text-center">
                             <div class="animate-pulse flex justify-center">
                                 <svg class="animate-spin h-5 w-5 text-gray-500" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
                                     <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
@@ -137,13 +158,32 @@
             </table>
         </div>
         <div class="bg-white dark:bg-gray-800 px-4 py-3 flex items-center justify-between border-t border-gray-200 dark:border-gray-700 sm:px-6">
-            <div class=" sm:items-center sm:justify-between">
+            <div class="hidden sm:flex-1 sm:flex sm:items-center sm:justify-between">
                 <div>
                     <p class="text-sm text-gray-700 dark:text-gray-400">
-                        Showing <span class="font-medium" id="artikelCount">0</span> articles
+                        Menampilkan <span class="font-medium" id="showingStart">1</span> - <span class="font-medium" id="showingEnd">0</span> dari <span class="font-medium" id="artikelCount">0</span> artikel
                     </p>
                 </div>
-                <!-- Pagination would go here if needed -->
+                <div>
+                    <nav class="relative z-0 inline-flex rounded-md shadow-sm -space-x-px" aria-label="Pagination" id="pagination">
+                        <!-- Pagination buttons will be dynamically inserted here -->
+                        <button id="prevPage" class="relative inline-flex items-center px-2 py-2 rounded-l-md border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-700 text-sm font-medium text-gray-500 dark:text-gray-400 hover:bg-gray-50 dark:hover:bg-gray-600 disabled:opacity-50 disabled:cursor-not-allowed">
+                            <span class="sr-only">Previous</span>
+                            <!-- Heroicon name: solid/chevron-left -->
+                            <svg class="h-5 w-5" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor" aria-hidden="true">
+                                <path fill-rule="evenodd" d="M12.707 5.293a1 1 0 010 1.414L9.414 10l3.293 3.293a1 1 0 01-1.414 1.414l-4-4a1 1 0 010-1.414l4-4a1 1 0 011.414 0z" clip-rule="evenodd" />
+                            </svg>
+                        </button>
+                        <div id="pageNumbers" class="flex"></div>
+                        <button id="nextPage" class="relative inline-flex items-center px-2 py-2 rounded-r-md border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-700 text-sm font-medium text-gray-500 dark:text-gray-400 hover:bg-gray-50 dark:hover:bg-gray-600 disabled:opacity-50 disabled:cursor-not-allowed">
+                            <span class="sr-only">Next</span>
+                            <!-- Heroicon name: solid/chevron-right -->
+                            <svg class="h-5 w-5" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor" aria-hidden="true">
+                                <path fill-rule="evenodd" d="M7.293 14.707a1 1 0 010-1.414L10.586 10 7.293 6.707a1 1 0 011.414-1.414l4 4a1 1 0 010 1.414l-4 4a1 1 0 01-1.414 0z" clip-rule="evenodd" />
+                            </svg>
+                        </button>
+                    </nav>
+                </div>
             </div>
         </div>
     </div>
@@ -151,6 +191,24 @@
 
 @push('scripts')
 <script>
+    // Fungsi untuk menghitung posisi popup - didefinisikan di luar DOMContentLoaded agar bisa diakses secara global
+    function getPopupPosition(event) {
+        const button = event.currentTarget;
+        const rect = button.getBoundingClientRect();
+        const popupWidth = 192; // w-48 = 12rem = 192px
+        
+        // Pastikan popup tidak keluar dari batas kanan layar
+        let leftPos = rect.right - popupWidth;
+        if (leftPos < 10) leftPos = 10; // Beri sedikit margin jika terlalu kiri
+        
+        return {
+            position: 'fixed',
+            top: `${rect.bottom + 5}px`, // 5px offset dari tombol
+            left: `${leftPos}px`,
+            width: `${popupWidth}px`
+        };
+    }
+
     document.addEventListener('DOMContentLoaded', function() {
         const token = localStorage.getItem('access_token');
         if (!token) {
@@ -158,28 +216,112 @@
             return;
         }
 
+        // Pagination variables
+        let currentPage = 1;
+        let itemsPerPage = 10;
+        let totalItems = 0;
+        let totalPages = 0;
+        let sortField = 'tgl_rilis';
+        let sortDirection = 'desc';
+        let searchQuery = '';
+        
         // Fetch articles from API
         fetchArticles();
 
         // Search functionality
         const searchInput = document.getElementById('searchArticle');
         if (searchInput) {
+            let searchTimeout;
             searchInput.addEventListener('keyup', function() {
-                const searchValue = this.value.toLowerCase();
-                const tableRows = document.querySelectorAll('#artikelTableBody tr');
-                
-                tableRows.forEach(row => {
-                    if (row.hasAttribute('data-article-name')) {
-                        const text = row.getAttribute('data-article-name').toLowerCase();
-                        const description = row.getAttribute('data-article-description').toLowerCase();
-                        row.style.display = text.includes(searchValue) || description.includes(searchValue) ? '' : 'none';
-                    }
-                });
+                clearTimeout(searchTimeout);
+                searchTimeout = setTimeout(() => {
+                    searchQuery = this.value.toLowerCase();
+                    // Reset to page 1 when searching
+                    currentPage = 1;
+                    // Fetch articles with search query
+                    fetchArticles();
+                }, 300);
             });
+        }
+        
+        // Select all checkbox functionality
+        const selectAllCheckbox = document.getElementById('selectAllCheckbox');
+        if (selectAllCheckbox) {
+            selectAllCheckbox.addEventListener('change', function() {
+                const checkboxes = document.querySelectorAll('#artikelTableBody input[type="checkbox"]');
+                checkboxes.forEach(checkbox => {
+                    checkbox.checked = this.checked;
+                });
+                updateSelectedCount();
+            });
+        }
+        
+        // Event delegation for checkbox changes in the table body
+        document.getElementById('artikelTableBody').addEventListener('change', function(e) {
+            if (e.target && e.target.type === 'checkbox') {
+                updateSelectedCount();
+            }
+        });
+
+        // Pagination event listeners
+        document.getElementById('prevPage').addEventListener('click', function() {
+            if (currentPage > 1) {
+                currentPage--;
+                fetchArticles();
+            }
+        });
+
+        document.getElementById('nextPage').addEventListener('click', function() {
+            if (currentPage < totalPages) {
+                currentPage++;
+                fetchArticles();
+            }
+        });
+
+        function updateSelectedCount() {
+            const selectedCheckboxes = document.querySelectorAll('#artikelTableBody input[type="checkbox"]:checked');
+            const count = selectedCheckboxes.length;
+            document.getElementById('selectedCount').textContent = count;
+            
+            const bulkActionsContainer = document.getElementById('bulkActionsContainer');
+            if (count > 0) {
+                bulkActionsContainer.classList.add('active');
+            } else {
+                bulkActionsContainer.classList.remove('active');
+                // Uncheck the select all checkbox if no items are selected
+                document.getElementById('selectAllCheckbox').checked = false;
+            }
         }
 
         function fetchArticles() {
-            fetch('/api/admin/articles', {
+            // Show loading state
+            document.getElementById('artikelTableBody').innerHTML = `
+                <tr>
+                    <td colspan="8" class="px-3 py-4 text-center">
+                        <div class="animate-pulse flex justify-center">
+                            <svg class="animate-spin h-5 w-5 text-gray-500" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
+                                <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
+                                <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
+                            </svg>
+                            <span class="ml-2">Loading artikels...</span>
+                        </div>
+                    </td>
+                </tr>
+            `;
+            
+            // Build query parameters
+            const params = new URLSearchParams({
+                page: currentPage,
+                per_page: itemsPerPage,
+                sort_field: sortField,
+                sort_direction: sortDirection
+            });
+            
+            if (searchQuery) {
+                params.append('search', searchQuery);
+            }
+            
+            fetch(`/api/admin/articles?${params.toString()}`, {
                 headers: {
                     'Authorization': `Bearer ${token}`,
                     'Content-Type': 'application/json',
@@ -197,16 +339,29 @@
                 }
                 return response.json();
             })
-            .then(data => {
-                if (!data) return;
+            .then(response => {
+                if (!response) return;
                 
+                // Update pagination variables from API response
+                const { data, meta } = response;
+                totalItems = meta.total;
+                totalPages = meta.total_pages;
+                currentPage = meta.current_page;
+                
+                // Render the articles
                 renderArticles(data);
+                
+                // Update pagination UI
+                updatePagination();
+                
+                // Update article count display
+                document.getElementById('articleCount').textContent = totalItems;
             })
             .catch(error => {
                 console.error('Error fetching articles:', error);
                 document.getElementById('artikelTableBody').innerHTML = `
                     <tr>
-                        <td colspan="7" class="px-3 py-4 text-center text-sm text-red-500">
+                        <td colspan="8" class="px-3 py-4 text-center text-sm text-red-500">
                             Error loading articles. Please try again later.
                         </td>
                     </tr>
@@ -214,40 +369,108 @@
             });
         }
 
+        function updatePagination() {
+            // Update pagination info
+            document.getElementById('showingStart').textContent = totalItems === 0 ? '0' : ((currentPage - 1) * itemsPerPage + 1);
+            const end = Math.min(currentPage * itemsPerPage, totalItems);
+            document.getElementById('showingEnd').textContent = end;
+            document.getElementById('artikelCount').textContent = totalItems;
+            
+            // Enable/disable previous/next buttons
+            document.getElementById('prevPage').disabled = currentPage <= 1;
+            document.getElementById('nextPage').disabled = currentPage >= totalPages;
+            
+            // Generate page number buttons
+            const pageNumbersContainer = document.getElementById('pageNumbers');
+            pageNumbersContainer.innerHTML = '';
+            
+            // Determine which page numbers to show (max 5)
+            let startPage = Math.max(1, currentPage - 2);
+            let endPage = Math.min(totalPages, startPage + 4);
+            
+            if (endPage - startPage < 4 && startPage > 1) {
+                startPage = Math.max(1, endPage - 4);
+            }
+            
+            // Add "..." button for first page if needed
+            if (startPage > 1) {
+                const firstPageBtn = createPageButton(1);
+                pageNumbersContainer.appendChild(firstPageBtn);
+                
+                if (startPage > 2) {
+                    const ellipsis = document.createElement('span');
+                    ellipsis.className = "relative inline-flex items-center px-4 py-2 border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-700 text-sm font-medium text-gray-700 dark:text-gray-300";
+                    ellipsis.textContent = "...";
+                    pageNumbersContainer.appendChild(ellipsis);
+                }
+            }
+            
+            // Add page number buttons
+            for (let i = startPage; i <= endPage; i++) {
+                const pageBtn = createPageButton(i);
+                pageNumbersContainer.appendChild(pageBtn);
+            }
+            
+            // Add "..." button for last page if needed
+            if (endPage < totalPages) {
+                if (endPage < totalPages - 1) {
+                    const ellipsis = document.createElement('span');
+                    ellipsis.className = "relative inline-flex items-center px-4 py-2 border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-700 text-sm font-medium text-gray-700 dark:text-gray-300";
+                    ellipsis.textContent = "...";
+                    pageNumbersContainer.appendChild(ellipsis);
+                }
+                
+                const lastPageBtn = createPageButton(totalPages);
+                pageNumbersContainer.appendChild(lastPageBtn);
+            }
+        }
+        
+        function createPageButton(pageNumber) {
+            const button = document.createElement('button');
+            button.type = "button";
+            
+            if (pageNumber === currentPage) {
+                button.className = "relative inline-flex items-center px-4 py-2 border border-orange-500 dark:border-orange-400 bg-orange-50 dark:bg-orange-900 text-sm font-medium text-orange-600 dark:text-orange-200";
+            } else {
+                button.className = "relative inline-flex items-center px-4 py-2 border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-700 text-sm font-medium text-gray-700 dark:text-gray-200 hover:bg-gray-50 dark:hover:bg-gray-600";
+            }
+            
+            button.textContent = pageNumber;
+            button.addEventListener('click', function() {
+                currentPage = pageNumber;
+                fetchArticles();
+            });
+            
+            return button;
+        }
+
         function renderArticles(articles) {
             const tbody = document.getElementById('artikelTableBody');
-            const articleCount = document.getElementById('articleCount');
-            const artikelCount = document.getElementById('artikelCount');
             
             if (articles.length === 0) {
                 tbody.innerHTML = `
                     <tr>
-                        <td colspan="7" class="px-3 py-4 text-center text-sm text-gray-500 dark:text-gray-400">
+                        <td colspan="8" class="px-3 py-4 text-center text-sm text-gray-500 dark:text-gray-400">
                             Tidak ada data artikel
                         </td>
                     </tr>
                 `;
-                articleCount.textContent = '0';
-                artikelCount.textContent = '0';
                 return;
             }
-            
-            articleCount.textContent = articles.length;
-            artikelCount.textContent = articles.length;
             
             let html = '';
             
             articles.forEach(artikel => {
                 let statusClass = '';
-                let statusText = artikel.status.nama_status;
+                let statusText = '';
                 
-                if (artikel.id_status == 1) {
+                if (artikel.status === 'published') {
                     statusClass = 'bg-green-100 text-green-800 dark:bg-green-900 dark:text-green-300';
                     statusText = 'Published';
-                } else if (artikel.id_status == 2) {
+                } else if (artikel.status === 'draft') {
                     statusClass = 'bg-gray-100 text-gray-800 dark:bg-gray-700 dark:text-gray-300';
                     statusText = 'Draft';
-                } else {
+                } else if (artikel.status === 'archived') {
                     statusClass = 'bg-orange-100 text-orange-800 dark:bg-orange-900 dark:text-orange-300';
                     statusText = 'Diarsipkan';
                 }
@@ -255,11 +478,12 @@
                 html += `
                     <tr class="hover:bg-gray-50 dark:hover:bg-gray-700 ${artikel.has_pending_comments ? 'row-has-pending-comments' : ''}" 
                         data-article-name="${artikel.nama_artikel}" 
-                        data-article-description="${artikel.deskripsi_artikel}">
+                        data-article-description="${artikel.deskripsi_artikel}"
+                        data-article-id="${artikel.id_artikel}">
                         ${artikel.pending_comments > 0 ? `
                         <td class="px-3 py-4 whitespace-nowrap relative">
                             <div class="flex items-center">
-                                <input type="checkbox" class="form-checkbox h-4 w-4 text-orange-500 rounded border-gray-300">
+                                <input type="checkbox" class="article-checkbox form-checkbox h-4 w-4 text-orange-500 rounded border-gray-300" value="${artikel.id_artikel}">
                             </div>
                             <div class="absolute -left-1 top-1/2 transform -translate-y-1/2">
                                 <span class="flex h-2 w-2">
@@ -271,7 +495,7 @@
                         ` : `
                         <td class="px-3 py-4 whitespace-nowrap">
                             <div class="flex items-center">
-                                <input type="checkbox" class="form-checkbox h-4 w-4 text-orange-500 rounded border-gray-300">
+                                <input type="checkbox" class="article-checkbox form-checkbox h-4 w-4 text-orange-500 rounded border-gray-300" value="${artikel.id_artikel}">
                             </div>
                         </td>
                         `}
@@ -297,6 +521,9 @@
                             <span class="px-2 inline-flex text-xs leading-5 font-semibold rounded-full ${statusClass}">
                                 ${statusText}
                             </span>
+                        </td>
+                        <td class="px-3 py-4 whitespace-nowrap text-sm text-gray-500 dark:text-gray-400 hidden sm:table-cell">
+                            ${artikel.user_name || 'Unknown'}
                         </td>
                         <td class="px-3 py-4 whitespace-nowrap text-sm text-gray-500 dark:text-gray-400 hidden sm:table-cell">
                             ${formatDate(artikel.tgl_rilis)}
@@ -329,13 +556,13 @@
                             </div>
                         </td>
                         <td class="px-3 py-4 whitespace-nowrap text-right text-sm font-medium">
-                            <div class="relative" x-data="{ open: false }">
-                                <button @click="open = !open" class="text-gray-400 hover:text-gray-500">
+                            <div x-data="{ open: false, posStyle: {} }">
+                                <button @click="open = !open; if (open) posStyle = getPopupPosition($event)" class="text-gray-400 hover:text-gray-500">
                                     <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" viewBox="0 0 20 20" fill="currentColor">
                                         <path d="M10 6a2 2 0 110-4 2 2 0 010 4zM10 12a2 2 0 110-4 2 2 0 010 4zM10 18a2 2 0 110-4 2 2 0 010 4z" />
                                     </svg>
                                 </button>
-                                <div x-show="open" @click.away="open = false" x-cloak class="origin-top-right absolute right-0 mt-2 w-48 rounded-md shadow-lg bg-white dark:bg-gray-800 ring-1 ring-black ring-opacity-5 z-40">
+                                <div x-show="open" @click.away="open = false" x-cloak :style="posStyle" class="fixed rounded-md shadow-lg bg-white dark:bg-gray-800 ring-1 ring-black ring-opacity-5 z-50">
                                     <div class="py-1" role="menu" aria-orientation="vertical">
                                         <a href="/admin/artikel/${artikel.id_artikel}/edit" class="block px-4 py-2 text-sm text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700" role="menuitem">
                                             <i class="bi bi-pencil mr-2"></i> Edit
@@ -352,6 +579,9 @@
             });
             
             tbody.innerHTML = html;
+            
+            // Reset the selected count after rendering
+            updateSelectedCount();
         }
 
         function stripHtmlTags(html) {
@@ -392,13 +622,68 @@
                 .then(data => {
                     if (!data) return;
                 
-                    // Refresh the article list
+                    // Refresh the article list with current pagination
                     fetchArticles();
                 })
                 .catch(error => {
                     console.error('Error deleting article:', error);
                     alert('Failed to delete article. Please try again.');
                 });
+            }
+        };
+        
+        // Function to handle bulk delete
+        window.deleteBulkArticles = function() {
+            const selectedCheckboxes = document.querySelectorAll('#artikelTableBody input[type="checkbox"]:checked');
+            const selectedIds = Array.from(selectedCheckboxes).map(checkbox => checkbox.value);
+            
+            if (selectedIds.length === 0) {
+                alert('Tidak ada artikel yang dipilih');
+                return;
+            }
+            
+            if (confirm(`Apakah Anda yakin ingin menghapus ${selectedIds.length} artikel yang dipilih?`)) {
+                const token = localStorage.getItem('access_token');
+                
+                // For multiple deletions, you might want to use Promise.all for parallel requests
+                // or create a specific bulk delete API endpoint
+                const deletePromises = selectedIds.map(id => 
+                    fetch(`/api/admin/articles/${id}`, {
+                        method: 'DELETE',
+                        headers: {
+                            'Authorization': `Bearer ${token}`,
+                            'Content-Type': 'application/json',
+                            'Accept': 'application/json',
+                            'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').getAttribute('content')
+                        }
+                    })
+                    .then(response => {
+                        if (!response.ok) {
+                            if (response.status === 401) {
+                                localStorage.removeItem('access_token');
+                                window.location.href = '/admin/login';
+                                return null;
+                            }
+                            throw new Error(`Failed to delete article ${id}`);
+                        }
+                        return response.json();
+                    })
+                );
+                
+                Promise.all(deletePromises)
+                    .then(() => {
+                        // Go back to first page after bulk delete
+                        currentPage = 1;
+                        // Refresh the article list
+                        fetchArticles();
+                        alert(`${selectedIds.length} artikel berhasil dihapus`);
+                    })
+                    .catch(error => {
+                        console.error('Error deleting articles:', error);
+                        alert('Gagal menghapus beberapa artikel. Silakan coba lagi.');
+                        // Refresh anyway to show the current state
+                        fetchArticles();
+                    });
             }
         };
     });

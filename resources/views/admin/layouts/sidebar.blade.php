@@ -27,7 +27,7 @@
                 <a href="{{ route('admin.linktree.index') }}"
                     class="flex items-center px-4 py-3 text-sm font-medium rounded-md {{ request()->routeIs('admin.linktree.*') ? 'bg-white text-orange-500 dark:bg-gray-700 dark:text-gray-100' : 'text-white/80 hover:bg-white/10 hover:text-white dark:hover:bg-gray-700' }}">
                     <i class="bi bi-link-45deg mr-3 text-lg"></i>
-                    <span>Linktree</span>
+                    <span>Tautan</span>
                 </a>
 
                 <!-- Artikel Link -->
@@ -89,8 +89,8 @@
                     <button @click="open = !open"
                         class="flex items-center justify-between w-full px-4 py-3 text-sm font-medium rounded-md {{ request()->routeIs('admin.layanan.*') || request()->routeIs('admin.hero-banners.*') ? 'bg-white/10 text-white dark:bg-gray-700 dark:text-gray-100' : 'text-white/80 hover:bg-white/10 hover:text-white dark:hover:bg-gray-700' }}">
                         <div class="flex items-center">
-                            <i class="bi bi-gear-wide-connected mr-3 text-lg"></i>
-                            <span>Layanan</span>
+                            <i class="bi bi-window mr-3 text-lg"></i>
+                            <span>Manajemen Halaman</span>
                         </div>
                         <i class="bi" :class="{ 'bi-chevron-down': !open, 'bi-chevron-up': open }"></i>
                     </button>

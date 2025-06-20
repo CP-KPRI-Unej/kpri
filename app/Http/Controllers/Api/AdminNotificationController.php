@@ -10,6 +10,12 @@ use App\Models\PushNotification;
 use App\Services\NotificationService;
 use Carbon\Carbon;
 
+/**
+ * @OA\Tag(
+ *     name="Admin Notifications",
+ *     description="API Endpoints for Push Notification Management"
+ * )
+ */
 class AdminNotificationController extends Controller
 {
     /**
@@ -35,6 +41,90 @@ class AdminNotificationController extends Controller
      * 
      * @param Request $request
      * @return \Illuminate\Http\JsonResponse
+     * 
+     * @OA\Get(
+     *     path="/admin/notifications",
+     *     summary="Get all notifications",
+     *     description="Returns a paginated list of push notifications with filtering and sorting",
+     *     operationId="adminGetNotifications",
+     *     tags={"Admin Notifications"},
+     *     security={{"bearerAuth":{}}},
+     *     @OA\Parameter(
+     *         name="per_page",
+     *         in="query",
+     *         description="Number of items per page",
+     *         required=false,
+     *         @OA\Schema(type="integer", default=10)
+     *     ),
+     *     @OA\Parameter(
+     *         name="sort_by",
+     *         in="query",
+     *         description="Field to sort by",
+     *         required=false,
+     *         @OA\Schema(type="string", default="created_at")
+     *     ),
+     *     @OA\Parameter(
+     *         name="sort_dir",
+     *         in="query",
+     *         description="Sort direction",
+     *         required=false,
+     *         @OA\Schema(type="string", enum={"asc", "desc"}, default="desc")
+     *     ),
+     *     @OA\Parameter(
+     *         name="search",
+     *         in="query",
+     *         description="Search term",
+     *         required=false,
+     *         @OA\Schema(type="string")
+     *     ),
+     *     @OA\Parameter(
+     *         name="status",
+     *         in="query",
+     *         description="Filter by status",
+     *         required=false,
+     *         @OA\Schema(type="string", enum={"sent", "scheduled", "all"})
+     *     ),
+     *     @OA\Response(
+     *         response=200,
+     *         description="Successful operation",
+     *         @OA\JsonContent(
+     *             @OA\Property(property="status", type="string", example="success"),
+     *             @OA\Property(property="data", type="object",
+     *                 @OA\Property(property="current_page", type="integer", example=1),
+     *                 @OA\Property(property="data", type="array",
+     *                     @OA\Items(
+     *                         @OA\Property(property="id", type="integer", example=1),
+     *                         @OA\Property(property="title", type="string", example="New Feature Announcement"),
+     *                         @OA\Property(property="message", type="string", example="We have launched a new feature..."),
+     *                         @OA\Property(property="icon", type="string", example="/storage/uploads/notifications/icon.png"),
+     *                         @OA\Property(property="image", type="string", example="/storage/uploads/notifications/image.jpg"),
+     *                         @OA\Property(property="target_url", type="string", example="/new-feature"),
+     *                         @OA\Property(property="is_sent", type="boolean", example=true),
+     *                         @OA\Property(property="scheduled_at", type="string", format="date-time"),
+     *                         @OA\Property(property="user_kpri_id", type="integer", example=1),
+     *                         @OA\Property(property="created_at", type="string", format="date-time"),
+     *                         @OA\Property(property="updated_at", type="string", format="date-time"),
+     *                         @OA\Property(property="user", type="object")
+     *                     )
+     *                 ),
+     *                 @OA\Property(property="first_page_url", type="string"),
+     *                 @OA\Property(property="from", type="integer"),
+     *                 @OA\Property(property="last_page", type="integer"),
+     *                 @OA\Property(property="last_page_url", type="string"),
+     *                 @OA\Property(property="next_page_url", type="string"),
+     *                 @OA\Property(property="path", type="string"),
+     *                 @OA\Property(property="per_page", type="integer"),
+     *                 @OA\Property(property="prev_page_url", type="string"),
+     *                 @OA\Property(property="to", type="integer"),
+     *                 @OA\Property(property="total", type="integer")
+     *             ),
+     *             @OA\Property(property="message", type="string", example="Notifications retrieved successfully")
+     *         )
+     *     ),
+     *     @OA\Response(response=401, description="Unauthenticated"),
+     *     @OA\Response(response=403, description="Forbidden"),
+     *     @OA\Response(response=500, description="Server error")
+     * )
      */
     public function index(Request $request)
     {
@@ -85,6 +175,35 @@ class AdminNotificationController extends Controller
      * 
      * @param int $id
      * @return \Illuminate\Http\JsonResponse
+     * 
+     * @OA\Get(
+     *     path="/admin/notifications/{id}",
+     *     summary="Get notification by ID",
+     *     description="Returns a specific notification by ID",
+     *     operationId="adminGetNotification",
+     *     tags={"Admin Notifications"},
+     *     security={{"bearerAuth":{}}},
+     *     @OA\Parameter(
+     *         name="id",
+     *         in="path",
+     *         description="Notification ID",
+     *         required=true,
+     *         @OA\Schema(type="integer")
+     *     ),
+     *     @OA\Response(
+     *         response=200,
+     *         description="Successful operation",
+     *         @OA\JsonContent(
+     *             @OA\Property(property="status", type="string", example="success"),
+     *             @OA\Property(property="data", type="object"),
+     *             @OA\Property(property="message", type="string", example="Notification retrieved successfully")
+     *         )
+     *     ),
+     *     @OA\Response(response=401, description="Unauthenticated"),
+     *     @OA\Response(response=403, description="Forbidden"),
+     *     @OA\Response(response=404, description="Notification not found"),
+     *     @OA\Response(response=500, description="Server error")
+     * )
      */
     public function show($id)
     {
@@ -116,6 +235,48 @@ class AdminNotificationController extends Controller
      * 
      * @param Request $request
      * @return \Illuminate\Http\JsonResponse
+     * 
+     * @OA\Post(
+     *     path="/admin/notifications",
+     *     summary="Create a new notification",
+     *     description="Creates a new push notification, can be sent immediately or scheduled",
+     *     operationId="adminCreateNotification",
+     *     tags={"Admin Notifications"},
+     *     security={{"bearerAuth":{}}},
+     *     @OA\RequestBody(
+     *         required=true,
+     *         @OA\MediaType(
+     *             mediaType="multipart/form-data",
+     *             @OA\Schema(
+     *                 required={"title", "message"},
+     *                 @OA\Property(property="title", type="string", example="New Feature Announcement"),
+     *                 @OA\Property(property="message", type="string", example="We have launched a new feature..."),
+     *                 @OA\Property(property="icon", type="string", format="binary", description="Icon image (optional)"),
+     *                 @OA\Property(property="image", type="string", format="binary", description="Main image (optional)"),
+     *                 @OA\Property(property="icon_url", type="string", example="https://example.com/icon.png"),
+     *                 @OA\Property(property="image_url", type="string", example="https://example.com/image.jpg"),
+     *                 @OA\Property(property="target_url", type="string", example="/new-feature"),
+     *                 @OA\Property(property="scheduled_at", type="string", format="date-time", example="2023-12-31T12:00:00Z"),
+     *                 @OA\Property(property="send_now", type="boolean", example=false)
+     *             )
+     *         )
+     *     ),
+     *     @OA\Response(
+     *         response=201,
+     *         description="Notification created/sent successfully",
+     *         @OA\JsonContent(
+     *             @OA\Property(property="status", type="string", example="success"),
+     *             @OA\Property(property="data", type="object",
+     *                 @OA\Property(property="id", type="integer", example=1)
+     *             ),
+     *             @OA\Property(property="message", type="string", example="Notification sent successfully")
+     *         )
+     *     ),
+     *     @OA\Response(response=401, description="Unauthenticated"),
+     *     @OA\Response(response=403, description="Forbidden"),
+     *     @OA\Response(response=422, description="Validation error"),
+     *     @OA\Response(response=500, description="Server error")
+     * )
      */
     public function store(Request $request)
     {
@@ -204,11 +365,114 @@ class AdminNotificationController extends Controller
      * @param Request $request
      * @param int $id
      * @return \Illuminate\Http\JsonResponse
+     * 
+     * @OA\Post(
+     *     path="/admin/notifications/{id}",
+     *     summary="Update a notification",
+     *     description="Updates an existing notification or reschedules it if already sent",
+     *     operationId="adminUpdateNotification",
+     *     tags={"Admin Notifications"},
+     *     security={{"bearerAuth":{}}},
+     *     @OA\Parameter(
+     *         name="id",
+     *         in="path",
+     *         description="Notification ID",
+     *         required=true,
+     *         @OA\Schema(type="integer")
+     *     ),
+     *     @OA\Parameter(
+     *         name="_method",
+     *         in="query",
+     *         description="HTTP method override",
+     *         required=true,
+     *         @OA\Schema(type="string", default="PUT")
+     *     ),
+     *     @OA\RequestBody(
+     *         required=true,
+     *         @OA\MediaType(
+     *             mediaType="multipart/form-data",
+     *             @OA\Schema(
+     *                 @OA\Property(property="title", type="string", example="Updated Feature Announcement"),
+     *                 @OA\Property(property="message", type="string", example="We have improved our new feature..."),
+     *                 @OA\Property(property="icon", type="string", format="binary"),
+     *                 @OA\Property(property="image", type="string", format="binary"),
+     *                 @OA\Property(property="icon_url", type="string", example="https://example.com/icon.png"),
+     *                 @OA\Property(property="image_url", type="string", example="https://example.com/image.jpg"),
+     *                 @OA\Property(property="target_url", type="string", example="/new-feature"),
+     *                 @OA\Property(property="scheduled_at", type="string", format="date-time"),
+     *                 @OA\Property(property="send_now", type="boolean", example=false),
+     *                 @OA\Property(property="reschedule", type="boolean", example=false)
+     *             )
+     *         )
+     *     ),
+     *     @OA\Response(
+     *         response=200,
+     *         description="Notification updated successfully",
+     *         @OA\JsonContent(
+     *             @OA\Property(property="status", type="string", example="success"),
+     *             @OA\Property(property="message", type="string", example="Notification updated successfully")
+     *         )
+     *     ),
+     *     @OA\Response(response=400, description="Cannot update a sent notification without reschedule option"),
+     *     @OA\Response(response=401, description="Unauthenticated"),
+     *     @OA\Response(response=403, description="Forbidden"),
+     *     @OA\Response(response=404, description="Notification not found"),
+     *     @OA\Response(response=422, description="Validation error"),
+     *     @OA\Response(response=500, description="Server error")
+     * )
      */
     public function update(Request $request, $id)
     {
         Log::info('Notification update request received', ['id' => $id, 'request' => $request->all()]);
         
+        // Check if notification exists
+        $notification = PushNotification::find($id);
+        
+        if (!$notification) {
+            return response()->json([
+                'status' => 'error',
+                'message' => 'Notification not found'
+            ], 404);
+        }
+        
+        $sendNow = filter_var($request->input('send_now', false), FILTER_VALIDATE_BOOLEAN);
+        $reschedule = filter_var($request->input('reschedule', false), FILTER_VALIDATE_BOOLEAN);
+        
+        // Handle sent notifications - can only be rescheduled, not edited
+        if ($notification->is_sent && !$reschedule) {
+            return response()->json([
+                'status' => 'error',
+                'message' => 'Cannot update a notification that has already been sent. Use reschedule option to send it again.'
+            ], 400);
+        }
+        
+        // For rescheduling, only validate the scheduled_at field
+        if ($reschedule) {
+            $validator = Validator::make($request->all(), [
+                'scheduled_at' => 'required|date'
+            ]);
+            
+            if ($validator->fails()) {
+                Log::warning('Notification reschedule validation failed', ['id' => $id, 'errors' => $validator->errors()->toArray()]);
+                return response()->json([
+                    'status' => 'error',
+                    'errors' => $validator->errors()
+                ], 422);
+            }
+            
+            // Only update scheduling information for reschedule
+            // Preserve all other fields (title, message, images, etc.)
+            $notification->is_sent = false;
+            $notification->scheduled_at = Carbon::parse($request->scheduled_at);
+            $notification->save();
+            
+            return response()->json([
+                'status' => 'success',
+                'message' => 'Notification rescheduled successfully'
+            ]);
+        }
+        
+        // For unsent notifications, validate all fields
         $validator = Validator::make($request->all(), [
             'title' => 'required|string|max:255',
             'message' => 'required|string',
@@ -216,8 +480,7 @@ class AdminNotificationController extends Controller
             'image' => 'nullable|image|mimes:jpeg,png,jpg,gif,svg|max:2048',
             'target_url' => 'nullable|string|max:255',
             'scheduled_at' => 'nullable|date',
-            'send_now' => 'nullable|boolean',
-            'reschedule' => 'nullable|boolean'
+            'send_now' => 'nullable|boolean'
         ]);
         
         if ($validator->fails()) {
@@ -229,29 +492,6 @@ class AdminNotificationController extends Controller
         }
         
         try {
-            // Check if notification exists
-            $notification = PushNotification::find($id);
-            
-            if (!$notification) {
-                return response()->json([
-                    'status' => 'error',
-                    'message' => 'Notification not found'
-                ], 404);
-            }
-            
-            $sendNow = filter_var($request->input('send_now', false), FILTER_VALIDATE_BOOLEAN);
-            $reschedule = filter_var($request->input('reschedule', false), FILTER_VALIDATE_BOOLEAN);
-            
-            // Allow rescheduling of sent notifications
-            if ($notification->is_sent && $reschedule) {
-                $notification->is_sent = false;
-            } else if ($notification->is_sent && !$reschedule) {
-                return response()->json([
-                    'status' => 'error',
-                    'message' => 'Cannot update a notification that has already been sent. Use reschedule option to send it again.'
-                ], 400);
-            }
-            
             $notification->title = $request->title;
             $notification->message = $request->message;
             $notification->target_url = $request->target_url;
@@ -270,7 +510,7 @@ class AdminNotificationController extends Controller
                 $iconName = time() . '_icon_' . $iconFile->getClientOriginalName();
                 $iconPath = $iconFile->storeAs('public/uploads/notifications', $iconName);
                 $notification->icon = '/storage/uploads/notifications/' . $iconName;
-            } else if ($request->has('icon_url')) {
+            } else if ($request->has('icon_url') && !empty($request->icon_url)) {
                 $notification->icon = $request->icon_url;
             }
             
@@ -288,7 +528,7 @@ class AdminNotificationController extends Controller
                 $imageName = time() . '_image_' . $imageFile->getClientOriginalName();
                 $imagePath = $imageFile->storeAs('public/uploads/notifications', $imageName);
                 $notification->image = '/storage/uploads/notifications/' . $imageName;
-            } else if ($request->has('image_url')) {
+            } else if ($request->has('image_url') && !empty($request->image_url)) {
                 $notification->image = $request->image_url;
             }
             
@@ -309,7 +549,7 @@ class AdminNotificationController extends Controller
             
             return response()->json([
                 'status' => 'success',
-                'message' => $sendNow ? 'Notification sent successfully' : ($reschedule ? 'Notification rescheduled successfully' : 'Notification updated successfully')
+                'message' => $sendNow ? 'Notification sent successfully' : 'Notification updated successfully'
             ]);
         } catch (\Exception $e) {
             return response()->json([
@@ -324,6 +564,34 @@ class AdminNotificationController extends Controller
      * 
      * @param int $id
      * @return \Illuminate\Http\JsonResponse
+     * 
+     * @OA\Delete(
+     *     path="/admin/notifications/{id}",
+     *     summary="Delete a notification",
+     *     description="Deletes a notification by ID",
+     *     operationId="adminDeleteNotification",
+     *     tags={"Admin Notifications"},
+     *     security={{"bearerAuth":{}}},
+     *     @OA\Parameter(
+     *         name="id",
+     *         in="path",
+     *         description="Notification ID",
+     *         required=true,
+     *         @OA\Schema(type="integer")
+     *     ),
+     *     @OA\Response(
+     *         response=200,
+     *         description="Notification deleted successfully",
+     *         @OA\JsonContent(
+     *             @OA\Property(property="status", type="string", example="success"),
+     *             @OA\Property(property="message", type="string", example="Notification deleted successfully")
+     *         )
+     *     ),
+     *     @OA\Response(response=401, description="Unauthenticated"),
+     *     @OA\Response(response=403, description="Forbidden"),
+     *     @OA\Response(response=404, description="Notification not found"),
+     *     @OA\Response(response=500, description="Server error")
+     * )
      */
     public function destroy($id)
     {
@@ -358,6 +626,34 @@ class AdminNotificationController extends Controller
      * 
      * @param int $id
      * @return \Illuminate\Http\JsonResponse
+     * 
+     * @OA\Post(
+     *     path="/admin/notifications/{id}/send-now",
+     *     summary="Send notification immediately",
+     *     description="Sends a notification immediately, regardless of its scheduled time",
+     *     operationId="adminSendNotificationNow",
+     *     tags={"Admin Notifications"},
+     *     security={{"bearerAuth":{}}},
+     *     @OA\Parameter(
+     *         name="id",
+     *         in="path",
+     *         description="Notification ID",
+     *         required=true,
+     *         @OA\Schema(type="integer")
+     *     ),
+     *     @OA\Response(
+     *         response=200,
+     *         description="Notification sent successfully",
+     *         @OA\JsonContent(
+     *             @OA\Property(property="status", type="string", example="success"),
+     *             @OA\Property(property="message", type="string", example="Notification sent successfully")
+     *         )
+     *     ),
+     *     @OA\Response(response=401, description="Unauthenticated"),
+     *     @OA\Response(response=403, description="Forbidden"),
+     *     @OA\Response(response=404, description="Notification not found"),
+     *     @OA\Response(response=500, description="Server error")
+     * )
      */
     public function sendNow($id)
     {
@@ -398,6 +694,33 @@ class AdminNotificationController extends Controller
      * Get notification statistics
      * 
      * @return \Illuminate\Http\JsonResponse
+     * 
+     * @OA\Get(
+     *     path="/admin/notifications/stats",
+     *     summary="Get notification statistics",
+     *     description="Returns notification counts and recent/upcoming notifications",
+     *     operationId="adminGetNotificationStats",
+     *     tags={"Admin Notifications"},
+     *     security={{"bearerAuth":{}}},
+     *     @OA\Response(
+     *         response=200,
+     *         description="Statistics retrieved successfully",
+     *         @OA\JsonContent(
+     *             @OA\Property(property="status", type="string", example="success"),
+     *             @OA\Property(property="data", type="object",
+     *                 @OA\Property(property="total", type="integer", example=100),
+     *                 @OA\Property(property="sent", type="integer", example=80),
+     *                 @OA\Property(property="scheduled", type="integer", example=20),
+     *                 @OA\Property(property="recent", type="array", @OA\Items(type="object")),
+     *                 @OA\Property(property="upcoming", type="array", @OA\Items(type="object"))
+     *             ),
+     *             @OA\Property(property="message", type="string", example="Notification statistics retrieved successfully")
+     *         )
+     *     ),
+     *     @OA\Response(response=401, description="Unauthenticated"),
+     *     @OA\Response(response=403, description="Forbidden"),
+     *     @OA\Response(response=500, description="Server error")
+     * )
      */
     public function stats()
     {
@@ -439,6 +762,29 @@ class AdminNotificationController extends Controller
      * Process all due notifications
      * 
      * @return \Illuminate\Http\JsonResponse
+     * 
+     * @OA\Post(
+     *     path="/admin/notifications/process-due",
+     *     summary="Process due notifications",
+     *     description="Processes all scheduled notifications that are due to be sent",
+     *     operationId="adminProcessDueNotifications",
+     *     tags={"Admin Notifications"},
+     *     security={{"bearerAuth":{}}},
+     *     @OA\Response(
+     *         response=200,
+     *         description="Notifications processed successfully",
+     *         @OA\JsonContent(
+     *             @OA\Property(property="status", type="string", example="success"),
+     *             @OA\Property(property="data", type="object",
+     *                 @OA\Property(property="count", type="integer", example=5)
+     *             ),
+     *             @OA\Property(property="message", type="string", example="5 notifications processed successfully")
+     *         )
+     *     ),
+     *     @OA\Response(response=401, description="Unauthenticated"),
+     *     @OA\Response(response=403, description="Forbidden"),
+     *     @OA\Response(response=500, description="Server error")
+     * )
      */
     public function processDue()
     {

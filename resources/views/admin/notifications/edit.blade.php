@@ -1,5 +1,7 @@
 @extends('admin.layouts.app')
 
+@section('title', 'Edit Notifikasi')
+
 @section('styles')
 <style>
     .preview-container {
@@ -34,44 +36,95 @@
         opacity: 0.6;
         pointer-events: none;
     }
+    /* Input field styles with stroke */
+    .input-stroke {
+        border: 2px solid #e5e7eb;
+        transition: border-color 0.2s ease;
+    }
+    .input-stroke:focus {
+        border-color: #f97316;
+        box-shadow: 0 0 0 2px rgba(249, 115, 22, 0.2);
+    }
+    .dark .input-stroke {
+        border-color: #4b5563;
+    }
+    .dark .input-stroke:focus {
+        border-color: #f97316;
+        box-shadow: 0 0 0 2px rgba(249, 115, 22, 0.3);
+    }
 </style>
 @endsection
 
 @section('content')
-<div class="container-fluid px-4 py-4 mx-auto">
-    <div class="mb-4">
-        <h1 class="text-2xl font-semibold">Edit Notifikasi</h1>
-        <p class="text-sm text-gray-500 dark:text-gray-400">Ubah detail notifikasi di bawah ini.</p>
+<div class="container mx-auto px-4 py-6">
+    <div class="flex items-center justify-between mb-6">
+        <div>
+            <h1 class="text-2xl font-semibold text-gray-800 dark:text-gray-200">Edit Notifikasi</h1>
+            <p class="text-sm text-gray-500 dark:text-gray-400">Ubah detail notifikasi di bawah ini.</p>
+        </div>
+        <a href="{{ route('admin.notification.index') }}" class="px-4 py-2 bg-orange-500 text-white rounded-md hover:bg-orange-600 transition-colors flex items-center">
+            <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 mr-1" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 19l-7-7m0 0l7-7m-7 7h18" />
+            </svg>
+            Kembali
+        </a>
     </div>
 
-    <div class="bg-white dark:bg-gray-800 shadow rounded-lg p-6">
+    <div id="alert-success" class="bg-green-100 border border-green-400 text-green-700 px-4 py-3 rounded relative mb-4 hidden" role="alert">
+        <span class="block sm:inline" id="success-message"></span>
+        <button type="button" class="absolute top-0 bottom-0 right-0 px-4 py-3" onclick="hideAlert('alert-success')" aria-label="Close">
+            <span class="sr-only">Close</span>
+            <svg class="h-4 w-4" fill="currentColor" viewBox="0 0 20 20">
+                <path d="M4.293 4.293a1 1 0 011.414 0L10 8.586l4.293-4.293a1 1 0 111.414 1.414L11.414 10l4.293 4.293a1 1 0 01-1.414 1.414L10 11.414l-4.293 4.293a1 1 0 01-1.414-1.414L8.586 10 4.293 5.707a1 1 0 010-1.414z" clip-rule="evenodd" fill-rule="evenodd"></path>
+            </svg>
+        </button>
+    </div>
+
+    <div id="alert-error" class="bg-red-100 border border-red-400 text-red-700 px-4 py-3 rounded relative mb-4 hidden" role="alert">
+        <span class="block sm:inline" id="error-message"></span>
+        <button type="button" class="absolute top-0 bottom-0 right-0 px-4 py-3" onclick="hideAlert('alert-error')" aria-label="Close">
+            <span class="sr-only">Close</span>
+            <svg class="h-4 w-4" fill="currentColor" viewBox="0 0 20 20">
+                <path d="M4.293 4.293a1 1 0 011.414 0L10 8.586l4.293-4.293a1 1 0 111.414 1.414L11.414 10l4.293 4.293a1 1 0 01-1.414 1.414L10 11.414l-4.293 4.293a1 1 0 01-1.414-1.414L8.586 10 4.293 5.707a1 1 0 010-1.414z" clip-rule="evenodd" fill-rule="evenodd"></path>
+            </svg>
+        </button>
+    </div>
+
+    <div id="loading-spinner" class="flex justify-center items-center py-10">
+        <svg class="animate-spin h-10 w-10 text-orange-500" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
+            <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
+            <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
+        </svg>
+    </div>
+
+    <div id="content-area" class="bg-white dark:bg-gray-800 shadow rounded-lg p-6">
         <form id="edit-notification-form" data-notification-id="{{ $id }}" enctype="multipart/form-data">
             <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
                 <!-- Title -->
                 <div>
                     <label for="title" class="block text-sm font-medium text-gray-700 dark:text-gray-300">Judul <span class="text-red-500">*</span></label>
-                    <input type="text" name="title" id="title" required class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-orange-500 focus:ring-orange-500 sm:text-sm dark:bg-gray-700 dark:border-gray-600">
+                    <input type="text" name="title" id="title" required class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-orange-500 focus:ring-orange-500 sm:text-sm dark:bg-gray-700 dark:border-gray-600 input-stroke">
                     <p class="mt-1 text-xs text-gray-500 dark:text-gray-400" id="title-error"></p>
                 </div>
                 
                 <!-- Message -->
                 <div class="md:col-span-2">
                     <label for="message" class="block text-sm font-medium text-gray-700 dark:text-gray-300">Pesan <span class="text-red-500">*</span></label>
-                    <textarea name="message" id="message" rows="4" required class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-orange-500 focus:ring-orange-500 sm:text-sm dark:bg-gray-700 dark:border-gray-600"></textarea>
+                    <textarea name="message" id="message" rows="4" required class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-orange-500 focus:ring-orange-500 sm:text-sm dark:bg-gray-700 dark:border-gray-600 input-stroke"></textarea>
                     <p class="mt-1 text-xs text-gray-500 dark:text-gray-400" id="message-error"></p>
                 </div>
 
                 <!-- Target URL -->
                 <div>
                     <label for="target_url" class="block text-sm font-medium text-gray-700 dark:text-gray-300">Target URL (Opsional)</label>
-                    <input type="url" name="target_url" id="target_url" class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-orange-500 focus:ring-orange-500 sm:text-sm dark:bg-gray-700 dark:border-gray-600" placeholder="https://example.com">
+                    <input type="url" name="target_url" id="target_url" class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-orange-500 focus:ring-orange-500 sm:text-sm dark:bg-gray-700 dark:border-gray-600 input-stroke" placeholder="https://example.com">
                     <p class="mt-1 text-xs text-gray-500 dark:text-gray-400" id="target_url-error"></p>
                 </div>
 
                 <!-- Icon Upload -->
                 <div>
                     <label for="icon" class="block text-sm font-medium text-gray-700 dark:text-gray-300">Icon (Opsional)</label>
-                    <input type="file" name="icon" id="icon" accept="image/*" class="mt-1 block w-full text-sm text-gray-500 dark:text-gray-400 file:mr-4 file:py-2 file:px-4 file:rounded-md file:border-0 file:text-sm file:font-semibold file:bg-orange-50 file:text-orange-700 hover:file:bg-orange-100 dark:file:bg-gray-700 dark:file:text-gray-300">
+                    <input type="file" name="icon" id="icon" accept="image/*" class="mt-1 block w-full text-sm text-gray-500 dark:text-gray-400 file:mr-4 file:py-2 file:px-4 file:rounded-md file:border-0 file:text-sm file:font-semibold file:bg-orange-50 file:text-orange-700 hover:file:bg-orange-100 dark:file:bg-gray-700 dark:file:text-gray-300 input-stroke">
                     <p class="mt-1 text-xs text-gray-500 dark:text-gray-400">Format: JPG, PNG, GIF, SVG. Maks: 2MB</p>
                     <p class="mt-1 text-xs text-gray-500 dark:text-gray-400" id="icon-error"></p>
                     
@@ -83,18 +136,12 @@
                             <span id="current-icon-name" class="ml-2 text-xs text-gray-500 dark:text-gray-400"></span>
                         </div>
                     </div>
-                    
-                    <!-- URL Fallback for icon -->
-                    <div class="mt-2">
-                        <label for="icon_url" class="block text-xs font-medium text-gray-500 dark:text-gray-400">Atau gunakan URL</label>
-                        <input type="url" name="icon_url" id="icon_url" class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-orange-500 focus:ring-orange-500 sm:text-xs dark:bg-gray-700 dark:border-gray-600" placeholder="https://example.com/icon.png">
-                    </div>
                 </div>
 
                 <!-- Image Upload -->
                 <div>
                     <label for="image" class="block text-sm font-medium text-gray-700 dark:text-gray-300">Gambar (Opsional)</label>
-                    <input type="file" name="image" id="image" accept="image/*" class="mt-1 block w-full text-sm text-gray-500 dark:text-gray-400 file:mr-4 file:py-2 file:px-4 file:rounded-md file:border-0 file:text-sm file:font-semibold file:bg-orange-50 file:text-orange-700 hover:file:bg-orange-100 dark:file:bg-gray-700 dark:file:text-gray-300">
+                    <input type="file" name="image" id="image" accept="image/*" class="mt-1 block w-full text-sm text-gray-500 dark:text-gray-400 file:mr-4 file:py-2 file:px-4 file:rounded-md file:border-0 file:text-sm file:font-semibold file:bg-orange-50 file:text-orange-700 hover:file:bg-orange-100 dark:file:bg-gray-700 dark:file:text-gray-300 input-stroke">
                     <p class="mt-1 text-xs text-gray-500 dark:text-gray-400">Format: JPG, PNG, GIF, SVG. Maks: 2MB</p>
                     <p class="mt-1 text-xs text-gray-500 dark:text-gray-400" id="image-error"></p>
                     
@@ -105,12 +152,6 @@
                             <img id="current-image" src="" alt="Current Image" class="h-16 w-auto object-cover rounded">
                             <span id="current-image-name" class="ml-2 text-xs text-gray-500 dark:text-gray-400"></span>
                         </div>
-                    </div>
-                    
-                    <!-- URL Fallback for image -->
-                    <div class="mt-2">
-                        <label for="image_url" class="block text-xs font-medium text-gray-500 dark:text-gray-400">Atau gunakan URL</label>
-                        <input type="url" name="image_url" id="image_url" class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-orange-500 focus:ring-orange-500 sm:text-xs dark:bg-gray-700 dark:border-gray-600" placeholder="https://example.com/image.jpg">
                     </div>
                 </div>
 
@@ -163,15 +204,15 @@
                 <!-- Scheduled At -->
                 <div id="schedule-container">
                     <label for="scheduled_at" class="block text-sm font-medium text-gray-700 dark:text-gray-300">Jadwalkan Untuk <span class="text-red-500 scheduled-required">*</span></label>
-                    <input type="datetime-local" name="scheduled_at" id="scheduled_at" class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-orange-500 focus:ring-orange-500 sm:text-sm dark:bg-gray-700 dark:border-gray-600">
+                    <input type="datetime-local" name="scheduled_at" id="scheduled_at" class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-orange-500 focus:ring-orange-500 sm:text-sm dark:bg-gray-700 dark:border-gray-600 input-stroke">
                     <p class="mt-1 text-xs text-gray-500 dark:text-gray-400" id="scheduled_at-error"></p>
                 </div>
             </div>
 
             <!-- Actions -->
             <div class="flex justify-end gap-3 mt-8">
-                <a href="{{ route('admin.notifications.index') }}" class="px-4 py-2 bg-gray-200 text-gray-800 rounded-md hover:bg-gray-300 dark:bg-gray-600 dark:text-white dark:hover:bg-gray-500">Batal</a>
-                <button type="submit" id="save-button" class="px-4 py-2 bg-indigo-800 text-white rounded-md hover:bg-indigo-900 flex items-center">
+                <a href="{{ route('admin.notification.index') }}" class="px-4 py-2 border border-orange-500 text-orange-500 rounded-md hover:bg-orange-500 hover:text-white transition-colors">Batal</a>
+                <button type="submit" id="save-button" class="px-4 py-2 bg-orange-500 text-white rounded-md hover:bg-orange-600 transition-colors flex items-center">
                     <span id="save-button-text">Update Notifikasi</span>
                     <svg id="loading-spinner" class="animate-spin -mr-1 ml-3 h-5 w-5 text-white hidden" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
                         <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
@@ -192,6 +233,8 @@ document.addEventListener('DOMContentLoaded', function () {
     const token = localStorage.getItem('access_token');
     const form = document.getElementById('edit-notification-form');
     const notificationId = form.dataset.notificationId;
+    const loadingSpinner = document.getElementById('loading-spinner');
+    const contentArea = document.getElementById('content-area');
 
     if (!token || !notificationId) {
         window.location.href = '/admin/login';
@@ -203,7 +246,7 @@ document.addEventListener('DOMContentLoaded', function () {
     const scheduledAtInput = document.getElementById('scheduled_at');
     const saveButton = document.getElementById('save-button');
     const saveButtonText = document.getElementById('save-button-text');
-    const loadingSpinner = document.getElementById('loading-spinner');
+    const formSpinner = document.getElementById('loading-spinner');
     const formError = document.getElementById('form-error');
     const notificationStatus = document.getElementById('notification-status');
     
@@ -211,9 +254,7 @@ document.addEventListener('DOMContentLoaded', function () {
     const titleInput = document.getElementById('title');
     const messageInput = document.getElementById('message');
     const iconInput = document.getElementById('icon');
-    const iconUrlInput = document.getElementById('icon_url');
     const imageInput = document.getElementById('image');
-    const imageUrlInput = document.getElementById('image_url');
     const previewTitle = document.getElementById('preview-title');
     const previewMessage = document.getElementById('preview-message');
     const previewIcon = document.getElementById('preview-icon');
@@ -263,18 +304,11 @@ document.addEventListener('DOMContentLoaded', function () {
             }
             reader.readAsDataURL(iconInput.files[0]);
         } 
-        // If URL is provided
-        else if (iconUrlInput.value && isValidUrl(iconUrlInput.value)) {
-            previewIcon.src = iconUrlInput.value;
-            previewIconContainer.classList.remove('hidden');
-        } 
         // If there's a current icon
         else if (currentIcon.src && currentIcon.src !== window.location.href) {
-            previewIcon.src = currentIcon.src;
+            // Keep using the current icon
             previewIconContainer.classList.remove('hidden');
-        }
-        // Hide if no icon
-        else {
+        } else {
             previewIconContainer.classList.add('hidden');
         }
     }
@@ -289,18 +323,11 @@ document.addEventListener('DOMContentLoaded', function () {
             }
             reader.readAsDataURL(imageInput.files[0]);
         } 
-        // If URL is provided
-        else if (imageUrlInput.value && isValidUrl(imageUrlInput.value)) {
-            previewImage.src = imageUrlInput.value;
-            previewImageContainer.classList.remove('hidden');
-        } 
         // If there's a current image
         else if (currentImage.src && currentImage.src !== window.location.href) {
-            previewImage.src = currentImage.src;
+            // Keep using the current image
             previewImageContainer.classList.remove('hidden');
-        }
-        // Hide if no image
-        else {
+        } else {
             previewImageContainer.classList.add('hidden');
         }
     }
@@ -314,29 +341,35 @@ document.addEventListener('DOMContentLoaded', function () {
         }
     }
 
+    function showAlert(message, type = 'success') {
+        const alertId = type === 'success' ? 'alert-success' : 'alert-error';
+        const alertEl = document.getElementById(alertId);
+        const messageEl = alertId === 'alert-success' ? document.getElementById('success-message') : document.getElementById('error-message');
+        
+        if (alertEl && messageEl) {
+            messageEl.textContent = message;
+            alertEl.classList.remove('hidden');
+            
+            setTimeout(() => {
+                alertEl.classList.add('hidden');
+            }, 5000);
+        }
+    }
+    
+    function hideAlert(alertId) {
+        const alertEl = document.getElementById(alertId);
+        if (alertEl) {
+            alertEl.classList.add('hidden');
+        }
+    }
+
     function populateForm(notification) {
+        // Populate form fields
         titleInput.value = notification.title || '';
         messageInput.value = notification.message || '';
         document.getElementById('target_url').value = notification.target_url || '';
         
-        // Handle icon
-        if (notification.icon) {
-            // Don't set the file input (can't set value for security reasons)
-            // But show the current icon
-            currentIcon.src = notification.icon;
-            currentIconName.textContent = getFileNameFromPath(notification.icon);
-            currentIconContainer.classList.remove('hidden');
-        }
-        
-        // Handle image
-        if (notification.image) {
-            // Don't set the file input (can't set value for security reasons)
-            // But show the current image
-            currentImage.src = notification.image;
-            currentImageName.textContent = getFileNameFromPath(notification.image);
-            currentImageContainer.classList.remove('hidden');
-        }
-        
+        // Set scheduled date if available
         if (notification.scheduled_at) {
             // Format to YYYY-MM-DDTHH:mm
             try {
@@ -349,29 +382,75 @@ document.addEventListener('DOMContentLoaded', function () {
                 console.error('Date formatting error:', e);
             }
         }
+        
+        // Show current icon if exists
+        if (notification.icon) {
+            // Don't set the file input (can't set value for security reasons)
+            // But show the current icon
+            currentIcon.src = notification.icon;
+            currentIconName.textContent = getFileNameFromPath(notification.icon);
+            currentIconContainer.classList.remove('hidden');
+            
+            // Update preview
+            previewIcon.src = notification.icon;
+            previewIconContainer.classList.remove('hidden');
+        }
+        
+        // Show current image if exists
+        if (notification.image) {
+            // Don't set the file input (can't set value for security reasons)
+            // But show the current image
+            currentImage.src = notification.image;
+            currentImageName.textContent = getFileNameFromPath(notification.image);
+            currentImageContainer.classList.remove('hidden');
 
         // Update preview
+            previewImage.src = notification.image;
+            previewImageContainer.classList.remove('hidden');
+        }
+        
+        // Update the preview
         updatePreview();
 
+        // Handle sent notification UI
+        handleSentNotification(notification.is_sent);
+    }
+    
+    function getFileNameFromPath(path) {
+        if (!path) return '';
+        return path.split('/').pop() || path;
+    }
+
+    function handleSentNotification(isSent) {
         // Check for reschedule parameter in URL
         const urlParams = new URLSearchParams(window.location.search);
         const reschedule = urlParams.get('reschedule');
 
-        if (notification.is_sent) {
-            // Show reschedule option
+        if (isSent) {
+            // Show reschedule option and hide edit options
             document.getElementById('reschedule-container').style.display = 'flex';
+            sendNowCheckbox.parentElement.parentElement.style.display = 'none'; // Hide send now option
+            
+            // Change button text to indicate reschedule action
+            saveButtonText.textContent = "Reschedule Notification";
+            
+            // Disable form by default for sent notifications
+            disableForm();
             
             // If reschedule parameter is present, check the reschedule checkbox
             if (reschedule === 'true') {
                 document.getElementById('reschedule').checked = true;
-                enableForm();
-                notificationStatus.textContent = "You are rescheduling a notification that was already sent. This will create a new delivery of the same notification.";
+                enableFormForReschedule(); // Only enable scheduling fields
+                notificationStatus.textContent = "You are rescheduling a notification that was already sent. You can only change the schedule date.";
                 notificationStatus.classList.add('text-blue-600', 'dark:text-blue-400');
             } else {
-                // Disable form if already sent and not rescheduling
-                disableForm();
+                notificationStatus.textContent = "This notification has already been sent. To send it again, use the reschedule option.";
+                notificationStatus.classList.add('text-amber-600', 'dark:text-amber-400');
             }
         } else {
+            // Hide reschedule option for unsent notifications
+            document.getElementById('reschedule-container').style.display = 'none';
+            
             // Set minimum date for scheduled_at to now
             const now = new Date();
             const year = now.getFullYear();
@@ -381,16 +460,20 @@ document.addEventListener('DOMContentLoaded', function () {
             const minutes = String(now.getMinutes()).padStart(2, '0');
             
             scheduledAtInput.min = `${year}-${month}-${day}T${hours}:${minutes}`;
+            
+            // Enable all form fields for editing
+            enableForm();
+            
+            notificationStatus.textContent = "You can edit this notification before it's sent.";
+            notificationStatus.classList.add('text-green-600', 'dark:text-green-400');
         }
-    }
-    
-    function getFileNameFromPath(path) {
-        if (!path) return '';
-        return path.split('/').pop() || path;
+        
+        // Show content after loading
+        loadingSpinner.style.display = 'none';
+        contentArea.style.display = 'block';
     }
 
     // Fetch existing data
-    setLoading(true);
     fetch(`/api/admin/notifications/${notificationId}`, {
         headers: {
             'Authorization': `Bearer ${token}`,
@@ -419,11 +502,9 @@ document.addEventListener('DOMContentLoaded', function () {
         console.error('Error fetching notification:', error);
         formError.textContent = 'Could not load notification data. Please try again.';
         saveButton.disabled = true;
-    })
-    .finally(() => {
-        setLoading(false);
+        loadingSpinner.style.display = 'none';
+        contentArea.style.display = 'block';
     });
-
 
     sendNowCheckbox.addEventListener('change', (e) => {
         toggleSchedule(e.target.checked);
@@ -433,9 +514,7 @@ document.addEventListener('DOMContentLoaded', function () {
     titleInput.addEventListener('input', updatePreview);
     messageInput.addEventListener('input', updatePreview);
     iconInput.addEventListener('change', updateIconPreview);
-    iconUrlInput.addEventListener('input', updateIconPreview);
     imageInput.addEventListener('change', updateImagePreview);
-    imageUrlInput.addEventListener('input', updateImagePreview);
 
     form.addEventListener('submit', function (e) {
         e.preventDefault();
@@ -544,7 +623,7 @@ document.addEventListener('DOMContentLoaded', function () {
     function setLoading(isLoading) {
         if (isLoading) {
             saveButton.disabled = true;
-            saveButtonText.textContent = 'Loading...';
+            saveButtonText.textContent = 'Memuat...';
             loadingSpinner.classList.remove('hidden');
         } else {
             if (!form.classList.contains('form-disabled')) {
@@ -565,11 +644,6 @@ document.addEventListener('DOMContentLoaded', function () {
         
         form.classList.add('form-disabled');
         saveButton.disabled = true;
-        saveButtonText.textContent = "Already Sent";
-        
-        // Show status message
-        notificationStatus.textContent = "This notification has already been sent and cannot be edited unless you reschedule it.";
-        notificationStatus.classList.add('text-amber-600', 'dark:text-amber-400');
         
         // Hide form error if any
         formError.textContent = '';
@@ -583,7 +657,25 @@ document.addEventListener('DOMContentLoaded', function () {
         
         form.classList.remove('form-disabled');
         saveButton.disabled = false;
-        saveButtonText.textContent = "Reschedule Notification";
+    }
+    
+    function enableFormForReschedule() {
+        // Keep most fields disabled
+        const formElements = form.querySelectorAll('input, textarea, button, select');
+        formElements.forEach(el => {
+            el.disabled = true;
+        });
+        
+        // Only enable scheduling fields
+        scheduledAtInput.disabled = false;
+        document.getElementById('reschedule').disabled = false;
+        saveButton.disabled = false;
+        
+        // Hide file input fields to prevent accidental changes
+        document.getElementById('icon').parentElement.style.display = 'none';
+        document.getElementById('image').parentElement.style.display = 'none';
+        
+        form.classList.remove('form-disabled');
     }
 
     // Add event listener for reschedule checkbox
@@ -591,12 +683,15 @@ document.addEventListener('DOMContentLoaded', function () {
     if (rescheduleCheckbox) {
         rescheduleCheckbox.addEventListener('change', function() {
             if (this.checked) {
-                enableForm();
-                notificationStatus.textContent = "You are rescheduling a notification that was already sent. This will create a new delivery of the same notification.";
+                enableFormForReschedule();
+                notificationStatus.textContent = "You are rescheduling a notification that was already sent. You can only change the schedule date.";
                 notificationStatus.classList.add('text-blue-600', 'dark:text-blue-400');
                 notificationStatus.classList.remove('text-amber-600', 'dark:text-amber-400');
             } else {
                 disableForm();
+                notificationStatus.textContent = "This notification has already been sent. To send it again, use the reschedule option.";
+                notificationStatus.classList.add('text-amber-600', 'dark:text-amber-400');
+                notificationStatus.classList.remove('text-blue-600', 'dark:text-blue-400');
             }
         });
     }

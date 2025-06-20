@@ -8,7 +8,14 @@ use App\Models\JenisLayanan;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Validator;
 use Illuminate\Support\Facades\Log;
+use Illuminate\Support\Facades\Storage;
 
+/**
+ * @OA\Tag(
+ *     name="Admin Services",
+ *     description="API Endpoints for Admin Service Management"
+ * )
+ */
 class AdminLayananController extends Controller
 {
     /**
@@ -27,6 +34,49 @@ class AdminLayananController extends Controller
      *
      * @param  int  $jenisLayananId
      * @return \Illuminate\Http\Response
+     * 
+     * @OA\Get(
+     *     path="/admin/layanan/{jenisLayananId?}",
+     *     summary="Get all services",
+     *     description="Returns a list of all services, optionally filtered by service type",
+     *     operationId="adminGetLayanan",
+     *     tags={"Admin Services"},
+     *     security={{"bearerAuth":{}}},
+     *     @OA\Parameter(
+     *         name="jenisLayananId",
+     *         in="path",
+     *         description="Service type ID (optional)",
+     *         required=false,
+     *         @OA\Schema(type="integer")
+     *     ),
+     *     @OA\Response(
+     *         response=200,
+     *         description="Successful operation",
+     *         @OA\JsonContent(
+     *             @OA\Property(property="status", type="string", example="success"),
+     *             @OA\Property(property="data", type="array",
+     *                 @OA\Items(
+     *                     @OA\Property(property="id_layanan", type="integer", example=1),
+     *                     @OA\Property(property="id_jenis_layanan", type="integer", example=1),
+     *                     @OA\Property(property="judul_layanan", type="string", example="Pinjaman Anggota"),
+     *                     @OA\Property(property="deskripsi_layanan", type="string", example="Layanan pinjaman untuk anggota koperasi"),
+     *                     @OA\Property(property="gambar", type="string", example="layanan/layanan_1234567890.jpg"),
+     *                     @OA\Property(property="created_at", type="string", format="date-time"),
+     *                     @OA\Property(property="updated_at", type="string", format="date-time"),
+     *                     @OA\Property(property="jenis_layanan", type="object",
+     *                         @OA\Property(property="id_jenis_layanan", type="integer", example=1),
+     *                         @OA\Property(property="nama_jenis", type="string", example="Pinjaman"),
+     *                         @OA\Property(property="created_at", type="string", format="date-time"),
+     *                         @OA\Property(property="updated_at", type="string", format="date-time")
+     *                     )
+     *                 )
+     *             )
+     *         )
+     *     ),
+     *     @OA\Response(response=401, description="Unauthenticated"),
+     *     @OA\Response(response=403, description="Forbidden"),
+     *     @OA\Response(response=500, description="Server error")
+     * )
      */
     public function index($jenisLayananId = null)
     {
@@ -57,13 +107,70 @@ class AdminLayananController extends Controller
      *
      * @param  \Illuminate\Http\Request  $request
      * @return \Illuminate\Http\Response
+     * 
+     * @OA\Post(
+     *     path="/admin/layanan",
+     *     summary="Create a new service",
+     *     description="Creates a new service with optional image upload",
+     *     operationId="adminCreateLayanan",
+     *     tags={"Admin Services"},
+     *     security={{"bearerAuth":{}}},
+     *     @OA\RequestBody(
+     *         required=true,
+     *         @OA\MediaType(
+     *             mediaType="multipart/form-data",
+     *             @OA\Schema(
+     *                 required={"id_jenis_layanan", "judul_layanan"},
+     *                 @OA\Property(
+     *                     property="id_jenis_layanan",
+     *                     type="integer",
+     *                     example=1,
+     *                     description="Service type ID"
+     *                 ),
+     *                 @OA\Property(
+     *                     property="judul_layanan",
+     *                     type="string",
+     *                     maxLength=120,
+     *                     example="Pinjaman Anggota",
+     *                     description="Service title"
+     *                 ),
+     *                 @OA\Property(
+     *                     property="deskripsi_layanan",
+     *                     type="string",
+     *                     example="Layanan pinjaman untuk anggota koperasi",
+     *                     description="Service description"
+     *                 ),
+     *                 @OA\Property(
+     *                     property="gambar",
+     *                     type="string",
+     *                     format="binary",
+     *                     description="Service image (JPEG, PNG, JPG, GIF max 2MB)"
+     *                 )
+     *             )
+     *         )
+     *     ),
+     *     @OA\Response(
+     *         response=201,
+     *         description="Service created successfully",
+     *         @OA\JsonContent(
+     *             @OA\Property(property="status", type="string", example="success"),
+     *             @OA\Property(property="message", type="string", example="Layanan created successfully"),
+     *             @OA\Property(property="data", type="object")
+     *         )
+     *     ),
+     *     @OA\Response(response=401, description="Unauthenticated"),
+     *     @OA\Response(response=403, description="Forbidden"),
+     *     @OA\Response(response=422, description="Validation error"),
+     *     @OA\Response(response=500, description="Server error")
+     * )
      */
     public function store(Request $request)
     {
         $validator = Validator::make($request->all(), [
             'id_jenis_layanan' => 'required|exists:jenis_layanan,id_jenis_layanan',
             'judul_layanan' => 'required|string|max:120',
-            'deskripsi_layanan' => 'required|string',
+            'deskripsi_layanan' => 'nullable|string',
+            'gambar' => 'nullable|image|mimes:jpeg,png,jpg,gif|max:2048',
         ]);
 
         if ($validator->fails()) {
@@ -75,11 +182,25 @@ class AdminLayananController extends Controller
         }
 
         try {
-            $layanan = Layanan::create([
+            $data = [
                 'id_jenis_layanan' => $request->id_jenis_layanan,
                 'judul_layanan' => $request->judul_layanan,
-                'deskripsi_layanan' => $request->deskripsi_layanan,
-            ]);
+            ];
+            
+            // Handle description if provided
+            if ($request->has('deskripsi_layanan')) {
+                $data['deskripsi_layanan'] = $request->deskripsi_layanan;
+            }
+            
+            // Handle image upload if provided
+            if ($request->hasFile('gambar')) {
+                $image = $request->file('gambar');
+                $imageName = 'layanan_' . time() . '.' . $image->getClientOriginalExtension();
+                $path = $image->storeAs('layanan', $imageName, 'public');
+                $data['gambar'] = $path;
+            }
+            
+            $layanan = Layanan::create($data);
             
             return response()->json([
                 'status' => 'success',
@@ -100,6 +221,34 @@ class AdminLayananController extends Controller
      *
      * @param  int  $id
      * @return \Illuminate\Http\Response
+     * 
+     * @OA\Get(
+     *     path="/admin/layanan/{id}",
+     *     summary="Get service by ID",
+     *     description="Returns a specific service by ID",
+     *     operationId="adminGetLayananById",
+     *     tags={"Admin Services"},
+     *     security={{"bearerAuth":{}}},
+     *     @OA\Parameter(
+     *         name="id",
+     *         in="path",
+     *         description="Service ID",
+     *         required=true,
+     *         @OA\Schema(type="integer")
+     *     ),
+     *     @OA\Response(
+     *         response=200,
+     *         description="Successful operation",
+     *         @OA\JsonContent(
+     *             @OA\Property(property="status", type="string", example="success"),
+     *             @OA\Property(property="data", type="object")
+     *         )
+     *     ),
+     *     @OA\Response(response=401, description="Unauthenticated"),
+     *     @OA\Response(response=403, description="Forbidden"),
+     *     @OA\Response(response=404, description="Service not found"),
+     *     @OA\Response(response=500, description="Server error")
+     * )
      */
     public function show($id)
     {
@@ -132,6 +281,76 @@ class AdminLayananController extends Controller
      * @param  \Illuminate\Http\Request  $request
      * @param  int  $id
      * @return \Illuminate\Http\Response
+     * 
+     * @OA\Post(
+     *     path="/admin/layanan/{id}",
+     *     summary="Update a service",
+     *     description="Updates an existing service with optional image upload",
+     *     operationId="adminUpdateLayanan",
+     *     tags={"Admin Services"},
+     *     security={{"bearerAuth":{}}},
+     *     @OA\Parameter(
+     *         name="id",
+     *         in="path",
+     *         description="Service ID",
+     *         required=true,
+     *         @OA\Schema(type="integer")
+     *     ),
+     *     @OA\Parameter(
+     *         name="_method",
+     *         in="query",
+     *         description="HTTP method override",
+     *         required=true,
+     *         @OA\Schema(type="string", default="PUT")
+     *     ),
+     *     @OA\RequestBody(
+     *         required=true,
+     *         @OA\MediaType(
+     *             mediaType="multipart/form-data",
+     *             @OA\Schema(
+     *                 @OA\Property(
+     *                     property="id_jenis_layanan",
+     *                     type="integer",
+     *                     example=1,
+     *                     description="Service type ID"
+     *                 ),
+     *                 @OA\Property(
+     *                     property="judul_layanan",
+     *                     type="string",
+     *                     maxLength=120,
+     *                     example="Pinjaman Anggota Updated",
+     *                     description="Service title"
+     *                 ),
+     *                 @OA\Property(
+     *                     property="deskripsi_layanan",
+     *                     type="string",
+     *                     example="Updated description for layanan pinjaman",
+     *                     description="Service description"
+     *                 ),
+     *                 @OA\Property(
+     *                     property="gambar",
+     *                     type="string",
+     *                     format="binary",
+     *                     description="Service image (JPEG, PNG, JPG, GIF max 2MB)"
+     *                 )
+     *             )
+     *         )
+     *     ),
+     *     @OA\Response(
+     *         response=200,
+     *         description="Service updated successfully",
+     *         @OA\JsonContent(
+     *             @OA\Property(property="status", type="string", example="success"),
+     *             @OA\Property(property="message", type="string", example="Layanan updated successfully"),
+     *             @OA\Property(property="data", type="object")
+     *         )
+     *     ),
+     *     @OA\Response(response=401, description="Unauthenticated"),
+     *     @OA\Response(response=403, description="Forbidden"),
+     *     @OA\Response(response=404, description="Service not found"),
+     *     @OA\Response(response=422, description="Validation error"),
+     *     @OA\Response(response=500, description="Server error")
+     * )
      */
     public function update(Request $request, $id)
     {
@@ -147,7 +366,8 @@ class AdminLayananController extends Controller
         $validator = Validator::make($request->all(), [
             'id_jenis_layanan' => 'sometimes|required|exists:jenis_layanan,id_jenis_layanan',
             'judul_layanan' => 'sometimes|required|string|max:120',
-            'deskripsi_layanan' => 'sometimes|required|string',
+            'deskripsi_layanan' => 'nullable|string',
+            'gambar' => 'nullable|image|mimes:jpeg,png,jpg,gif|max:2048',
         ]);
 
         if ($validator->fails()) {
@@ -171,6 +391,19 @@ class AdminLayananController extends Controller
                 $layanan->deskripsi_layanan = $request->deskripsi_layanan;
             }
             
+            // Handle image upload if provided
+            if ($request->hasFile('gambar')) {
+                // Delete old image if exists
+                if ($layanan->gambar) {
+                    Storage::disk('public')->delete($layanan->gambar);
+                }
+                
+                $image = $request->file('gambar');
+                $imageName = 'layanan_' . time() . '.' . $image->getClientOriginalExtension();
+                $path = $image->storeAs('layanan', $imageName, 'public');
+                $layanan->gambar = $path;
+            }
+            
             $layanan->save();
             
             return response()->json([
@@ -192,6 +425,34 @@ class AdminLayananController extends Controller
      *
      * @param  int  $id
      * @return \Illuminate\Http\Response
+     * 
+     * @OA\Delete(
+     *     path="/admin/layanan/{id}",
+     *     summary="Delete a service",
+     *     description="Deletes a specific service by ID",
+     *     operationId="adminDeleteLayanan",
+     *     tags={"Admin Services"},
+     *     security={{"bearerAuth":{}}},
+     *     @OA\Parameter(
+     *         name="id",
+     *         in="path",
+     *         description="Service ID",
+     *         required=true,
+     *         @OA\Schema(type="integer")
+     *     ),
+     *     @OA\Response(
+     *         response=200,
+     *         description="Service deleted successfully",
+     *         @OA\JsonContent(
+     *             @OA\Property(property="status", type="string", example="success"),
+     *             @OA\Property(property="message", type="string", example="Layanan deleted successfully")
+     *         )
+     *     ),
+     *     @OA\Response(response=401, description="Unauthenticated"),
+     *     @OA\Response(response=403, description="Forbidden"),
+     *     @OA\Response(response=404, description="Service not found"),
+     *     @OA\Response(response=500, description="Server error")
+     * )
      */
     public function destroy($id)
     {
@@ -203,6 +464,11 @@ class AdminLayananController extends Controller
                     'status' => 'error',
                     'message' => 'Layanan not found'
                 ], 404);
+            }
+            
+            // Delete associated image if exists
+            if ($layanan->gambar) {
+                Storage::disk('public')->delete($layanan->gambar);
             }
             
             $layanan->delete();
@@ -224,6 +490,33 @@ class AdminLayananController extends Controller
      * Get all service types.
      *
      * @return \Illuminate\Http\Response
+     * 
+     * @OA\Get(
+     *     path="/admin/jenis-layanan",
+     *     summary="Get all service types",
+     *     description="Returns a list of all service types",
+     *     operationId="adminGetJenisLayanan",
+     *     tags={"Admin Services"},
+     *     security={{"bearerAuth":{}}},
+     *     @OA\Response(
+     *         response=200,
+     *         description="Successful operation",
+     *         @OA\JsonContent(
+     *             @OA\Property(property="status", type="string", example="success"),
+     *             @OA\Property(property="data", type="array",
+     *                 @OA\Items(
+     *                     @OA\Property(property="id_jenis_layanan", type="integer", example=1),
+     *                     @OA\Property(property="nama_jenis", type="string", example="Pinjaman"),
+     *                     @OA\Property(property="created_at", type="string", format="date-time"),
+     *                     @OA\Property(property="updated_at", type="string", format="date-time")
+     *                 )
+     *             )
+     *         )
+     *     ),
+     *     @OA\Response(response=401, description="Unauthenticated"),
+     *     @OA\Response(response=403, description="Forbidden"),
+     *     @OA\Response(response=500, description="Server error")
+     * )
      */
     public function getJenisLayanan()
     {
@@ -248,6 +541,50 @@ class AdminLayananController extends Controller
      *
      * @param  int  $id
      * @return \Illuminate\Http\Response
+     * 
+     * @OA\Get(
+     *     path="/admin/jenis-layanan/{id}",
+     *     summary="Get service type by ID",
+     *     description="Returns a specific service type by ID with its services",
+     *     operationId="adminGetJenisLayananById",
+     *     tags={"Admin Services"},
+     *     security={{"bearerAuth":{}}},
+     *     @OA\Parameter(
+     *         name="id",
+     *         in="path",
+     *         description="Service Type ID",
+     *         required=true,
+     *         @OA\Schema(type="integer")
+     *     ),
+     *     @OA\Response(
+     *         response=200,
+     *         description="Successful operation",
+     *         @OA\JsonContent(
+     *             @OA\Property(property="status", type="string", example="success"),
+     *             @OA\Property(property="data", type="object",
+     *                 @OA\Property(property="id_jenis_layanan", type="integer", example=1),
+     *                 @OA\Property(property="nama_jenis", type="string", example="Pinjaman"),
+     *                 @OA\Property(property="created_at", type="string", format="date-time"),
+     *                 @OA\Property(property="updated_at", type="string", format="date-time"),
+     *                 @OA\Property(property="layanan", type="array",
+     *                     @OA\Items(
+     *                         @OA\Property(property="id_layanan", type="integer", example=1),
+     *                         @OA\Property(property="id_jenis_layanan", type="integer", example=1),
+     *                         @OA\Property(property="judul_layanan", type="string", example="Pinjaman Anggota"),
+     *                         @OA\Property(property="deskripsi_layanan", type="string", example="Layanan pinjaman untuk anggota koperasi"),
+     *                         @OA\Property(property="gambar", type="string", example="layanan/layanan_1234567890.jpg"),
+     *                         @OA\Property(property="created_at", type="string", format="date-time"),
+     *                         @OA\Property(property="updated_at", type="string", format="date-time")
+     *                     )
+     *                 )
+     *             )
+     *         )
+     *     ),
+     *     @OA\Response(response=401, description="Unauthenticated"),
+     *     @OA\Response(response=403, description="Forbidden"),
+     *     @OA\Response(response=404, description="Service type not found"),
+     *     @OA\Response(response=500, description="Server error")
+     * )
      */
     public function getJenisLayananById($id)
     {

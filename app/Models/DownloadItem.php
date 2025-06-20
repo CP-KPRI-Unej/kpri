@@ -39,7 +39,7 @@ class DownloadItem extends Model
         'id_user',
         'nama_item',
         'path_file',
-        'status',
+        'id_status',
         'tgl_upload',
         'urutan',
     ];
@@ -59,5 +59,13 @@ class DownloadItem extends Model
     public function user()
     {
         return $this->belongsTo(User::class, 'id_user', 'id_user');
+    }
+
+    /**
+     * Get the status of the download item.
+     */
+    public function status()
+    {
+        return $this->belongsTo(Status::class, 'id_status', 'id_status');
     }
 } 

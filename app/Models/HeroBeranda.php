@@ -40,7 +40,8 @@ class HeroBeranda extends Model
         'judul',
         'deskripsi',
         'gambar',
-        'url'
+        'url',
+        'id_status'
     ];
 
     /**
@@ -49,6 +50,14 @@ class HeroBeranda extends Model
     public function user()
     {
         return $this->belongsTo(User::class, 'id_user', 'id_user');
+    }
+
+    /**
+     * Get the status of the hero banner.
+     */
+    public function status()
+    {
+        return $this->belongsTo(Status::class, 'id_status', 'id_status');
     }
 } 
  

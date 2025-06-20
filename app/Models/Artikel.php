@@ -36,21 +36,13 @@ class Artikel extends Model
      * @var array
      */
     protected $fillable = [
-        'id_status',
         'id_user',
         'nama_artikel',
         'deskripsi_artikel',
         'tgl_rilis',
-        'tags_artikel'
+        'tags_artikel',
+        'status'
     ];
-
-    /**
-     * Get the status that owns the article.
-     */
-    public function status()
-    {
-        return $this->belongsTo(Status::class, 'id_status', 'id_status');
-    }
 
     /**
      * Get the user that owns the article.

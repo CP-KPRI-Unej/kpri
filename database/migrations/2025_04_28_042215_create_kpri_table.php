@@ -18,11 +18,10 @@ class CreateKpriTable extends Migration
             $table->unsignedInteger('id_jenis_layanan');
             $table->string('judul_layanan', 120);
             $table->text('deskripsi_layanan')->nullable();
-            $table->string('gambar')->nullable(); // Menambahkan kolom gambar (opsional)
+            $table->string('gambar')->nullable(); 
         
             $table->foreign('id_jenis_layanan')->references('id_jenis_layanan')->on('jenis_layanan');
         });
-        
         
         Schema::create('status', function (Blueprint $table) {
             $table->increments('id_status');
@@ -91,16 +90,18 @@ class CreateKpriTable extends Migration
         
         Schema::create('artikel', function (Blueprint $table) {
             $table->increments('id_artikel');
-            $table->unsignedInteger('id_status');
             $table->unsignedInteger('id_user');
             $table->string('nama_artikel', 120);
             $table->text('deskripsi_artikel');
             $table->date('tgl_rilis');
             $table->string('tags_artikel', 255);
+            
 
-            $table->foreign('id_status')->references('id_status')->on('status');
+            $table->enum('status', ['draft', 'published', 'archived'])->default('draft');
+        
             $table->foreign('id_user')->references('id_user')->on('user_KPRI');
         });
+        
         
         Schema::create('artikel_images', function (Blueprint $table) {
             $table->increments('id');
@@ -130,12 +131,25 @@ class CreateKpriTable extends Migration
             $table->string('nama_jabatan', 20);
         });
 
+        Schema::create('periode_kepengurusan', function (Blueprint $table) {
+            $table->increments('id_periode');
+            $table->string('nama_periode', 100);
+            $table->date('tanggal_mulai');
+            $table->date('tanggal_selesai');
+            $table->enum('status', ['aktif', 'nonaktif'])->default('aktif');
+            $table->text('keterangan')->nullable();
+            $table->timestamps();
+        });
+
         Schema::create('struktur_kepengurusan', function (Blueprint $table) {
             $table->increments('id_pengurus');
             $table->unsignedInteger('id_jabatan');
+            $table->unsignedInteger('id_periode');
             $table->string('nama_pengurus', 50)->nullable();
+            $table->timestamps();
 
             $table->foreign('id_jabatan')->references('id_jabatan')->on('jabatan');
+            $table->foreign('id_periode')->references('id_periode')->on('periode_kepengurusan');
         });
 
         Schema::create('form_kpri', function (Blueprint $table) {
@@ -207,8 +221,10 @@ class CreateKpriTable extends Migration
             $table->unsignedInteger('id_user');
             $table->string('judul', 120);
             $table->text('deskripsi');
+            $table->unsignedInteger('id_status')->default(1);
 
             $table->foreign('id_user')->references('id_user')->on('user_KPRI');
+            $table->foreign('id_status')->references('id_status')->on('status');
         });
 
         Schema::create('hero_beranda', function (Blueprint $table) {
@@ -218,8 +234,10 @@ class CreateKpriTable extends Migration
             $table->text('deskripsi');
             $table->string('gambar', 100);
             $table->string('url', 255);
+            $table->unsignedInteger('id_status')->default(1);
 
             $table->foreign('id_user')->references('id_user')->on('user_KPRI');
+            $table->foreign('id_status')->references('id_status')->on('status');
         });
 
         Schema::create('log_perubahan', function (Blueprint $table) {
@@ -240,11 +258,12 @@ class CreateKpriTable extends Migration
             $table->unsignedInteger('id_user');
             $table->string('nama_item', 120);
             $table->string('path_file', 255);
-            $table->enum('status', ['Active', 'Inactive'])->default('Active');
+            $table->unsignedInteger('id_status');
             $table->date('tgl_upload');
             $table->integer('urutan')->default(0);
         
             $table->foreign('id_user')->references('id_user')->on('user_KPRI')->onDelete('cascade');
+            $table->foreign('id_status')->references('id_status')->on('status');
         });
 
         Schema::create('visitor_stats', function (Blueprint $table) {
@@ -272,6 +291,7 @@ class CreateKpriTable extends Migration
         Schema::dropIfExists('kategori_produk');
         Schema::dropIfExists('form_kpri');
         Schema::dropIfExists('struktur_kepengurusan');
+        Schema::dropIfExists('periode_kepengurusan');
         Schema::dropIfExists('jabatan');
         Schema::dropIfExists('komentar');
         Schema::dropIfExists('artikel_images');

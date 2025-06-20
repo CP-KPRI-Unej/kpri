@@ -1,7 +1,7 @@
 <?php
 
 use Illuminate\Support\Facades\Route;
-use App\Http\Controllers\TokoController;
+
 
 
 
@@ -69,6 +69,11 @@ Route::prefix('admin')->group(function () {
     Route::get('/struktur/create', function() {
         return view('admin.struktur.create');
     })->name('admin.struktur.create');
+
+    // Periode Kepengurusan routes
+    Route::get('/struktur/periode', function() {
+        return view('admin.struktur.periode.index');
+    })->name('admin.struktur.periode.index');
 
     Route::get('/struktur/{id}/edit', function($id) {
         return view('admin.struktur.edit', ['id' => $id]);
@@ -167,28 +172,21 @@ Route::prefix('admin')->group(function () {
         return view('admin.hero-banners.edit', ['id' => $id]);
     })->name('admin.hero-banners.edit');
 
-    // Settings routes
     Route::get('/settings', function() {
         return view('admin.settings.index');
     })->name('admin.settings.index');
 
-    // Notification routes
-    Route::get('/notifications', function() {
-        return view('admin.notifications.index');
-    })->name('admin.notifications.index');
-
-    // Alias untuk /notification tanpa 's' agar tetap berfungsi
     Route::get('/notification', function() {
         return view('admin.notifications.index');
     })->name('admin.notification.index');
 
-    Route::get('/notifications/create', function() {
+    Route::get('/notification/create', function() {
         return view('admin.notifications.create');
-    })->name('admin.notifications.create');
+    })->name('admin.notification.create');
 
-    Route::get('/notifications/{id}/edit', function($id) {
+    Route::get('/notification/{id}/edit', function($id) {
         return view('admin.notifications.edit', ['id' => $id]);
-    })->name('admin.notifications.edit');
+    })->name('admin.notification.edit');
 });
 
 Route::get("beranda", function () {

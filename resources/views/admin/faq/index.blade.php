@@ -2,6 +2,18 @@
 
 @section('title', 'Manajemen FAQ')
 
+@section('styles')
+<style>
+    .bulk-actions-container {
+        display: none;
+    }
+    
+    .bulk-actions-container.active {
+        display: flex;
+    }
+</style>
+@endsection
+
 @section('content')
 <div class="container-fluid px-4 py-4 mx-auto">
     <div class="mb-4">
@@ -39,8 +51,28 @@
             </div>
         </div>
         
+        <!-- Bulk actions -->
+        <div id="bulkActionsContainer" class="bulk-actions-container items-center bg-gray-100 dark:bg-gray-700 px-3 py-2 rounded-md mr-auto">
+            <span class="text-sm mr-2"><span id="selectedCount">0</span> terpilih</span>
+            <div x-data="{ open: false, posStyle: {} }">
+                <button @click="open = !open; if (open) posStyle = getPopupPosition($event)" class="flex items-center text-sm bg-white dark:bg-gray-800 px-3 py-1 rounded border">
+                    Aksi Massal
+                    <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 ml-1" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7" />
+                    </svg>
+                </button>
+                <div x-show="open" @click.away="open = false" x-cloak :style="posStyle" class="fixed rounded-md shadow-lg bg-white dark:bg-gray-800 ring-1 ring-black ring-opacity-5 z-50">
+                    <div class="py-1" role="menu" aria-orientation="vertical">
+                        <button onclick="deleteBulkFAQs()" class="w-full text-left block px-4 py-2 text-sm text-red-700 dark:text-red-400 hover:bg-gray-100 dark:hover:bg-gray-700" role="menuitem">
+                            <i class="bi bi-trash mr-2"></i> Hapus Terpilih
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
         <div class="flex space-x-2 w-full md:w-auto justify-end">
-            <a href="{{ route('admin.faq.create') }}" class="bg-indigo-800 text-white px-4 py-2 rounded-md text-sm flex items-center">
+            <a href="{{ route('admin.faq.create') }}" class="bg-orange-500 text-white px-4 py-2 rounded-md text-sm flex items-center hover:bg-orange-600 transition-colors">
                 <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 mr-1" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4" />
                 </svg>
@@ -56,7 +88,7 @@
                     <tr>
                         <th scope="col" class="px-3 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">
                             <div class="flex items-center">
-                                <input type="checkbox" class="form-checkbox h-4 w-4 text-orange-500 rounded border-gray-300">
+                                <input type="checkbox" id="selectAllCheckbox" class="form-checkbox h-4 w-4 text-orange-500 rounded border-gray-300">
                             </div>
                         </th>
                         <th scope="col" class="px-3 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">
@@ -66,7 +98,10 @@
                             Jawaban
                         </th>
                         <th scope="col" class="px-3 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider hidden sm:table-cell">
-                            Dibuat Oleh
+                            Oleh
+                        </th>
+                        <th scope="col" class="px-3 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">
+                            Status
                         </th>
                         <th scope="col" class="relative px-3 py-3">
                             <span class="sr-only">Actions</span>
@@ -75,7 +110,7 @@
                 </thead>
                 <tbody id="faqList" class="bg-white dark:bg-gray-800 divide-y divide-gray-200 dark:divide-gray-700">
                     <tr id="loading-indicator">
-                        <td colspan="5" class="px-3 py-4 text-center">
+                        <td colspan="6" class="px-3 py-4 text-center">
                             <svg class="animate-spin h-5 w-5 mx-auto text-gray-500" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
                                 <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
                                 <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
@@ -87,13 +122,12 @@
             </table>
         </div>
         <div class="bg-white dark:bg-gray-800 px-4 py-3 flex items-center justify-between border-t border-gray-200 dark:border-gray-700 sm:px-6">
-            <div class="sm:items-center sm:justify-between">
+            <div class="hidden sm:flex-1 sm:flex sm:items-center sm:justify-between">
                 <div>
                     <p class="text-sm text-gray-700 dark:text-gray-400">
-                        Showing <span class="font-medium" id="faqCountFooter">0</span> FAQs
+                        Menampilkan <span class="font-medium" id="faqCountFooter">0</span> FAQ
                     </p>
                 </div>
-                <!-- Pagination would go here if needed -->
             </div>
         </div>
     </div>
@@ -121,6 +155,24 @@
 @push('scripts')
 <script src="https://cdn.jsdelivr.net/npm/axios/dist/axios.min.js"></script>
 <script>
+    // Fungsi untuk menghitung posisi popup - didefinisikan di luar DOMContentLoaded agar bisa diakses secara global
+    function getPopupPosition(event) {
+        const button = event.currentTarget;
+        const rect = button.getBoundingClientRect();
+        const popupWidth = 192; // w-48 = 12rem = 192px
+        
+        // Pastikan popup tidak keluar dari batas kanan layar
+        let leftPos = rect.right - popupWidth;
+        if (leftPos < 10) leftPos = 10; // Beri sedikit margin jika terlalu ke kiri
+        
+        return {
+            position: 'fixed',
+            top: `${rect.bottom + 5}px`, // 5px offset dari tombol
+            left: `${leftPos}px`,
+            width: `${popupWidth}px`
+        };
+    }
+    
     document.addEventListener('DOMContentLoaded', function() {
         // Set up axios defaults
         axios.defaults.headers.common['X-Requested-With'] = 'XMLHttpRequest';
@@ -144,16 +196,28 @@
         const searchInput = document.getElementById('searchFAQ');
         if (searchInput) {
             searchInput.addEventListener('keyup', function() {
-                const searchValue = this.value.toLowerCase();
-                const tableRows = document.querySelectorAll('#faqList tr:not(#loading-indicator)');
-                
-                // Filter table rows
-                tableRows.forEach(row => {
-                    const text = row.textContent.toLowerCase();
-                    row.style.display = text.includes(searchValue) ? '' : 'none';
-                });
+                filterFAQs();
             });
         }
+        
+        // Select all checkbox functionality
+        const selectAllCheckbox = document.getElementById('selectAllCheckbox');
+        if (selectAllCheckbox) {
+            selectAllCheckbox.addEventListener('change', function() {
+                const checkboxes = document.querySelectorAll('#faqList input[type="checkbox"]');
+                checkboxes.forEach(checkbox => {
+                    checkbox.checked = this.checked;
+                });
+                updateSelectedCount();
+            });
+        }
+        
+        // Event delegation for checkbox changes in the table body
+        document.getElementById('faqList').addEventListener('change', function(e) {
+            if (e.target && e.target.type === 'checkbox') {
+                updateSelectedCount();
+            }
+            });
     });
     
     // Check authentication status
@@ -201,6 +265,71 @@
             });
     }
     
+    // Filter FAQs based on search input
+    function filterFAQs() {
+        const searchValue = document.getElementById('searchFAQ').value.toLowerCase();
+        const tableRows = document.querySelectorAll('#faqList tr:not(#loading-indicator)');
+        
+        // Filter table rows
+        tableRows.forEach(row => {
+            const text = row.textContent.toLowerCase();
+            row.style.display = text.includes(searchValue) ? '' : 'none';
+        });
+    }
+    
+    // Update selected count
+    function updateSelectedCount() {
+        const selectedCheckboxes = document.querySelectorAll('#faqList input[type="checkbox"]:checked');
+        const count = selectedCheckboxes.length;
+        document.getElementById('selectedCount').textContent = count;
+        
+        const bulkActionsContainer = document.getElementById('bulkActionsContainer');
+        if (count > 0) {
+            bulkActionsContainer.classList.add('active');
+        } else {
+            bulkActionsContainer.classList.remove('active');
+            // Uncheck the select all checkbox if no items are selected
+            document.getElementById('selectAllCheckbox').checked = false;
+        }
+    }
+    
+    // Function to handle bulk delete
+    function deleteBulkFAQs() {
+        const selectedCheckboxes = document.querySelectorAll('#faqList input[type="checkbox"]:checked');
+        const selectedIds = Array.from(selectedCheckboxes).map(checkbox => checkbox.value);
+        
+        if (selectedIds.length === 0) {
+            alert('Tidak ada FAQ yang dipilih');
+            return;
+        }
+        
+        if (confirm(`Apakah Anda yakin ingin menghapus ${selectedIds.length} FAQ yang dipilih?`)) {
+            // Use Promise.all for parallel requests
+            const deletePromises = selectedIds.map(id => 
+                axios.delete(`/api/admin/faqs/${id}`)
+                .then(response => {
+                    if (!response.data || response.data.status !== 'success') {
+                        throw new Error(`Failed to delete item ${id}`);
+                    }
+                    return response.data;
+                })
+            );
+            
+            Promise.all(deletePromises)
+                .then(() => {
+                    // Refresh the FAQ list
+                    fetchFAQData();
+                    showAlert('success', `${selectedIds.length} FAQ berhasil dihapus`);
+                })
+                .catch(error => {
+                    console.error('Error deleting items:', error);
+                    showAlert('error', 'Gagal menghapus beberapa FAQ. Silakan coba lagi.');
+                    // Refresh anyway to show the current state
+                    fetchFAQData();
+                });
+        }
+    }
+    
     // Render FAQ list
     function renderFAQList(data) {
         const faqList = document.getElementById('faqList');
@@ -221,8 +350,8 @@
         if (data.length === 0) {
             const emptyRow = document.createElement('tr');
             emptyRow.innerHTML = `
-                <td colspan="5" class="px-3 py-4 text-center text-sm text-gray-500 dark:text-gray-400">
-                    Tidak ada data FAQ
+                <td colspan="6" class="px-3 py-4 text-center text-sm text-gray-500 dark:text-gray-400">
+                    Tidak ada FAQ yang tersedia
                 </td>
             `;
             faqList.appendChild(emptyRow);
@@ -234,37 +363,49 @@
             const row = document.createElement('tr');
             row.className = 'hover:bg-gray-50 dark:hover:bg-gray-700';
             
-            // Limit text length
-            const limitedTitle = faq.judul.length > 50 ? faq.judul.substring(0, 50) + '...' : faq.judul;
-            // Strip HTML tags and limit description length
-            const strippedDesc = faq.deskripsi.replace(/<[^>]*>?/gm, '');
-            const limitedDesc = strippedDesc.length > 100 ? strippedDesc.substring(0, 100) + '...' : strippedDesc;
+            // Truncate description for display
+            const truncatedDescription = faq.deskripsi.length > 100 
+                ? faq.deskripsi.substring(0, 100) + '...' 
+                : faq.deskripsi;
+            
+            // Determine status badge color
+            let statusBadgeClass = '';
+            let statusText = faq.status ? faq.status.nama_status : 'Default';
+            
+            // Use different colors for different statuses - simplify to match gallery section
+            const statusLower = statusText.toLowerCase();
+            statusBadgeClass = (statusLower === 'aktif' || statusLower === 'active' || statusLower === 'published')
+                ? 'bg-green-100 text-green-800 dark:bg-green-900 dark:text-green-300'
+                : 'bg-gray-100 text-gray-800 dark:bg-gray-700 dark:text-gray-300';
             
             row.innerHTML = `
                 <td class="px-3 py-4 whitespace-nowrap">
                     <div class="flex items-center">
-                        <input type="checkbox" class="form-checkbox h-4 w-4 text-orange-500 rounded border-gray-300">
+                        <input type="checkbox" class="faq-checkbox form-checkbox h-4 w-4 text-orange-500 rounded border-gray-300" value="${faq.id_faq}">
                     </div>
                 </td>
-                <td class="px-3 py-4 whitespace-nowrap">
-                    <div class="text-sm font-medium text-gray-900 dark:text-white">${limitedTitle}</div>
+                <td class="px-3 py-4">
+                    <div class="text-sm font-medium text-gray-900 dark:text-white">${faq.judul}</div>
                 </td>
                 <td class="px-3 py-4 hidden md:table-cell">
-                    <div class="text-sm text-gray-500 dark:text-gray-400 truncate max-w-xs">
-                        ${limitedDesc}
-                    </div>
+                    <div class="text-sm text-gray-500 dark:text-gray-400">${truncatedDescription}</div>
                 </td>
                 <td class="px-3 py-4 whitespace-nowrap text-sm text-gray-500 dark:text-gray-400 hidden sm:table-cell">
-                    ${faq.user ? faq.user.nama_user : 'Unknown'}
+                    ${faq.user ? faq.user.nama_user : 'Tidak diketahui'}
+                </td>
+                <td class="px-3 py-4 whitespace-nowrap">
+                    <span class="px-2 inline-flex text-xs leading-5 font-semibold rounded-full ${statusBadgeClass}">
+                        ${statusText}
+                    </span>
                 </td>
                 <td class="px-3 py-4 whitespace-nowrap text-right text-sm font-medium">
-                    <div class="relative" x-data="{ open: false }">
-                        <button @click="open = !open" class="text-gray-400 hover:text-gray-500">
+                    <div class="relative" x-data="{ open: false, posStyle: {} }">
+                        <button @click="open = !open; if (open) posStyle = getActionPopupPosition($event)" class="text-gray-400 hover:text-gray-500">
                             <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" viewBox="0 0 20 20" fill="currentColor">
                                 <path d="M10 6a2 2 0 110-4 2 2 0 010 4zM10 12a2 2 0 110-4 2 2 0 010 4zM10 18a2 2 0 110-4 2 2 0 010 4z" />
                             </svg>
                         </button>
-                        <div x-show="open" @click.away="open = false" x-cloak class="origin-top-right absolute right-0 mt-2 w-48 rounded-md shadow-lg bg-white dark:bg-gray-800 ring-1 ring-black ring-opacity-5 z-40">
+                        <div x-show="open" @click.away="open = false" x-cloak :style="posStyle" class="fixed rounded-md shadow-lg bg-white dark:bg-gray-800 ring-1 ring-black ring-opacity-5 z-40">
                             <div class="py-1" role="menu" aria-orientation="vertical">
                                 <a href="/admin/faq/${faq.id_faq}/edit" class="block px-4 py-2 text-sm text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700" role="menuitem">
                                     <i class="bi bi-pencil mr-2"></i> Edit
@@ -313,6 +454,35 @@
                 showAlert('error', 'Error deleting FAQ: ' + (error.response?.data?.message || error.message));
                 closeDeleteModal();
             });
+    }
+    
+    // Function to get action popup position
+    function getActionPopupPosition(event) {
+        const button = event.currentTarget;
+        const rect = button.getBoundingClientRect();
+        const popupWidth = 192; // Width of the popup (w-48 = 12rem = 192px)
+        const windowWidth = window.innerWidth;
+        
+        // Default to placing the popup to the left of the button
+        let leftPos = rect.right - popupWidth;
+        
+        // If this would place the popup off the left edge, position it differently
+        if (leftPos < 10) {
+            leftPos = 10; // Minimum 10px from left edge
+        }
+        
+        // If the popup would go off the right edge, position it to the left of the button
+        if (rect.left + popupWidth > windowWidth - 10) {
+            leftPos = Math.max(10, windowWidth - popupWidth - 10);
+        }
+        
+        return {
+            position: 'fixed',
+            top: `${rect.bottom + 5}px`, // 5px offset from button
+            left: `${leftPos}px`,
+            width: `${popupWidth}px`,
+            zIndex: '50'
+        };
     }
     
     // Show alert messages

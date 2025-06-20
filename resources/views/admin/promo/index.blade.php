@@ -1,5 +1,7 @@
 @extends('admin.layouts.app')
 
+@section('title', 'Manajemen Promo')
+
 @section('styles')
 <style>
     @keyframes pulse-highlight {
@@ -34,6 +36,14 @@
     
     .dark .row-active:hover {
         background-color: rgba(6, 95, 70, 0.25) !important;
+    }
+    
+    .bulk-actions-container {
+        display: none;
+    }
+    
+    .bulk-actions-container.active {
+        display: flex;
     }
 </style>
 @endsection
@@ -75,6 +85,26 @@
             </div>
         </div>
         
+        <!-- Bulk actions -->
+        <div id="bulkActionsContainer" class="bulk-actions-container items-center bg-gray-100 dark:bg-gray-700 px-3 py-2 rounded-md mr-auto">
+            <span class="text-sm mr-2"><span id="selectedCount">0</span> terpilih</span>
+            <div x-data="{ open: false, posStyle: {} }">
+                <button @click="open = !open; if (open) posStyle = getPopupPosition($event)" class="flex items-center text-sm bg-white dark:bg-gray-800 px-3 py-1 rounded border">
+                    Aksi Massal
+                    <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 ml-1" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7" />
+                    </svg>
+                </button>
+                <div x-show="open" @click.away="open = false" x-cloak :style="posStyle" class="fixed rounded-md shadow-lg bg-white dark:bg-gray-800 ring-1 ring-black ring-opacity-5 z-50">
+                    <div class="py-1" role="menu" aria-orientation="vertical">
+                        <button onclick="deleteBulkPromos()" class="w-full text-left block px-4 py-2 text-sm text-red-700 dark:text-red-400 hover:bg-gray-100 dark:hover:bg-gray-700" role="menuitem">
+                            <i class="bi bi-trash mr-2"></i> Hapus Terpilih
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
         <div class="flex space-x-2 w-full md:w-auto justify-end">
             <select id="statusFilter" class="border rounded-md p-2 text-sm focus:outline-none focus:ring-2 focus:ring-orange-500">
                 <option value="">Semua Status</option>
@@ -83,7 +113,7 @@
                 <option value="berakhir">Berakhir</option>
             </select>
             
-            <a href="{{ route('admin.promo.create') }}" class="bg-indigo-800 text-white px-4 py-2 rounded-md text-sm flex items-center">
+            <a href="{{ route('admin.promo.create') }}" class="bg-orange-500 text-white px-4 py-2 rounded-md text-sm flex items-center hover:bg-orange-600 transition-colors">
                 <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 mr-1" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4" />
                 </svg>
@@ -138,7 +168,7 @@
                             Produk
                         </th>
                         <th scope="col" class="relative px-3 py-3">
-                            <span class="sr-only">Actions</span>
+                            <span class="sr-only">Aksi</span>
                         </th>
                     </tr>
                 </thead>
@@ -146,7 +176,7 @@
                     <!-- Promotions will be loaded here via API -->
                     <tr id="loading-row">
                         <td colspan="7" class="px-3 py-4 text-center text-sm text-gray-500 dark:text-gray-400">
-                            <svg class="inline-block animate-spin h-5 w-5 text-indigo-500 mr-2" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
+                            <svg class="inline-block animate-spin h-5 w-5 text-orange-500 mr-2" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
                                 <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
                                 <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
                             </svg>
@@ -157,11 +187,14 @@
             </table>
         </div>
         <div class="bg-white dark:bg-gray-800 px-4 py-3 flex items-center justify-between border-t border-gray-200 dark:border-gray-700 sm:px-6">
-            <div class="sm:items-center sm:justify-between">
+            <div class="hidden sm:flex-1 sm:flex sm:items-center sm:justify-between">
                 <div>
                     <p class="text-sm text-gray-700 dark:text-gray-400">
-                        Showing <span class="font-medium" id="items-count-footer">0</span> promos
+                        Menampilkan <span class="font-medium" id="items-count-current">0</span> dari <span class="font-medium" id="items-count-total">0</span> promo
                     </p>
+                </div>
+                <div id="pagination-controls">
+                    <!-- Pagination will be added here via JS -->
                 </div>
             </div>
         </div>
@@ -287,6 +320,7 @@
                     currentPage = data.current_page;
                     totalPages = data.last_page;
                     renderPromotions();
+                    updatePagination(data);
                     updateItemCount(data.total);
                 }
                 // Hide loading row
@@ -372,7 +406,7 @@
                         <td class="px-3 py-4 whitespace-nowrap text-sm text-gray-500 dark:text-gray-400 hidden sm:table-cell">
                             <div class="flex items-center">
                                 <div class="mr-2">
-                                    <span class="inline-flex items-center justify-center px-2 py-1 text-xs font-bold leading-none text-white bg-blue-600 rounded-md shadow-sm status-badge">
+                                    <span class="inline-flex items-center justify-center px-2 py-1 text-xs font-bold leading-none text-white bg-orange-600 rounded-md shadow-sm status-badge">
                                         <svg xmlns="http://www.w3.org/2000/svg" class="h-3 w-3 mr-1" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M16 11V7a4 4 0 00-8 0v4M5 9h14l1 12H4L5 9z" />
                                         </svg>
@@ -382,13 +416,13 @@
                             </div>
                         </td>
                         <td class="px-3 py-4 whitespace-nowrap text-right text-sm font-medium">
-                            <div class="relative" x-data="{ open: false }">
-                                <button @click="open = !open" class="text-gray-400 hover:text-gray-500">
+                            <div class="relative" x-data="{ open: false, posStyle: {} }">
+                                <button @click="open = !open; if (open) posStyle = getPopupPosition($event)" class="text-gray-400 hover:text-gray-500">
                                     <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" viewBox="0 0 20 20" fill="currentColor">
                                         <path d="M10 6a2 2 0 110-4 2 2 0 010 4zM10 12a2 2 0 110-4 2 2 0 010 4zM10 18a2 2 0 110-4 2 2 0 010 4z" />
                                     </svg>
                                 </button>
-                                <div x-show="open" @click.away="open = false" x-cloak class="origin-top-right absolute right-0 mt-2 w-48 rounded-md shadow-lg bg-white dark:bg-gray-800 ring-1 ring-black ring-opacity-5 z-40">
+                                <div x-show="open" @click.away="open = false" x-cloak :style="posStyle" class="fixed rounded-md shadow-lg bg-white dark:bg-gray-800 ring-1 ring-black ring-opacity-5 z-40">
                                     <div class="py-1" role="menu" aria-orientation="vertical">
                                 ${promo.status !== 'berakhir' ? `
                                     ${promo.status !== 'aktif' ? `
@@ -415,11 +449,112 @@
             `;
             tbody.appendChild(tr);
         });
+        
+        // Update the selected count after rendering
+        updateSelectedCount();
+    }
+
+    function updatePagination(data) {
+        const paginationControls = document.getElementById('pagination-controls');
+        paginationControls.innerHTML = '';
+        
+        // Only show pagination if we have more than one page
+        if (data.last_page <= 1) return;
+        
+        // Create pagination nav element
+        const nav = document.createElement('nav');
+        nav.className = 'relative z-0 inline-flex rounded-md shadow-sm -space-x-px';
+        nav.setAttribute('aria-label', 'Pagination');
+        
+        // Previous button
+        const prevButton = document.createElement('button');
+        prevButton.className = 'relative inline-flex items-center px-2 py-2 rounded-l-md border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-700 text-sm font-medium text-gray-500 dark:text-gray-400 hover:bg-gray-50 dark:hover:bg-gray-600' + (data.current_page === 1 ? ' opacity-50 cursor-not-allowed' : '');
+        prevButton.disabled = data.current_page === 1;
+        prevButton.innerHTML = `
+            <span class="sr-only">Previous</span>
+            <svg class="h-5 w-5" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor" aria-hidden="true">
+                <path fill-rule="evenodd" d="M12.707 5.293a1 1 0 010 1.414L9.414 10l3.293 3.293a1 1 0 01-1.414 1.414l-4-4a1 1 0 010-1.414l4-4a1 1 0 011.414 0z" clip-rule="evenodd" />
+            </svg>
+        `;
+        prevButton.onclick = () => {
+            if (data.current_page > 1) {
+                currentPage = data.current_page - 1;
+                fetchPromotions();
+            }
+        };
+        nav.appendChild(prevButton);
+        
+        // Page numbers
+        const pageNumbersContainer = document.createElement('div');
+        pageNumbersContainer.id = 'pageNumbers';
+        pageNumbersContainer.className = 'flex';
+        
+        // Logic to show appropriate page numbers
+        let startPage = Math.max(1, data.current_page - 2);
+        let endPage = Math.min(data.last_page, startPage + 4);
+        
+        if (endPage - startPage < 4) {
+            startPage = Math.max(1, endPage - 4);
+        }
+        
+        for (let i = startPage; i <= endPage; i++) {
+            const pageButton = document.createElement('button');
+            pageButton.className = i === data.current_page
+                ? 'relative inline-flex items-center px-4 py-2 border border-orange-500 bg-orange-50 dark:bg-orange-900 text-sm font-medium text-orange-600 dark:text-orange-200'
+                : 'relative inline-flex items-center px-4 py-2 border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-700 text-sm font-medium text-gray-700 dark:text-gray-200 hover:bg-gray-50 dark:hover:bg-gray-600';
+            pageButton.innerHTML = i;
+            pageButton.onclick = () => {
+                currentPage = i;
+                fetchPromotions();
+            };
+            pageNumbersContainer.appendChild(pageButton);
+        }
+        nav.appendChild(pageNumbersContainer);
+        
+        // Next button
+        const nextButton = document.createElement('button');
+        nextButton.className = 'relative inline-flex items-center px-2 py-2 rounded-r-md border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-700 text-sm font-medium text-gray-500 dark:text-gray-400 hover:bg-gray-50 dark:hover:bg-gray-600' + (data.current_page === data.last_page ? ' opacity-50 cursor-not-allowed' : '');
+        nextButton.disabled = data.current_page === data.last_page;
+        nextButton.innerHTML = `
+            <span class="sr-only">Next</span>
+            <svg class="h-5 w-5" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor" aria-hidden="true">
+                <path fill-rule="evenodd" d="M7.293 14.707a1 1 0 010-1.414L10.586 10 7.293 6.707a1 1 0 011.414-1.414l4 4a1 1 0 010 1.414l-4 4a1 1 0 01-1.414 0z" clip-rule="evenodd" />
+            </svg>
+        `;
+        nextButton.onclick = () => {
+            if (data.current_page < data.last_page) {
+                currentPage = data.current_page + 1;
+                fetchPromotions();
+            }
+        };
+        nav.appendChild(nextButton);
+        
+        paginationControls.appendChild(nav);
     }
 
     function updateItemCount(total) {
         document.getElementById('promo-count').textContent = total;
-        document.getElementById('items-count-footer').textContent = total;
+        document.getElementById('items-count-total').textContent = total;
+        document.getElementById('items-count-current').textContent = promotions.length;
+    }
+
+    function updateSelectedCount() {
+        const selectedCheckboxes = document.querySelectorAll('.promo-checkbox:checked');
+        const count = selectedCheckboxes.length;
+        
+        // Update select all checkbox state
+        const selectAllCheckbox = document.getElementById('selectAll');
+        const allCheckboxes = document.querySelectorAll('.promo-checkbox');
+        selectAllCheckbox.checked = allCheckboxes.length > 0 && allCheckboxes.length === selectedCheckboxes.length;
+        
+        // Update bulk actions container visibility
+        document.getElementById('selectedCount').textContent = count;
+        const bulkActionsContainer = document.getElementById('bulkActionsContainer');
+        if (count > 0) {
+            bulkActionsContainer.classList.add('active');
+        } else {
+            bulkActionsContainer.classList.remove('active');
+        }
     }
 
     function setupEventListeners() {
@@ -469,12 +604,21 @@
             checkboxes.forEach(checkbox => {
                 checkbox.checked = selectAllCheckbox.checked;
             });
+            updateSelectedCount();
+        });
+        
+        // Event delegation for checkbox changes in the promo list
+        document.getElementById('promotionList').addEventListener('change', function(e) {
+            if (e.target && e.target.classList.contains('promo-checkbox')) {
+                updateSelectedCount();
+            }
         });
         
         // Confirm delete button
         document.getElementById('confirmDeleteBtn').addEventListener('click', function() {
             if (deletePromoId) {
                 deletePromotion(deletePromoId);
+                closeDeleteModal();
             }
         });
                 
@@ -484,6 +628,7 @@
             const newStatus = document.getElementById('newStatus').value;
             if (promoId && newStatus) {
                 updatePromotionStatus(promoId, newStatus);
+                closeStatusModal();
             }
         });
     }
@@ -494,7 +639,7 @@
             icon.innerHTML = `
                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M7 16V4m0 0L3 8m4-4l4 4m6 0v12m0 0l4-4m-4 4l-4-4" />
             `;
-            icon.parentElement.parentElement.classList.remove('text-indigo-600');
+            icon.parentElement.parentElement.classList.remove('text-orange-600');
         });
         
         // Update the clicked header's icon
@@ -510,7 +655,7 @@
                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7" />
                 `;
             }
-            header.classList.add('text-indigo-600');
+            header.classList.add('text-orange-600');
         }
     }
 
@@ -518,31 +663,25 @@
         axios.delete(`/api/admin/promotions/${id}`)
             .then(response => {
                 if (response.data.status === 'success') {
-                    showAlert('success', response.data.message);
+                    showAlert('success', response.data.message || 'Promo berhasil dihapus');
                     fetchPromotions(); // Refresh the list
-                    closeDeleteModal();
                 }
             })
             .catch(error => {
                 showAlert('error', 'Gagal menghapus promo: ' + (error.response?.data?.message || error.message));
-                closeDeleteModal();
             });
     }
 
     function updatePromotionStatus(id, status) {
-        axios.post(`/api/admin/promotions/${id}`, {
-            status: status
-        })
+        axios.patch(`/api/admin/promotions/${id}/status`, { status: status })
             .then(response => {
                 if (response.data.status === 'success') {
-                    showAlert('success', 'Status promo berhasil diperbarui');
+                    showAlert('success', response.data.message || 'Status promo berhasil diubah');
                     fetchPromotions(); // Refresh the list
-                    closeStatusModal();
                 }
             })
             .catch(error => {
-                showAlert('error', 'Gagal mengubah status promo: ' + (error.response?.data?.message || error.message));
-                closeStatusModal();
+                showAlert('error', 'Gagal mengubah status: ' + (error.response?.data?.message || error.message));
             });
     }
 
@@ -564,8 +703,6 @@
 
     function closeStatusModal() {
         document.getElementById('statusModal').classList.add('hidden');
-        document.getElementById('promoId').value = '';
-        document.getElementById('newStatus').value = '';
     }
 
     function showAlert(type, message) {
@@ -593,6 +730,66 @@
             clearTimeout(timeout);
             timeout = setTimeout(() => func.apply(context, args), wait);
         };
+    }
+    
+    // Function to get popup position for bulk actions
+    function getPopupPosition(event) {
+        const button = event.currentTarget;
+        const rect = button.getBoundingClientRect();
+        const popupWidth = 192; // w-48 = 12rem = 192px
+        
+        // Calculate position to ensure the popup is fully visible
+        let leftPos = rect.left;
+        
+        // Check if popup would go off the right edge of the screen
+        if (leftPos + popupWidth > window.innerWidth - 10) {
+            leftPos = window.innerWidth - popupWidth - 10; // 10px margin from right edge
+        }
+        
+        return {
+            position: 'fixed',
+            top: `${rect.bottom + 5}px`, // 5px offset from button
+            left: `${leftPos}px`,
+            width: `${popupWidth}px`,
+            zIndex: 50
+        };
+    }
+    
+    // Function to handle bulk delete
+    function deleteBulkPromos() {
+        const selectedCheckboxes = document.querySelectorAll('.promo-checkbox:checked');
+        const selectedIds = Array.from(selectedCheckboxes).map(checkbox => checkbox.dataset.id);
+        
+        if (selectedIds.length === 0) {
+            showAlert('error', 'Tidak ada promo yang dipilih');
+            return;
+        }
+        
+        if (confirm(`Apakah Anda yakin ingin menghapus ${selectedIds.length} promo yang dipilih?`)) {
+            // Use Promise.all for parallel requests
+            const deletePromises = selectedIds.map(id => 
+                axios.delete(`/api/admin/promotions/${id}`)
+                .then(response => {
+                    if (!response.data || response.data.status !== 'success') {
+                        throw new Error(`Failed to delete promo ${id}`);
+                    }
+                    return response.data;
+                })
+            );
+            
+            Promise.all(deletePromises)
+                .then(() => {
+                    // Refresh the promo list
+                    fetchPromotions();
+                    showAlert('success', `${selectedIds.length} promo berhasil dihapus`);
+                })
+                .catch(error => {
+                    console.error('Error deleting promos:', error);
+                    showAlert('error', 'Gagal menghapus beberapa promo. Silakan coba lagi.');
+                    // Refresh anyway to show the current state
+                    fetchPromotions();
+                });
+        }
     }
 </script>
 @endpush

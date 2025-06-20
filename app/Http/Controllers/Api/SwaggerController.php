@@ -1,6 +1,6 @@
 <?php
 
-namespace App\Http\Controllers\User\Api;
+namespace App\Http\Controllers\Api;
 
 use App\Http\Controllers\Controller;
 
@@ -16,7 +16,7 @@ use App\Http\Controllers\Controller;
  * )
  * 
  * @OA\Server(
- *     url="/User/Api",
+ *     url="/api",
  *     description="API Server"
  * )
  * 

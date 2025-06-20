@@ -55,7 +55,21 @@
         color: #f3f4f6;
     }
     .dark .select2-results__option--highlighted[aria-selected] {
-        background-color: #4f46e5;
+        background-color: #f97316;
+    }
+    
+    .input-stroke {
+        border: 2px solid #e5e7eb;
+        transition: all 0.3s ease;
+    }
+    
+    .dark .input-stroke {
+        border-color: #4b5563;
+    }
+    
+    .input-stroke:focus {
+        border-color: #f97316;
+        box-shadow: 0 0 0 1px rgba(249, 115, 22, 0.2);
     }
 </style>
 @endsection
@@ -67,7 +81,7 @@
             <h1 class="text-2xl font-semibold">Tambah Promo Baru</h1>
             <p class="text-sm text-gray-500 dark:text-gray-400">Buat promo diskon untuk produk</p>
         </div>
-        <a href="{{ route('admin.promo.index') }}" class="bg-gray-500 hover:bg-gray-600 text-white px-4 py-2 rounded-md text-sm flex items-center transition duration-300">
+        <a href="{{ route('admin.promo.index') }}" class="px-4 py-2 bg-orange-500 text-white rounded-md hover:bg-orange-600 transition-colors flex items-center">
             <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 mr-1" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 19l-7-7m0 0l7-7m-7 7h18" />
             </svg>
@@ -102,20 +116,20 @@
                 <div class="space-y-6">
                     <div>
                         <label for="judul_promo" class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Judul Promosi <span class="text-red-600">*</span></label>
-                        <input type="text" class="w-full px-3 py-2 border rounded-md focus:outline-none focus:ring-2 focus:ring-indigo-500 dark:bg-gray-700 dark:border-gray-600 dark:text-white" id="judul_promo" name="judul_promo" required maxlength="120" placeholder="Masukkan judul promosi">
+                        <input type="text" class="input-stroke w-full px-3 py-2 rounded-md focus:outline-none focus:ring-2 focus:ring-orange-500 dark:bg-gray-700 dark:border-gray-600 dark:text-white" id="judul_promo" name="judul_promo" required maxlength="120" placeholder="Masukkan judul promosi">
                         <p class="mt-1 text-sm text-red-600 dark:text-red-400 error-message" id="judul_promo-error"></p>
                     </div>
                     
                     <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
                         <div>
                             <label for="tgl_start" class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Tanggal Mulai <span class="text-red-600">*</span></label>
-                            <input type="text" class="w-full px-3 py-2 border rounded-md focus:outline-none focus:ring-2 focus:ring-indigo-500 dark:bg-gray-700 dark:border-gray-600 dark:text-white" id="tgl_start" name="tgl_start" required placeholder="Pilih tanggal mulai">
+                            <input type="text" class="input-stroke w-full px-3 py-2 rounded-md focus:outline-none focus:ring-2 focus:ring-orange-500 dark:bg-gray-700 dark:border-gray-600 dark:text-white" id="tgl_start" name="tgl_start" required placeholder="Pilih tanggal mulai">
                             <p class="mt-1 text-sm text-red-600 dark:text-red-400 error-message" id="tgl_start-error"></p>
                         </div>
                         
                         <div>
                             <label for="tgl_end" class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Tanggal Berakhir <span class="text-red-600">*</span></label>
-                            <input type="text" class="w-full px-3 py-2 border rounded-md focus:outline-none focus:ring-2 focus:ring-indigo-500 dark:bg-gray-700 dark:border-gray-600 dark:text-white" id="tgl_end" name="tgl_end" required placeholder="Pilih tanggal berakhir">
+                            <input type="text" class="input-stroke w-full px-3 py-2 rounded-md focus:outline-none focus:ring-2 focus:ring-orange-500 dark:bg-gray-700 dark:border-gray-600 dark:text-white" id="tgl_end" name="tgl_end" required placeholder="Pilih tanggal berakhir">
                             <p class="mt-1 text-sm text-red-600 dark:text-red-400 error-message" id="tgl_end-error"></p>
                         </div>
                     </div>
@@ -123,7 +137,7 @@
                     <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
                         <div>
                             <label for="tipe_diskon" class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Tipe Diskon <span class="text-red-600">*</span></label>
-                            <select class="w-full px-3 py-2 border rounded-md focus:outline-none focus:ring-2 focus:ring-indigo-500 dark:bg-gray-700 dark:border-gray-600 dark:text-white" id="tipe_diskon" name="tipe_diskon" required>
+                            <select class="input-stroke w-full px-3 py-2 rounded-md focus:outline-none focus:ring-2 focus:ring-orange-500 dark:bg-gray-700 dark:border-gray-600 dark:text-white" id="tipe_diskon" name="tipe_diskon" required>
                                 <option value="">-- Pilih Tipe --</option>
                                 <option value="persen">Persentase (%)</option>
                                 <option value="nominal">Nominal (Rp)</option>
@@ -137,7 +151,7 @@
                                 <span id="diskon-prefix" class="inline-flex items-center px-3 py-2 rounded-l-md border border-r-0 border-gray-300 bg-gray-50 text-gray-500 dark:bg-gray-600 dark:border-gray-500 dark:text-gray-300">
                                     Rp
                                 </span>
-                                <input type="number" class="flex-1 px-3 py-2 border focus:outline-none focus:ring-2 focus:ring-indigo-500 dark:bg-gray-700 dark:border-gray-600 dark:text-white rounded-r-md" id="nilai_diskon" name="nilai_diskon" required min="1" placeholder="Nilai diskon">
+                                <input type="number" class="input-stroke flex-1 px-3 py-2 focus:outline-none focus:ring-2 focus:ring-orange-500 dark:bg-gray-700 dark:border-gray-600 dark:text-white rounded-r-md" id="nilai_diskon" name="nilai_diskon" required min="1" placeholder="Nilai diskon">
                                 <span id="diskon-suffix" class="hidden items-center px-3 py-2 rounded-r-md border border-l-0 border-gray-300 bg-gray-50 text-gray-500 dark:bg-gray-600 dark:border-gray-500 dark:text-gray-300">
                                     %
                                 </span>
@@ -149,7 +163,7 @@
                     
                     <div>
                         <label for="status" class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Status <span class="text-red-600">*</span></label>
-                        <select class="w-full px-3 py-2 border rounded-md focus:outline-none focus:ring-2 focus:ring-indigo-500 dark:bg-gray-700 dark:border-gray-600 dark:text-white" id="status" name="status" required>
+                        <select class="input-stroke w-full px-3 py-2 rounded-md focus:outline-none focus:ring-2 focus:ring-orange-500 dark:bg-gray-700 dark:border-gray-600 dark:text-white" id="status" name="status" required>
                             <option value="aktif">Aktif</option>
                             <option value="nonaktif">Non-aktif</option>
                         </select>
@@ -161,7 +175,7 @@
                 <div class="space-y-6">
                     <div>
                         <label for="products" class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Produk yang Dipromo <span class="text-red-600">*</span></label>
-                        <select class="select2 w-full px-3 py-2 border rounded-md focus:outline-none focus:ring-2 focus:ring-indigo-500 dark:bg-gray-700 dark:border-gray-600 dark:text-white" id="products" name="products" multiple required>
+                        <select class="select2 input-stroke w-full px-3 py-2 rounded-md focus:outline-none focus:ring-2 focus:ring-orange-500 dark:bg-gray-700 dark:border-gray-600 dark:text-white" id="products" name="products" multiple required>
                             <!-- Products will be loaded from API -->
                         </select>
                         <p class="mt-1 text-xs text-gray-500 dark:text-gray-400">Pilih satu atau lebih produk yang akan dimasukkan dalam promosi ini.</p>
@@ -181,10 +195,10 @@
             </div>
             
             <div class="px-6 py-4 bg-gray-50 dark:bg-gray-700 border-t border-gray-200 dark:border-gray-600 flex justify-end space-x-3">
-                <a href="{{ route('admin.promo.index') }}" class="px-4 py-2 bg-gray-500 hover:bg-gray-600 text-white rounded-md text-sm transition duration-300">
+                <a href="{{ route('admin.promo.index') }}" class="px-4 py-2 border border-orange-500 text-orange-500 rounded-md hover:bg-orange-500 hover:text-white transition-colors">
                     Batal
                 </a>
-                <button type="submit" id="submitBtn" class="px-4 py-2 bg-indigo-700 hover:bg-indigo-800 text-white rounded-md text-sm transition duration-300">
+                <button type="submit" id="submitBtn" class="px-4 py-2 bg-orange-500 hover:bg-orange-600 text-white rounded-md text-sm transition duration-300">
                     <i class="bi bi-save mr-1"></i> Simpan Promo
                 </button>
             </div>

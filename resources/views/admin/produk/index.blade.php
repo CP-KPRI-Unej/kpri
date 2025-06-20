@@ -9,10 +9,10 @@
     }
     .sortable-item.sortable-ghost {
         opacity: 0.4;
-        background-color: #e5edff !important;
+        background-color: #fff7ed !important;
     }
     .dark .sortable-item.sortable-ghost {
-        background-color: #283548 !important;
+        background-color: #7c2d12 !important;
     }
     .sortable-item.sortable-drag {
         opacity: 0.8;
@@ -25,7 +25,7 @@
         cursor: grab;
     }
     .sort-handle:hover {
-        color: #4f46e5;
+        color: #f97316;
     }
     .product-image {
         width: 40px;
@@ -34,9 +34,17 @@
         border-radius: 4px;
     }
     @keyframes pulse-highlight {
-        0% { box-shadow: 0 0 0 0 rgba(79, 70, 229, 0.7); }
-        70% { box-shadow: 0 0 0 5px rgba(79, 70, 229, 0); }
-        100% { box-shadow: 0 0 0 0 rgba(79, 70, 229, 0); }
+        0% { box-shadow: 0 0 0 0 rgba(245, 158, 11, 0.7); }
+        70% { box-shadow: 0 0 0 5px rgba(245, 158, 11, 0); }
+        100% { box-shadow: 0 0 0 0 rgba(245, 158, 11, 0); }
+    }
+    
+    .bulk-actions-container {
+        display: none;
+    }
+    
+    .bulk-actions-container.active {
+        display: flex;
     }
 </style>
 @endsection
@@ -71,7 +79,7 @@
     <div class="flex flex-col md:flex-row justify-between items-center gap-4 mb-4">
         <div class="flex flex-col md:flex-row gap-2 w-full md:w-auto">
         <div class="relative w-full md:w-64">
-                <input id="searchProduct" type="text" class="border rounded-md p-2 w-full pl-10 text-sm focus:outline-none focus:ring-2 focus:ring-indigo-500" placeholder="Cari Produk">
+                <input id="searchProduct" type="text" class="border rounded-md p-2 w-full pl-10 text-sm focus:outline-none focus:ring-2 focus:ring-orange-500" placeholder="Cari Produk">
             <div class="absolute left-3 top-2.5">
                 <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 text-gray-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
@@ -79,14 +87,34 @@
             </div>
             </div>
             
-            <select id="categoryFilter" class="border rounded-md p-2 text-sm focus:outline-none focus:ring-2 focus:ring-indigo-500 w-full md:w-auto">
+            <select id="categoryFilter" class="border rounded-md p-2 text-sm focus:outline-none focus:ring-2 focus:ring-orange-500 w-full md:w-auto">
                 <option value="">Semua Kategori</option>
                 <!-- Categories will be loaded here via API -->
             </select>
         </div>
         
+        <!-- Bulk actions -->
+        <div id="bulkActionsContainer" class="bulk-actions-container items-center bg-gray-100 dark:bg-gray-700 px-3 py-2 rounded-md mr-auto">
+            <span class="text-sm mr-2"><span id="selectedCount">0</span> terpilih</span>
+            <div x-data="{ open: false, posStyle: {} }">
+                <button @click="open = !open; if (open) posStyle = getPopupPosition($event)" class="flex items-center text-sm bg-white dark:bg-gray-800 px-3 py-1 rounded border">
+                    Aksi Massal
+                    <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 ml-1" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7" />
+                    </svg>
+                </button>
+                <div x-show="open" @click.away="open = false" x-cloak :style="posStyle" class="fixed rounded-md shadow-lg bg-white dark:bg-gray-800 ring-1 ring-black ring-opacity-5 z-50">
+                    <div class="py-1" role="menu" aria-orientation="vertical">
+                        <button onclick="deleteBulkProducts()" class="w-full text-left block px-4 py-2 text-sm text-red-700 dark:text-red-400 hover:bg-gray-100 dark:hover:bg-gray-700" role="menuitem">
+                            <i class="bi bi-trash mr-2"></i> Hapus Terpilih
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
         <div class="flex space-x-2 w-full md:w-auto justify-end">
-            <a href="{{ route('admin.produk.create') }}" class="bg-indigo-800 text-white px-4 py-2 rounded-md text-sm flex items-center">
+            <a href="{{ route('admin.produk.create') }}" class="bg-orange-500 text-white px-4 py-2 rounded-md text-sm flex items-center hover:bg-orange-600 transition-colors">
                 <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 mr-1" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4" />
                 </svg>
@@ -102,7 +130,7 @@
                     <tr>
                         <th scope="col" class="px-3 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">
                             <div class="flex items-center">
-                                <input type="checkbox" class="form-checkbox h-4 w-4 text-indigo-500 rounded border-gray-300" id="selectAll">
+                                <input type="checkbox" class="form-checkbox h-4 w-4 text-orange-500 rounded border-gray-300" id="selectAll">
                             </div>
                         </th>
                         <th scope="col" class="px-3 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">
@@ -136,7 +164,7 @@
                             </div>
                         </th>
                         <th scope="col" class="relative px-3 py-3">
-                            <span class="sr-only">Actions</span>
+                            <span class="sr-only">Aksi</span>
                         </th>
                     </tr>
                 </thead>
@@ -144,7 +172,7 @@
                     <!-- Products will be loaded here via API -->
                     <tr id="loading-row">
                         <td colspan="7" class="px-3 py-4 text-center text-sm text-gray-500 dark:text-gray-400">
-                            <svg class="inline-block animate-spin h-5 w-5 text-indigo-500 mr-2" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
+                            <svg class="inline-block animate-spin h-5 w-5 text-orange-500 mr-2" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
                                 <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
                                 <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
                             </svg>
@@ -155,13 +183,15 @@
                 </table>
             </div>
             <div class="bg-white dark:bg-gray-800 px-4 py-3 flex items-center justify-between border-t border-gray-200 dark:border-gray-700 sm:px-6">
-            <div class="flex items-center">
+            <div class="hidden sm:flex-1 sm:flex sm:items-center sm:justify-between">
+                <div>
                         <p class="text-sm text-gray-700 dark:text-gray-400">
-                    Showing <span class="font-medium" id="items-count-current">0</span> of <span class="font-medium" id="items-count-total">0</span> products
+                        Menampilkan <span class="font-medium" id="items-count-current">0</span> dari <span class="font-medium" id="items-count-total">0</span> produk
                         </p>
             </div>
-            <div class="flex justify-between gap-2" id="pagination-controls">
+                <div id="pagination-controls">
                 <!-- Pagination will be added here via JS -->
+                </div>
             </div>
         </div>
     </div>
@@ -345,7 +375,7 @@
             tr.innerHTML = `
                         <td class="px-3 py-4 whitespace-nowrap">
                             <div class="flex items-center">
-                        <input type="checkbox" class="form-checkbox h-4 w-4 text-indigo-500 rounded border-gray-300 product-checkbox" data-id="${product.id_produk}">
+                        <input type="checkbox" class="form-checkbox h-4 w-4 text-orange-500 rounded border-gray-300 product-checkbox" data-id="${product.id_produk}">
                             </div>
                         </td>
                         <td class="px-3 py-4 whitespace-nowrap">
@@ -368,13 +398,13 @@
                                     ${product.stok_produk}
                         </td>
                         <td class="px-3 py-4 whitespace-nowrap text-right text-sm font-medium">
-                            <div class="relative" x-data="{ open: false }">
-                                <button @click="open = !open" class="text-gray-400 hover:text-gray-500">
+                            <div class="relative" x-data="{ open: false, posStyle: {} }">
+                                <button @click="open = !open; if (open) posStyle = getPopupPosition($event)" class="text-gray-400 hover:text-gray-500">
                                     <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" viewBox="0 0 20 20" fill="currentColor">
                                         <path d="M10 6a2 2 0 110-4 2 2 0 010 4zM10 12a2 2 0 110-4 2 2 0 010 4zM10 18a2 2 0 110-4 2 2 0 010 4z" />
                                     </svg>
                                 </button>
-                                <div x-show="open" @click.away="open = false" x-cloak class="origin-top-right absolute right-0 mt-2 w-48 rounded-md shadow-lg bg-white dark:bg-gray-800 ring-1 ring-black ring-opacity-5 z-40">
+                                <div x-show="open" @click.away="open = false" x-cloak :style="posStyle" class="fixed rounded-md shadow-lg bg-white dark:bg-gray-800 ring-1 ring-black ring-opacity-5 z-40">
                                     <div class="py-1" role="menu" aria-orientation="vertical">
                                 <a href="/admin/produk/${product.id_produk}/edit" class="block px-4 py-2 text-sm text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700" role="menuitem">
                                             <i class="bi bi-pencil mr-2"></i> Edit
@@ -389,6 +419,9 @@
                 `;
             tbody.appendChild(tr);
             });
+            
+            // Update the selected count after rendering
+            updateSelectedCount();
     }
 
     function updatePagination(data) {
@@ -398,22 +431,33 @@
         // Only show pagination if we have more than one page
         if (data.last_page <= 1) return;
         
+        // Create pagination nav element
+        const nav = document.createElement('nav');
+        nav.className = 'relative z-0 inline-flex rounded-md shadow-sm -space-x-px';
+        nav.setAttribute('aria-label', 'Pagination');
+        
         // Previous button
         const prevButton = document.createElement('button');
-        prevButton.className = 'relative inline-flex items-center px-4 py-2 border border-gray-300 text-sm font-medium rounded-md text-gray-700 bg-white hover:bg-gray-50 dark:bg-gray-700 dark:text-gray-200 dark:border-gray-600 dark:hover:bg-gray-600';
-        prevButton.innerHTML = 'Previous';
+        prevButton.className = 'relative inline-flex items-center px-2 py-2 rounded-l-md border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-700 text-sm font-medium text-gray-500 dark:text-gray-400 hover:bg-gray-50 dark:hover:bg-gray-600' + (data.current_page === 1 ? ' opacity-50 cursor-not-allowed' : '');
         prevButton.disabled = data.current_page === 1;
+        prevButton.innerHTML = `
+            <span class="sr-only">Previous</span>
+            <svg class="h-5 w-5" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor" aria-hidden="true">
+                <path fill-rule="evenodd" d="M12.707 5.293a1 1 0 010 1.414L9.414 10l3.293 3.293a1 1 0 01-1.414 1.414l-4-4a1 1 0 010-1.414l4-4a1 1 0 011.414 0z" clip-rule="evenodd" />
+            </svg>
+        `;
         prevButton.onclick = () => {
             if (data.current_page > 1) {
                 currentPage = data.current_page - 1;
                 fetchProducts();
             }
         };
-        paginationControls.appendChild(prevButton);
+        nav.appendChild(prevButton);
         
         // Page numbers
-        const pagesContainer = document.createElement('div');
-        pagesContainer.className = 'hidden md:flex gap-1';
+        const pageNumbersContainer = document.createElement('div');
+        pageNumbersContainer.id = 'pageNumbers';
+        pageNumbersContainer.className = 'flex';
         
         // Logic to show appropriate page numbers
         let startPage = Math.max(1, data.current_page - 2);
@@ -426,29 +470,36 @@
         for (let i = startPage; i <= endPage; i++) {
             const pageButton = document.createElement('button');
             pageButton.className = i === data.current_page
-                ? 'relative inline-flex items-center px-4 py-2 border text-sm font-medium rounded-md bg-indigo-600 text-white'
-                : 'relative inline-flex items-center px-4 py-2 border border-gray-300 text-sm font-medium rounded-md text-gray-700 bg-white hover:bg-gray-50 dark:bg-gray-700 dark:text-gray-200 dark:border-gray-600 dark:hover:bg-gray-600';
+                ? 'relative inline-flex items-center px-4 py-2 border border-orange-500 bg-orange-50 dark:bg-orange-900 text-sm font-medium text-orange-600 dark:text-orange-200'
+                : 'relative inline-flex items-center px-4 py-2 border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-700 text-sm font-medium text-gray-700 dark:text-gray-200 hover:bg-gray-50 dark:hover:bg-gray-600';
             pageButton.innerHTML = i;
             pageButton.onclick = () => {
                 currentPage = i;
                 fetchProducts();
             };
-            pagesContainer.appendChild(pageButton);
+            pageNumbersContainer.appendChild(pageButton);
         }
-        paginationControls.appendChild(pagesContainer);
+        nav.appendChild(pageNumbersContainer);
             
         // Next button
         const nextButton = document.createElement('button');
-        nextButton.className = 'relative inline-flex items-center px-4 py-2 border border-gray-300 text-sm font-medium rounded-md text-gray-700 bg-white hover:bg-gray-50 dark:bg-gray-700 dark:text-gray-200 dark:border-gray-600 dark:hover:bg-gray-600';
-        nextButton.innerHTML = 'Next';
+        nextButton.className = 'relative inline-flex items-center px-2 py-2 rounded-r-md border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-700 text-sm font-medium text-gray-500 dark:text-gray-400 hover:bg-gray-50 dark:hover:bg-gray-600' + (data.current_page === data.last_page ? ' opacity-50 cursor-not-allowed' : '');
         nextButton.disabled = data.current_page === data.last_page;
+        nextButton.innerHTML = `
+            <span class="sr-only">Next</span>
+            <svg class="h-5 w-5" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor" aria-hidden="true">
+                <path fill-rule="evenodd" d="M7.293 14.707a1 1 0 010-1.414L10.586 10 7.293 6.707a1 1 0 011.414-1.414l4 4a1 1 0 010 1.414l-4 4a1 1 0 01-1.414 0z" clip-rule="evenodd" />
+            </svg>
+        `;
         nextButton.onclick = () => {
             if (data.current_page < data.last_page) {
                 currentPage = data.current_page + 1;
                 fetchProducts();
         }
         };
-        paginationControls.appendChild(nextButton);
+        nav.appendChild(nextButton);
+        
+        paginationControls.appendChild(nav);
     }
 
     function updateItemCount(total) {
@@ -504,6 +555,14 @@
             checkboxes.forEach(checkbox => {
                 checkbox.checked = selectAllCheckbox.checked;
             });
+            updateSelectedCount();
+        });
+        
+        // Event delegation for checkbox changes in the product list
+        document.getElementById('productList').addEventListener('change', function(e) {
+            if (e.target && e.target.classList.contains('product-checkbox')) {
+                updateSelectedCount();
+            }
         });
         
         // Confirm delete button
@@ -515,13 +574,28 @@
         });
     }
 
+    function updateSelectedCount() {
+        const selectedCheckboxes = document.querySelectorAll('.product-checkbox:checked');
+        const count = selectedCheckboxes.length;
+        document.getElementById('selectedCount').textContent = count;
+        
+        const bulkActionsContainer = document.getElementById('bulkActionsContainer');
+        if (count > 0) {
+            bulkActionsContainer.classList.add('active');
+        } else {
+            bulkActionsContainer.classList.remove('active');
+            // Uncheck the select all checkbox if no items are selected
+            document.getElementById('selectAll').checked = false;
+        }
+    }
+
     function updateSortIcons(field, direction) {
         // Reset all icons first
         document.querySelectorAll('.sort-icon').forEach(icon => {
             icon.innerHTML = `
                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M7 16V4m0 0L3 8m4-4l4 4m6 0v12m0 0l4-4m-4 4l-4-4" />
             `;
-            icon.parentElement.parentElement.classList.remove('text-indigo-600');
+            icon.parentElement.parentElement.classList.remove('text-orange-600');
         });
         
         // Update the clicked header's icon
@@ -537,7 +611,7 @@
                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7" />
                 `;
             }
-            header.classList.add('text-indigo-600');
+            header.classList.add('text-orange-600');
         }
     }
 
@@ -581,6 +655,29 @@
         document.getElementById(elementId).classList.add('hidden');
     }
 
+    // Function to get popup position for action buttons
+    function getPopupPosition(event) {
+        const button = event.currentTarget;
+        const rect = button.getBoundingClientRect();
+        const popupWidth = 192; // w-48 = 12rem = 192px
+        
+        // Calculate position to ensure the popup is fully visible
+        let leftPos = rect.left;
+        
+        // Check if popup would go off the right edge of the screen
+        if (leftPos + popupWidth > window.innerWidth - 10) {
+            leftPos = window.innerWidth - popupWidth - 10; // 10px margin from right edge
+        }
+        
+        return {
+            position: 'fixed',
+            top: `${rect.bottom + 5}px`, // 5px offset from button
+            left: `${leftPos}px`,
+            width: `${popupWidth}px`,
+            zIndex: 50
+        };
+    }
+
     // Utility function to debounce inputs
     function debounce(func, wait) {
         let timeout;
@@ -588,6 +685,63 @@
             const context = this;
             clearTimeout(timeout);
             timeout = setTimeout(() => func.apply(context, args), wait);
+        };
+    }
+
+    function deleteBulkProducts() {
+        const selectedCheckboxes = document.querySelectorAll('.product-checkbox:checked');
+        const selectedIds = Array.from(selectedCheckboxes).map(checkbox => checkbox.dataset.id);
+        
+        if (selectedIds.length === 0) {
+            showAlert('error', 'Tidak ada produk yang dipilih');
+            return;
+        }
+        
+        // Update the modal title and message for bulk delete
+        const modalTitle = document.querySelector('#deleteModal h3');
+        const modalMessage = document.querySelector('#deleteModal p');
+        modalTitle.textContent = 'Konfirmasi Penghapusan Massal';
+        modalMessage.textContent = `Apakah Anda yakin ingin menghapus ${selectedIds.length} produk yang dipilih? Tindakan ini tidak dapat dibatalkan.`;
+        
+        // Show the delete modal
+        document.getElementById('deleteModal').classList.remove('hidden');
+        
+        // Update the confirm button to handle bulk delete
+        const confirmBtn = document.getElementById('confirmDeleteBtn');
+        const originalOnClick = confirmBtn.onclick;
+        
+        confirmBtn.onclick = function() {
+            // Create an array of promises for each delete operation
+            const deletePromises = selectedIds.map(id => 
+                axios.delete(`/api/admin/products/${id}`)
+                    .then(response => {
+                        if (response.data.status === 'success') {
+                            return response.data;
+                        }
+                        throw new Error(`Failed to delete product ${id}`);
+                    })
+            );
+            
+            Promise.all(deletePromises)
+                .then(() => {
+                    showAlert('success', `${selectedIds.length} produk berhasil dihapus`);
+                    // Go back to first page after bulk delete
+                    currentPage = 1;
+                    // Refresh the product list
+                    fetchProducts();
+                })
+                .catch(error => {
+                    console.error('Error deleting products:', error);
+                    showAlert('error', 'Gagal menghapus beberapa produk. Silakan coba lagi.');
+                    // Refresh anyway to show the current state
+                    fetchProducts();
+                });
+                
+            // Close the modal
+            closeDeleteModal();
+            
+            // Restore original onclick handler for single product delete
+            confirmBtn.onclick = originalOnClick;
         };
     }
 </script>

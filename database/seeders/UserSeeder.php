@@ -30,6 +30,13 @@ class UserSeeder extends Seeder
                 'username' => 'shopadmin',
                 'password' => Hash::make('password123'),
             ],
+            [
+                'id_user' => 3,
+                'id_role' => 1, // kpri admin
+                'nama_user' => 'KPRI Admin 2',
+                'username' => 'kpriadmin2',
+                'password' => Hash::make('password123'),
+            ],
         ]);
     }
 } 

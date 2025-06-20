@@ -271,7 +271,6 @@
 <!-- Status Update Form -->
 <form id="statusForm" method="POST" action="" style="display: none;">
     @csrf
-    @method('PATCH')
     <input type="hidden" name="status" id="statusValue">
 </form>
 
@@ -305,7 +304,7 @@
     // Update status function
     function updateStatus(id, status) {
         const form = document.getElementById('statusForm');
-        form.action = `{{ url('admin/komentar') }}/${id}/status`;
+        form.action = `{{ url('api/admin/comments') }}/${id}/status`;
         
         document.getElementById('statusValue').value = status;
         form.submit();

@@ -8,6 +8,12 @@ use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Log;
 use Carbon\Carbon;
 
+/**
+ * @OA\Tag(
+ *     name="Public Linktree",
+ *     description="API Endpoints for Public Linktree Access"
+ * )
+ */
 class PublicLinktreeController extends Controller
 {
     /**
@@ -15,6 +21,58 @@ class PublicLinktreeController extends Controller
      * 
      * @param int|null $id
      * @return \Illuminate\Http\JsonResponse
+     * 
+     * @OA\Get(
+     *     path="/public/linktree/{id?}",
+     *     summary="Get linktree data",
+     *     description="Returns linktree data with links for public display. If no ID is provided, returns the first linktree.",
+     *     operationId="getPublicLinktree",
+     *     tags={"Public Linktree"},
+     *     @OA\Parameter(
+     *         name="id",
+     *         in="path",
+     *         description="Linktree ID (optional)",
+     *         required=false,
+     *         @OA\Schema(type="integer")
+     *     ),
+     *     @OA\Response(
+     *         response=200,
+     *         description="Successful operation",
+     *         @OA\JsonContent(
+     *             @OA\Property(property="status", type="string", example="success"),
+     *             @OA\Property(property="data", type="object",
+     *                 @OA\Property(property="linktree", type="object",
+     *                     @OA\Property(property="id", type="integer", example=1),
+     *                     @OA\Property(property="title", type="string", example="KPRI Links"),
+     *                     @OA\Property(property="description", type="string", example="Official links for KPRI"),
+     *                     @OA\Property(property="logo", type="string", example="uploads/linktree/logo.png"),
+     *                     @OA\Property(property="background_color", type="string", example="#ffffff"),
+     *                     @OA\Property(property="text_color", type="string", example="#000000"),
+     *                     @OA\Property(property="created_at", type="string", format="date-time"),
+     *                     @OA\Property(property="updated_at", type="string", format="date-time")
+     *                 ),
+     *                 @OA\Property(property="links", type="array",
+     *                     @OA\Items(
+     *                         @OA\Property(property="id", type="integer", example=1),
+     *                         @OA\Property(property="page_id", type="integer", example=1),
+     *                         @OA\Property(property="title", type="string", example="Official Website"),
+     *                         @OA\Property(property="url", type="string", example="https://kpri.example.com"),
+     *                         @OA\Property(property="icon", type="string", example="fa-globe"),
+     *                         @OA\Property(property="position", type="integer", example=1),
+     *                         @OA\Property(property="button_color", type="string", example="#007bff"),
+     *                         @OA\Property(property="text_color", type="string", example="#ffffff"),
+     *                         @OA\Property(property="active", type="boolean", example=true),
+     *                         @OA\Property(property="created_at", type="string", format="date-time"),
+     *                         @OA\Property(property="updated_at", type="string", format="date-time")
+     *                     )
+     *                 )
+     *             ),
+     *             @OA\Property(property="message", type="string", example="Linktree data retrieved successfully")
+     *         )
+     *     ),
+     *     @OA\Response(response=404, description="Linktree not found"),
+     *     @OA\Response(response=500, description="Server error")
+     * )
      */
     public function getLinktree($id = null)
     {

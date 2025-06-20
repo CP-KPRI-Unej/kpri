@@ -8,10 +8,31 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Validator;
 use Illuminate\Support\Facades\Log;
 
+/**
+ * @OA\Tag(
+ *     name="Push Notifications",
+ *     description="API Endpoints for managing web push notification subscriptions"
+ * )
+ */
 class PushSubscriptionController extends Controller
 {
     /**
      * Get the VAPID public key
+     *
+     * @OA\Get(
+     *     path="/api/push/key",
+     *     summary="Get VAPID public key",
+     *     description="Retrieves the VAPID public key needed for push notification subscription",
+     *     tags={"Push Notifications"},
+     *     @OA\Response(
+     *         response=200,
+     *         description="Success",
+     *         @OA\JsonContent(
+     *             @OA\Property(property="success", type="boolean", example=true),
+     *             @OA\Property(property="vapidPublicKey", type="string", example="BNbKwE3_nEf95bWh-RiVYAmPFQTULThKo8IpGzpJQe1hXse2HZlrPwJiFMwZhLzvkgFolMFVGGqPh5SRPX3W3Zk")
+     *         )
+     *     )
+     * )
      *
      * @return \Illuminate\Http\JsonResponse
      */
@@ -25,6 +46,60 @@ class PushSubscriptionController extends Controller
 
     /**
      * Store a new push subscription
+     *
+     * @OA\Post(
+     *     path="/api/push/subscribe",
+     *     summary="Subscribe to push notifications",
+     *     description="Stores a new push notification subscription or updates an existing one",
+     *     tags={"Push Notifications"},
+     *     @OA\RequestBody(
+     *         required=true,
+     *         @OA\JsonContent(
+     *             required={"endpoint", "keys"},
+     *             @OA\Property(property="endpoint", type="string", example="https://fcm.googleapis.com/fcm/send/f1LsYWaEh_8:APA91bE...", description="Push subscription endpoint URL"),
+     *             @OA\Property(
+     *                 property="keys",
+     *                 type="object",
+     *                 required={"auth", "p256dh"},
+     *                 @OA\Property(property="auth", type="string", example="5VVaGl3BNxRdL0yN-TtKqQ", description="Auth key"),
+     *                 @OA\Property(property="p256dh", type="string", example="BKHcfZqjgqfH2GWAHJVtE1_zFoW-WIr8QwVTZKgKXQgJQFHD_NyS-38fsDJTKCQhPysi0ocUPB_7QGtqmNPvuJo", description="P256DH key")
+     *             )
+     *         )
+     *     ),
+     *     @OA\Response(
+     *         response=200,
+     *         description="Success",
+     *         @OA\JsonContent(
+     *             @OA\Property(property="success", type="boolean", example=true),
+     *             @OA\Property(property="message", type="string", example="Subscription saved successfully")
+     *         )
+     *     ),
+     *     @OA\Response(
+     *         response=422,
+     *         description="Validation Error",
+     *         @OA\JsonContent(
+     *             @OA\Property(property="success", type="boolean", example=false),
+     *             @OA\Property(property="message", type="string", example="Validation failed"),
+     *             @OA\Property(
+     *                 property="errors",
+     *                 type="object",
+     *                 @OA\Property(
+     *                     property="endpoint",
+     *                     type="array",
+     *                     @OA\Items(type="string", example="The endpoint field is required.")
+     *                 )
+     *             )
+     *         )
+     *     ),
+     *     @OA\Response(
+     *         response=500,
+     *         description="Server Error",
+     *         @OA\JsonContent(
+     *             @OA\Property(property="success", type="boolean", example=false),
+     *             @OA\Property(property="message", type="string", example="Failed to save subscription")
+     *         )
+     *     )
+     * )
      *
      * @param  \Illuminate\Http\Request  $request
      * @return \Illuminate\Http\JsonResponse
@@ -84,6 +159,61 @@ class PushSubscriptionController extends Controller
 
     /**
      * Delete a push subscription
+     *
+     * @OA\Delete(
+     *     path="/api/push/unsubscribe",
+     *     summary="Unsubscribe from push notifications",
+     *     description="Deletes an existing push notification subscription",
+     *     tags={"Push Notifications"},
+     *     @OA\RequestBody(
+     *         required=true,
+     *         @OA\JsonContent(
+     *             required={"endpoint"},
+     *             @OA\Property(property="endpoint", type="string", example="https://fcm.googleapis.com/fcm/send/f1LsYWaEh_8:APA91bE...", description="Push subscription endpoint URL")
+     *         )
+     *     ),
+     *     @OA\Response(
+     *         response=200,
+     *         description="Success",
+     *         @OA\JsonContent(
+     *             @OA\Property(property="success", type="boolean", example=true),
+     *             @OA\Property(property="message", type="string", example="Subscription deleted successfully")
+     *         )
+     *     ),
+     *     @OA\Response(
+     *         response=404,
+     *         description="Not Found",
+     *         @OA\JsonContent(
+     *             @OA\Property(property="success", type="boolean", example=false),
+     *             @OA\Property(property="message", type="string", example="Subscription not found")
+     *         )
+     *     ),
+     *     @OA\Response(
+     *         response=422,
+     *         description="Validation Error",
+     *         @OA\JsonContent(
+     *             @OA\Property(property="success", type="boolean", example=false),
+     *             @OA\Property(property="message", type="string", example="Validation failed"),
+     *             @OA\Property(
+     *                 property="errors",
+     *                 type="object",
+     *                 @OA\Property(
+     *                     property="endpoint",
+     *                     type="array",
+     *                     @OA\Items(type="string", example="The endpoint field is required.")
+     *                 )
+     *             )
+     *         )
+     *     ),
+     *     @OA\Response(
+     *         response=500,
+     *         description="Server Error",
+     *         @OA\JsonContent(
+     *             @OA\Property(property="success", type="boolean", example=false),
+     *             @OA\Property(property="message", type="string", example="Failed to delete subscription")
+     *         )
+     *     )
+     * )
      *
      * @param  \Illuminate\Http\Request  $request
      * @return \Illuminate\Http\JsonResponse

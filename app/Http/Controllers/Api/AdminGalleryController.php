@@ -9,10 +9,57 @@ use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\Facades\Validator;
 
+/**
+ * @OA\Tag(
+ *     name="Admin Gallery",
+ *     description="API Endpoints for Gallery management"
+ * )
+ */
 class AdminGalleryController extends Controller
 {
     /**
      * Display a listing of the gallery items.
+     *
+     * @OA\Get(
+     *     path="/admin/gallery",
+     *     summary="Get all gallery items",
+     *     tags={"Admin Gallery"},
+     *     security={{"bearerAuth":{}}},
+     *     @OA\Response(
+     *         response=200,
+     *         description="Success",
+     *         @OA\JsonContent(
+     *             @OA\Property(property="status", type="string", example="success"),
+     *             @OA\Property(property="data", type="array", 
+     *                 @OA\Items(
+     *                     @OA\Property(property="id_galeri", type="integer", example=1),
+     *                     @OA\Property(property="nama_galeri", type="string", example="Gallery Name"),
+     *                     @OA\Property(property="gambar_galeri", type="string", example="gallery/image.jpg"),
+     *                     @OA\Property(property="id_status", type="integer", example=1),
+     *                     @OA\Property(property="id_user", type="integer", example=1),
+     *                     @OA\Property(property="tgl_upload", type="string", format="date", example="2023-01-01"),
+     *                     @OA\Property(property="user", type="object",
+     *                         @OA\Property(property="id_user", type="integer", example=1),
+     *                         @OA\Property(property="nama_user", type="string", example="Admin User")
+     *                     ),
+     *                     @OA\Property(property="status", type="object",
+     *                         @OA\Property(property="id_status", type="integer", example=1),
+     *                         @OA\Property(property="nama_status", type="string", example="Active")
+     *                     )
+     *                 )
+     *             ),
+     *             @OA\Property(property="message", type="string", example="Gallery items retrieved successfully")
+     *         )
+     *     ),
+     *     @OA\Response(
+     *         response=500,
+     *         description="Server Error",
+     *         @OA\JsonContent(
+     *             @OA\Property(property="status", type="string", example="error"),
+     *             @OA\Property(property="message", type="string", example="Failed to retrieve gallery items")
+     *         )
+     *     )
+     * )
      *
      * @return \Illuminate\Http\JsonResponse
      */
@@ -38,6 +85,56 @@ class AdminGalleryController extends Controller
 
     /**
      * Store a newly created gallery item in storage.
+     *
+     * @OA\Post(
+     *     path="/admin/gallery",
+     *     summary="Create a new gallery item",
+     *     tags={"Admin Gallery"},
+     *     security={{"bearerAuth":{}}},
+     *     @OA\RequestBody(
+     *         required=true,
+     *         @OA\MediaType(
+     *             mediaType="multipart/form-data",
+     *             @OA\Schema(
+     *                 @OA\Property(property="nama_galeri", type="string", example="New Gallery", description="Gallery name"),
+     *                 @OA\Property(property="id_status", type="integer", example=1, description="Status ID"),
+     *                 @OA\Property(property="gambar_galeri", type="string", format="binary", description="Gallery image")
+     *             )
+     *         )
+     *     ),
+     *     @OA\Response(
+     *         response=201,
+     *         description="Created",
+     *         @OA\JsonContent(
+     *             @OA\Property(property="status", type="string", example="success"),
+     *             @OA\Property(property="data", type="object",
+     *                 @OA\Property(property="id_galeri", type="integer", example=1),
+     *                 @OA\Property(property="nama_galeri", type="string", example="New Gallery"),
+     *                 @OA\Property(property="gambar_galeri", type="string", example="gallery/image.jpg"),
+     *                 @OA\Property(property="id_status", type="integer", example=1),
+     *                 @OA\Property(property="id_user", type="integer", example=1),
+     *                 @OA\Property(property="tgl_upload", type="string", format="date", example="2023-01-01")
+     *             ),
+     *             @OA\Property(property="message", type="string", example="Gallery item created successfully")
+     *         )
+     *     ),
+     *     @OA\Response(
+     *         response=422,
+     *         description="Validation Error",
+     *         @OA\JsonContent(
+     *             @OA\Property(property="status", type="string", example="error"),
+     *             @OA\Property(property="errors", type="object")
+     *         )
+     *     ),
+     *     @OA\Response(
+     *         response=500,
+     *         description="Server Error",
+     *         @OA\JsonContent(
+     *             @OA\Property(property="status", type="string", example="error"),
+     *             @OA\Property(property="message", type="string", example="Failed to create gallery item")
+     *         )
+     *     )
+     * )
      *
      * @param  \Illuminate\Http\Request  $request
      * @return \Illuminate\Http\JsonResponse
@@ -88,6 +185,52 @@ class AdminGalleryController extends Controller
     /**
      * Display the specified gallery item.
      *
+     * @OA\Get(
+     *     path="/admin/gallery/{id}",
+     *     summary="Get gallery item by ID",
+     *     tags={"Admin Gallery"},
+     *     security={{"bearerAuth":{}}},
+     *     @OA\Parameter(
+     *         name="id",
+     *         in="path",
+     *         required=true,
+     *         description="Gallery ID",
+     *         @OA\Schema(type="integer")
+     *     ),
+     *     @OA\Response(
+     *         response=200,
+     *         description="Success",
+     *         @OA\JsonContent(
+     *             @OA\Property(property="status", type="string", example="success"),
+     *             @OA\Property(property="data", type="object",
+     *                 @OA\Property(property="id_galeri", type="integer", example=1),
+     *                 @OA\Property(property="nama_galeri", type="string", example="Gallery Name"),
+     *                 @OA\Property(property="gambar_galeri", type="string", example="gallery/image.jpg"),
+     *                 @OA\Property(property="id_status", type="integer", example=1),
+     *                 @OA\Property(property="id_user", type="integer", example=1),
+     *                 @OA\Property(property="tgl_upload", type="string", format="date", example="2023-01-01"),
+     *                 @OA\Property(property="user", type="object",
+     *                     @OA\Property(property="id_user", type="integer", example=1),
+     *                     @OA\Property(property="nama_user", type="string", example="Admin User")
+     *                 ),
+     *                 @OA\Property(property="status", type="object",
+     *                     @OA\Property(property="id_status", type="integer", example=1),
+     *                     @OA\Property(property="nama_status", type="string", example="Active")
+     *                 )
+     *             ),
+     *             @OA\Property(property="message", type="string", example="Gallery item retrieved successfully")
+     *         )
+     *     ),
+     *     @OA\Response(
+     *         response=404,
+     *         description="Not Found",
+     *         @OA\JsonContent(
+     *             @OA\Property(property="status", type="string", example="error"),
+     *             @OA\Property(property="message", type="string", example="Gallery item not found")
+     *         )
+     *     )
+     * )
+     *
      * @param  int  $id
      * @return \Illuminate\Http\JsonResponse
      */
@@ -112,6 +255,72 @@ class AdminGalleryController extends Controller
 
     /**
      * Update the specified gallery item in storage.
+     * 
+     * @OA\Post(
+     *     path="/admin/gallery/{id}",
+     *     summary="Update gallery item",
+     *     tags={"Admin Gallery"},
+     *     security={{"bearerAuth":{}}},
+     *     @OA\Parameter(
+     *         name="id",
+     *         in="path",
+     *         required=true,
+     *         description="Gallery ID",
+     *         @OA\Schema(type="integer")
+     *     ),
+     *     @OA\RequestBody(
+     *         required=true,
+     *         @OA\MediaType(
+     *             mediaType="multipart/form-data",
+     *             @OA\Schema(
+     *                 @OA\Property(property="_method", type="string", example="PUT", description="Method spoofing"),
+     *                 @OA\Property(property="nama_galeri", type="string", example="Updated Gallery", description="Gallery name"),
+     *                 @OA\Property(property="id_status", type="integer", example=1, description="Status ID"),
+     *                 @OA\Property(property="gambar_galeri", type="string", format="binary", description="Gallery image (optional)")
+     *             )
+     *         )
+     *     ),
+     *     @OA\Response(
+     *         response=200,
+     *         description="Success",
+     *         @OA\JsonContent(
+     *             @OA\Property(property="status", type="string", example="success"),
+     *             @OA\Property(property="data", type="object",
+     *                 @OA\Property(property="id_galeri", type="integer", example=1),
+     *                 @OA\Property(property="nama_galeri", type="string", example="Updated Gallery"),
+     *                 @OA\Property(property="gambar_galeri", type="string", example="gallery/image.jpg"),
+     *                 @OA\Property(property="id_status", type="integer", example=1),
+     *                 @OA\Property(property="id_user", type="integer", example=1),
+     *                 @OA\Property(property="tgl_upload", type="string", format="date", example="2023-01-01")
+     *             ),
+     *             @OA\Property(property="message", type="string", example="Gallery item updated successfully")
+     *         )
+     *     ),
+     *     @OA\Response(
+     *         response=422,
+     *         description="Validation Error",
+     *         @OA\JsonContent(
+     *             @OA\Property(property="status", type="string", example="error"),
+     *             @OA\Property(property="errors", type="object")
+     *         )
+     *     ),
+     *     @OA\Response(
+     *         response=404,
+     *         description="Not Found",
+     *         @OA\JsonContent(
+     *             @OA\Property(property="status", type="string", example="error"),
+     *             @OA\Property(property="message", type="string", example="Gallery item not found")
+     *         )
+     *     ),
+     *     @OA\Response(
+     *         response=500,
+     *         description="Server Error",
+     *         @OA\JsonContent(
+     *             @OA\Property(property="status", type="string", example="error"),
+     *             @OA\Property(property="message", type="string", example="Failed to update gallery item")
+     *         )
+     *     )
+     * )
      *
      * @param  \Illuminate\Http\Request  $request
      * @param  int  $id
@@ -169,6 +378,44 @@ class AdminGalleryController extends Controller
 
     /**
      * Remove the specified gallery item from storage.
+     * 
+     * @OA\Delete(
+     *     path="/admin/gallery/{id}",
+     *     summary="Delete gallery item",
+     *     tags={"Admin Gallery"},
+     *     security={{"bearerAuth":{}}},
+     *     @OA\Parameter(
+     *         name="id",
+     *         in="path",
+     *         required=true,
+     *         description="Gallery ID",
+     *         @OA\Schema(type="integer")
+     *     ),
+     *     @OA\Response(
+     *         response=200,
+     *         description="Success",
+     *         @OA\JsonContent(
+     *             @OA\Property(property="status", type="string", example="success"),
+     *             @OA\Property(property="message", type="string", example="Gallery item deleted successfully")
+     *         )
+     *     ),
+     *     @OA\Response(
+     *         response=404,
+     *         description="Not Found",
+     *         @OA\JsonContent(
+     *             @OA\Property(property="status", type="string", example="error"),
+     *             @OA\Property(property="message", type="string", example="Gallery item not found")
+     *         )
+     *     ),
+     *     @OA\Response(
+     *         response=500,
+     *         description="Server Error",
+     *         @OA\JsonContent(
+     *             @OA\Property(property="status", type="string", example="error"),
+     *             @OA\Property(property="message", type="string", example="Failed to delete gallery item")
+     *         )
+     *     )
+     * )
      *
      * @param  int  $id
      * @return \Illuminate\Http\JsonResponse
@@ -200,6 +447,35 @@ class AdminGalleryController extends Controller
 
     /**
      * Get statuses for dropdown.
+     * 
+     * @OA\Get(
+     *     path="/admin/gallery/statuses",
+     *     summary="Get all status options for gallery",
+     *     tags={"Admin Gallery"},
+     *     security={{"bearerAuth":{}}},
+     *     @OA\Response(
+     *         response=200,
+     *         description="Success",
+     *         @OA\JsonContent(
+     *             @OA\Property(property="status", type="string", example="success"),
+     *             @OA\Property(property="data", type="array", 
+     *                 @OA\Items(
+     *                     @OA\Property(property="id_status", type="integer", example=1),
+     *                     @OA\Property(property="nama_status", type="string", example="Active")
+     *                 )
+     *             ),
+     *             @OA\Property(property="message", type="string", example="Statuses retrieved successfully")
+     *         )
+     *     ),
+     *     @OA\Response(
+     *         response=500,
+     *         description="Server Error",
+     *         @OA\JsonContent(
+     *             @OA\Property(property="status", type="string", example="error"),
+     *             @OA\Property(property="message", type="string", example="Failed to retrieve statuses")
+     *         )
+     *     )
+     * )
      *
      * @return \Illuminate\Http\JsonResponse
      */

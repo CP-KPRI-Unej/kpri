@@ -34,7 +34,7 @@
             <h1 class="text-2xl font-semibold">Komentar Artikel: <span id="artikelTitle">Loading...</span></h1>
             <p class="text-sm text-gray-500 dark:text-gray-400">Kelola komentar untuk artikel ini</p>
         </div>
-        <a href="/admin/artikel" class="bg-gray-200 text-gray-700 px-4 py-2 rounded-md text-sm flex items-center">
+        <a href="/admin/artikel" class="bg-orange-500 text-white px-4 py-2 rounded-md text-sm flex items-center hover:bg-orange-600 transition-colors">
             <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 mr-1" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 19l-7-7m0 0l7-7m-7 7h18" />
             </svg>
@@ -179,7 +179,9 @@
                 }
                 return response.json();
             })
-            .then(articles => {
+            .then(data => {
+                // Access the articles data from the response object
+                const articles = data.data || [];
                 const article = articles.find(a => a.id_artikel == articleId);
                 if (article) {
                     document.getElementById('artikelTitle').textContent = article.nama_artikel;
@@ -259,13 +261,13 @@
             </div>
             <div class="flex space-x-2">
                         <div id="approveAllContainer" class="inline-block ${comments.filter(c => c.status === 'pending').length === 0 ? 'hidden' : ''}">
-                            <button type="button" id="approveAllBtn" class="bg-green-500 hover:bg-green-600 text-white px-3 py-1 rounded-md text-sm">
+                            <button type="button" id="approveAllBtn" class="bg-orange-500 hover:bg-orange-600 text-white px-3 py-1 rounded-md text-sm">
                         <i class="bi bi-check-all mr-1"></i> Setujui Semua Pending
                     </button>
                         </div>
                 
                 <div class="relative" x-data="{ open: false }">
-                    <button @click="open = !open" class="bg-blue-500 hover:bg-blue-600 text-white px-3 py-1 rounded-md text-sm flex items-center">
+                    <button @click="open = !open" class="bg-orange-500 hover:bg-orange-600 text-white px-3 py-1 rounded-md text-sm flex items-center">
                         <i class="bi bi-gear mr-1"></i> Tindakan Terpilih 
                         <svg class="w-4 h-4 ml-1" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"></path>
@@ -273,17 +275,17 @@
                     </button>
                     <div x-show="open" @click.away="open = false" x-cloak class="absolute right-0 mt-2 w-48 bg-white dark:bg-gray-800 rounded-md shadow-lg z-50 action-dropdown">
                         <div class="py-1">
-                            <button type="button" onclick="bulkUpdateStatus('approved')" class="w-full text-left px-4 py-2 text-sm text-gray-700 dark:text-gray-200 hover:bg-gray-100 dark:hover:bg-gray-700">
+                            <button type="button" onclick="bulkUpdateStatus('approved')" class="w-full text-left px-4 py-2 text-sm text-orange-500 dark:text-orange-300 hover:bg-gray-100 dark:hover:bg-gray-700">
                                 <i class="bi bi-check-circle mr-2"></i> Setujui Terpilih
                             </button>
-                            <button type="button" onclick="bulkUpdateStatus('rejected')" class="w-full text-left px-4 py-2 text-sm text-gray-700 dark:text-gray-200 hover:bg-gray-100 dark:hover:bg-gray-700">
+                            <button type="button" onclick="bulkUpdateStatus('rejected')" class="w-full text-left px-4 py-2 text-sm text-orange-500 dark:text-orange-300 hover:bg-gray-100 dark:hover:bg-gray-700">
                                 <i class="bi bi-x-circle mr-2"></i> Tolak Terpilih
                             </button>
-                            <button type="button" onclick="bulkUpdateStatus('pending')" class="w-full text-left px-4 py-2 text-sm text-gray-700 dark:text-gray-200 hover:bg-gray-100 dark:hover:bg-gray-700">
+                            <button type="button" onclick="bulkUpdateStatus('pending')" class="w-full text-left px-4 py-2 text-sm text-orange-500 dark:text-orange-300 hover:bg-gray-100 dark:hover:bg-gray-700">
                                 <i class="bi bi-clock mr-2"></i> Pending Terpilih
                             </button>
                             <div class="border-t border-gray-100 dark:border-gray-600 my-1"></div>
-                            <button type="button" onclick="confirmMultipleDelete()" class="w-full text-left px-4 py-2 text-sm text-red-700 dark:text-red-400 hover:bg-gray-100 dark:hover:bg-gray-700">
+                            <button type="button" onclick="confirmMultipleDelete()" class="w-full text-left px-4 py-2 text-sm text-red-500 dark:text-red-400 hover:bg-gray-100 dark:hover:bg-gray-700">
                                 <i class="bi bi-trash mr-2"></i> Hapus Terpilih
                             </button>
                         </div>
@@ -295,7 +297,7 @@
             <thead class="bg-gray-50 dark:bg-gray-700">
                 <tr>
                     <th scope="col" class="px-4 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">
-                        <input type="checkbox" id="selectAll" class="form-checkbox h-4 w-4 text-indigo-600 rounded border-gray-300">
+                        <input type="checkbox" id="selectAll" class="form-checkbox h-4 w-4 text-orange-500 rounded border-gray-300">
                     </th>
                     <th scope="col" class="px-4 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">
                         Nama Pengomentar
@@ -369,7 +371,7 @@
             return `
                 <tr class="hover:bg-gray-50 dark:hover:bg-gray-700 dropdown-container" data-status="${comment.status}">
                     <td class="px-4 py-4 whitespace-nowrap">
-                        <input type="checkbox" value="${comment.id_komentar}" class="form-checkbox h-4 w-4 text-indigo-600 rounded border-gray-300">
+                        <input type="checkbox" value="${comment.id_komentar}" class="form-checkbox h-4 w-4 text-orange-500 rounded border-gray-300">
                     </td>
                     <td class="px-4 py-4 whitespace-nowrap">
                         <div class="text-sm font-medium text-gray-900 dark:text-white">${comment.nama_pengomentar}</div>
@@ -389,7 +391,7 @@
                     </td>
                     <td class="px-4 py-4 whitespace-nowrap text-right text-sm font-medium relative">
                         <div class="relative" x-data="{ open: false }">
-                            <button @click="open = !open" class="text-gray-400 hover:text-gray-500">
+                            <button @click="open = !open" class="text-orange-500 hover:text-orange-600">
                                 <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" viewBox="0 0 20 20" fill="currentColor">
                                     <path d="M10 6a2 2 0 110-4 2 2 0 010 4zM10 12a2 2 0 110-4 2 2 0 010 4zM10 18a2 2 0 110-4 2 2 0 010 4z" />
                                 </svg>
@@ -401,7 +403,7 @@
 
                                     <!-- Approve Comment -->
                                     ${comment.status !== 'approved' ? `
-                                    <button type="button" class="update-status-btn w-full text-left block px-4 py-2 text-sm text-green-700 dark:text-green-400 hover:bg-gray-100 dark:hover:bg-gray-700" 
+                                    <button type="button" class="update-status-btn w-full text-left block px-4 py-2 text-sm text-orange-500 dark:text-orange-300 hover:bg-gray-100 dark:hover:bg-gray-700" 
                                             role="menuitem" 
                                             data-comment-id="${comment.id_komentar}" 
                                             data-status="approved">
@@ -411,7 +413,7 @@
 
                                     <!-- Reject Comment -->
                                     ${comment.status !== 'rejected' ? `
-                                    <button type="button" class="update-status-btn w-full text-left block px-4 py-2 text-sm text-yellow-700 dark:text-yellow-400 hover:bg-gray-100 dark:hover:bg-gray-700" 
+                                    <button type="button" class="update-status-btn w-full text-left block px-4 py-2 text-sm text-orange-500 dark:text-orange-300 hover:bg-gray-100 dark:hover:bg-gray-700" 
                                             role="menuitem" 
                                             data-comment-id="${comment.id_komentar}" 
                                             data-status="rejected">
@@ -421,7 +423,7 @@
 
                                     <!-- Return to Pending -->
                                     ${comment.status !== 'pending' ? `
-                                    <button type="button" class="update-status-btn w-full text-left block px-4 py-2 text-sm text-blue-700 dark:text-blue-400 hover:bg-gray-100 dark:hover:bg-gray-700" 
+                                    <button type="button" class="update-status-btn w-full text-left block px-4 py-2 text-sm text-orange-500 dark:text-orange-300 hover:bg-gray-100 dark:hover:bg-gray-700" 
                                             role="menuitem" 
                                             data-comment-id="${comment.id_komentar}" 
                                             data-status="pending">
@@ -432,7 +434,7 @@
                                     <div class="border-t border-gray-100 dark:border-gray-700"></div>
 
                                     <!-- Delete Comment -->
-                                    <button type="button" class="delete-comment-btn w-full text-left block px-4 py-2 text-sm text-red-700 dark:text-red-400 hover:bg-gray-100 dark:hover:bg-gray-700" 
+                                    <button type="button" class="delete-comment-btn w-full text-left block px-4 py-2 text-sm text-red-500 dark:text-red-400 hover:bg-gray-100 dark:hover:bg-gray-700" 
                                             role="menuitem" 
                                             data-comment-id="${comment.id_komentar}">
                                             <i class="bi bi-trash mr-2"></i> Hapus

@@ -7,10 +7,54 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 use Carbon\Carbon;
 
+/**
+ * @OA\Tag(
+ *     name="Dashboard Stats",
+ *     description="API Endpoints for dashboard statistics and visitor analytics"
+ * )
+ */
 class DashboardStatsController extends Controller
 {
     /**
      * Get summary statistics for dashboard
+     *
+     * @OA\Get(
+     *     path="/admin/dashboard/summary",
+     *     summary="Get dashboard summary statistics",
+     *     description="Retrieves summary statistics including total, today's, and monthly visitor counts",
+     *     tags={"Dashboard Stats"},
+     *     security={{"bearerAuth":{}}},
+     *     @OA\Response(
+     *         response=200,
+     *         description="Success",
+     *         @OA\JsonContent(
+     *             @OA\Property(property="status", type="string", example="success"),
+     *             @OA\Property(
+     *                 property="data",
+     *                 type="object",
+     *                 @OA\Property(property="totalVisitors", type="integer", example=1250),
+     *                 @OA\Property(property="todayVisitors", type="integer", example=42),
+     *                 @OA\Property(property="monthVisitors", type="integer", example=356)
+     *             ),
+     *             @OA\Property(property="message", type="string", example="Dashboard summary statistics retrieved successfully")
+     *         )
+     *     ),
+     *     @OA\Response(
+     *         response=401,
+     *         description="Unauthorized",
+     *         @OA\JsonContent(
+     *             @OA\Property(property="message", type="string", example="Unauthenticated")
+     *         )
+     *     ),
+     *     @OA\Response(
+     *         response=500,
+     *         description="Server Error",
+     *         @OA\JsonContent(
+     *             @OA\Property(property="status", type="string", example="error"),
+     *             @OA\Property(property="message", type="string", example="Failed to retrieve dashboard statistics: Database connection error")
+     *         )
+     *     )
+     * )
      *
      * @return \Illuminate\Http\JsonResponse
      */
@@ -53,6 +97,56 @@ class DashboardStatsController extends Controller
     /**
      * Get recent visitors
      *
+     * @OA\Get(
+     *     path="/admin/dashboard/recent-visitors/{limit}",
+     *     summary="Get recent visitors",
+     *     description="Retrieves a list of recent visitors with their details",
+     *     tags={"Dashboard Stats"},
+     *     security={{"bearerAuth":{}}},
+     *     @OA\Parameter(
+     *         name="limit",
+     *         in="path",
+     *         description="Number of recent visitors to retrieve (default: 10)",
+     *         required=false,
+     *         @OA\Schema(type="integer", default=10)
+     *     ),
+     *     @OA\Response(
+     *         response=200,
+     *         description="Success",
+     *         @OA\JsonContent(
+     *             @OA\Property(property="status", type="string", example="success"),
+     *             @OA\Property(
+     *                 property="data",
+     *                 type="array",
+     *                 @OA\Items(
+     *                     type="object",
+     *                     @OA\Property(property="ip_address", type="string", example="192.168.1.1"),
+     *                     @OA\Property(property="user_agent", type="string", example="Mozilla/5.0 (Windows NT 10.0; Win64; x64)..."),
+     *                     @OA\Property(property="page_visited", type="string", example="/produk"),
+     *                     @OA\Property(property="visited_at", type="string", format="date-time", example="2023-10-25 14:30:00"),
+     *                     @OA\Property(property="time_ago", type="string", example="5 minutes ago")
+     *                 )
+     *             ),
+     *             @OA\Property(property="message", type="string", example="Recent visitors retrieved successfully")
+     *         )
+     *     ),
+     *     @OA\Response(
+     *         response=401,
+     *         description="Unauthorized",
+     *         @OA\JsonContent(
+     *             @OA\Property(property="message", type="string", example="Unauthenticated")
+     *         )
+     *     ),
+     *     @OA\Response(
+     *         response=500,
+     *         description="Server Error",
+     *         @OA\JsonContent(
+     *             @OA\Property(property="status", type="string", example="error"),
+     *             @OA\Property(property="message", type="string", example="Failed to retrieve recent visitors: Database connection error")
+     *         )
+     *     )
+     * )
+     *
      * @param int $limit
      * @return \Illuminate\Http\JsonResponse
      */
@@ -91,6 +185,65 @@ class DashboardStatsController extends Controller
     
     /**
      * Get chart data for monthly statistics in a given year
+     *
+     * @OA\Get(
+     *     path="/admin/dashboard/monthly-chart/{year}",
+     *     summary="Get monthly visitor chart data",
+     *     description="Retrieves monthly visitor statistics for a specific year",
+     *     tags={"Dashboard Stats"},
+     *     security={{"bearerAuth":{}}},
+     *     @OA\Parameter(
+     *         name="year",
+     *         in="path",
+     *         description="Year to retrieve data for (defaults to current year if not provided)",
+     *         required=false,
+     *         @OA\Schema(type="integer", example=2023)
+     *     ),
+     *     @OA\Response(
+     *         response=200,
+     *         description="Success",
+     *         @OA\JsonContent(
+     *             @OA\Property(property="status", type="string", example="success"),
+     *             @OA\Property(
+     *                 property="data",
+     *                 type="object",
+     *                 @OA\Property(property="year", type="integer", example=2023),
+     *                 @OA\Property(
+     *                     property="chartData",
+     *                     type="object",
+     *                     @OA\Property(property="1", type="integer", example=42),
+     *                     @OA\Property(property="2", type="integer", example=56),
+     *                     @OA\Property(property="3", type="integer", example=78),
+     *                     @OA\Property(property="4", type="integer", example=103),
+     *                     @OA\Property(property="5", type="integer", example=142),
+     *                     @OA\Property(property="6", type="integer", example=198),
+     *                     @OA\Property(property="7", type="integer", example=210),
+     *                     @OA\Property(property="8", type="integer", example=167),
+     *                     @OA\Property(property="9", type="integer", example=145),
+     *                     @OA\Property(property="10", type="integer", example=156),
+     *                     @OA\Property(property="11", type="integer", example=132),
+     *                     @OA\Property(property="12", type="integer", example=178)
+     *                 )
+     *             ),
+     *             @OA\Property(property="message", type="string", example="Monthly visitor chart data retrieved successfully")
+     *         )
+     *     ),
+     *     @OA\Response(
+     *         response=401,
+     *         description="Unauthorized",
+     *         @OA\JsonContent(
+     *             @OA\Property(property="message", type="string", example="Unauthenticated")
+     *         )
+     *     ),
+     *     @OA\Response(
+     *         response=500,
+     *         description="Server Error",
+     *         @OA\JsonContent(
+     *             @OA\Property(property="status", type="string", example="error"),
+     *             @OA\Property(property="message", type="string", example="Failed to retrieve monthly chart data: Database connection error")
+     *         )
+     *     )
+     * )
      *
      * @param int|null $year
      * @return \Illuminate\Http\JsonResponse
@@ -134,6 +287,53 @@ class DashboardStatsController extends Controller
     /**
      * Get statistics for most visited pages
      *
+     * @OA\Get(
+     *     path="/admin/dashboard/top-pages/{limit}",
+     *     summary="Get most visited pages",
+     *     description="Retrieves statistics for the most frequently visited pages",
+     *     tags={"Dashboard Stats"},
+     *     security={{"bearerAuth":{}}},
+     *     @OA\Parameter(
+     *         name="limit",
+     *         in="path",
+     *         description="Number of top pages to retrieve (default: 5)",
+     *         required=false,
+     *         @OA\Schema(type="integer", default=5)
+     *     ),
+     *     @OA\Response(
+     *         response=200,
+     *         description="Success",
+     *         @OA\JsonContent(
+     *             @OA\Property(property="status", type="string", example="success"),
+     *             @OA\Property(
+     *                 property="data",
+     *                 type="array",
+     *                 @OA\Items(
+     *                     type="object",
+     *                     @OA\Property(property="page_visited", type="string", example="/produk"),
+     *                     @OA\Property(property="visit_count", type="integer", example=342)
+     *                 )
+     *             ),
+     *             @OA\Property(property="message", type="string", example="Top visited pages retrieved successfully")
+     *         )
+     *     ),
+     *     @OA\Response(
+     *         response=401,
+     *         description="Unauthorized",
+     *         @OA\JsonContent(
+     *             @OA\Property(property="message", type="string", example="Unauthenticated")
+     *         )
+     *     ),
+     *     @OA\Response(
+     *         response=500,
+     *         description="Server Error",
+     *         @OA\JsonContent(
+     *             @OA\Property(property="status", type="string", example="error"),
+     *             @OA\Property(property="message", type="string", example="Failed to retrieve top pages: Database connection error")
+     *         )
+     *     )
+     * )
+     *
      * @param int $limit
      * @return \Illuminate\Http\JsonResponse
      */
@@ -162,6 +362,61 @@ class DashboardStatsController extends Controller
     
     /**
      * Get daily visitor trend for the past N days
+     *
+     * @OA\Get(
+     *     path="/admin/dashboard/daily-trend/{days}",
+     *     summary="Get daily visitor trend",
+     *     description="Retrieves daily visitor statistics for the past N days",
+     *     tags={"Dashboard Stats"},
+     *     security={{"bearerAuth":{}}},
+     *     @OA\Parameter(
+     *         name="days",
+     *         in="path",
+     *         description="Number of past days to retrieve data for (default: 7)",
+     *         required=false,
+     *         @OA\Schema(type="integer", default=7)
+     *     ),
+     *     @OA\Response(
+     *         response=200,
+     *         description="Success",
+     *         @OA\JsonContent(
+     *             @OA\Property(property="status", type="string", example="success"),
+     *             @OA\Property(
+     *                 property="data",
+     *                 type="object",
+     *                 @OA\AdditionalProperties(
+     *                     type="integer",
+     *                     example=45
+     *                 ),
+     *                 example={
+     *                     "2023-10-19": 34,
+     *                     "2023-10-20": 42,
+     *                     "2023-10-21": 56,
+     *                     "2023-10-22": 48,
+     *                     "2023-10-23": 51,
+     *                     "2023-10-24": 62,
+     *                     "2023-10-25": 45
+     *                 }
+     *             ),
+     *             @OA\Property(property="message", type="string", example="Daily visitor trend retrieved successfully")
+     *         )
+     *     ),
+     *     @OA\Response(
+     *         response=401,
+     *         description="Unauthorized",
+     *         @OA\JsonContent(
+     *             @OA\Property(property="message", type="string", example="Unauthenticated")
+     *         )
+     *     ),
+     *     @OA\Response(
+     *         response=500,
+     *         description="Server Error",
+     *         @OA\JsonContent(
+     *             @OA\Property(property="status", type="string", example="error"),
+     *             @OA\Property(property="message", type="string", example="Failed to retrieve daily visitor trend: Database connection error")
+     *         )
+     *     )
+     * )
      *
      * @param int $days
      * @return \Illuminate\Http\JsonResponse

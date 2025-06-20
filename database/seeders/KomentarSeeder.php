@@ -22,7 +22,7 @@ class KomentarSeeder extends Seeder
         }
 
         // Get published articles to attach comments to
-        $articles = Artikel::where('id_status', 2)->get(); // Assuming 2 = Published
+        $articles = Artikel::where('status', 'published')->get(); // Menggunakan enum status 'published'
         
         if ($articles->isEmpty()) {
             $this->command->error('No published articles found. Please run ArtikelSeeder first.');

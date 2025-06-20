@@ -2,10 +2,37 @@
 
 @section('title', 'Tambah Anggota Pengurus')
 
+@section('styles')
+<style>
+    .loading-spinner {
+        display: inline-block;
+        width: 2rem;
+        height: 2rem;
+        vertical-align: text-bottom;
+        border: 0.25em solid currentColor;
+        border-right-color: transparent;
+        border-radius: 50%;
+        animation: spinner-border .75s linear infinite;
+    }
+    @keyframes spinner-border {
+        to { transform: rotate(360deg); }
+    }
+</style>
+@endsection
+
 @section('content')
-<div class="container px-6 py-4">
-    <div class="flex justify-between items-center mb-6">
-        <h1 class="text-2xl font-bold text-gray-800 dark:text-gray-100">Tambah Anggota Pengurus</h1>
+<div class="container mx-auto px-4 py-6">
+    <div class="flex items-center justify-between mb-6">
+        <div>
+            <h1 class="text-2xl font-semibold text-gray-800 dark:text-gray-200">Tambah Anggota Pengurus</h1>
+            <p class="text-sm text-gray-500 dark:text-gray-400">Tambah anggota baru ke struktur kepengurusan</p>
+        </div>
+        <a href="/admin/struktur" class="px-4 py-2 bg-orange-500 text-white rounded-md hover:bg-orange-600 transition-colors flex items-center">
+            <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 mr-1" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 19l-7-7m0 0l7-7m-7 7h18" />
+            </svg>
+            Kembali
+        </a>
     </div>
 
     <div id="error-container" class="hidden bg-red-100 border border-red-400 text-red-700 px-4 py-3 rounded-lg relative mb-4">
@@ -18,33 +45,38 @@
 
     <div class="bg-white dark:bg-gray-800 rounded-lg shadow-md p-6">
         <div id="loading-state" class="hidden flex justify-center items-center p-4">
-            <div class="animate-spin rounded-full h-8 w-8 border-b-2 border-blue-500"></div>
+            <div class="animate-spin rounded-full h-8 w-8 border-b-2 border-orange-500"></div>
             <span class="ml-2 text-gray-600 dark:text-gray-400">Memuat data...</span>
         </div>
 
         <form id="createForm" class="create-form">
             <div class="mb-4">
-                <label for="id_jabatan" class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">Jabatan</label>
-                <select name="id_jabatan" id="id_jabatan" class="w-full px-3 py-2 border border-gray-300 dark:border-gray-700 dark:bg-gray-800 dark:text-gray-200 rounded-md shadow-sm focus:outline-none focus:ring-blue-500 focus:border-blue-500">
+                <label for="id_jabatan" class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">Jabatan <span class="text-red-500">*</span></label>
+                <select name="id_jabatan" id="id_jabatan" class="w-full px-3 py-2 border border-gray-300 dark:border-gray-700 dark:bg-gray-800 dark:text-gray-200 rounded-md shadow-sm focus:outline-none focus:ring-orange-500 focus:border-orange-500">
                     <option value="">-- Pilih Jabatan --</option>
                     <!-- Jabatan options will be loaded dynamically -->
                 </select>
                 <p class="text-red-500 text-xs mt-1 hidden" id="id_jabatan_error"></p>
             </div>
 
+            <div class="mb-4">
+                <label for="id_periode" class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">Periode <span class="text-red-500">*</span></label>
+                <select name="id_periode" id="id_periode" class="w-full px-3 py-2 border border-gray-300 dark:border-gray-700 dark:bg-gray-800 dark:text-gray-200 rounded-md shadow-sm focus:outline-none focus:ring-orange-500 focus:border-orange-500">
+                    <option value="">-- Pilih Periode --</option>
+                    <!-- Periode options will be loaded dynamically -->
+                </select>
+                <p class="text-red-500 text-xs mt-1 hidden" id="id_periode_error"></p>
+            </div>
+
             <div class="mb-6">
-                <label for="nama_pengurus" class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">Nama Pengurus</label>
-                <input type="text" name="nama_pengurus" id="nama_pengurus" class="w-full px-3 py-2 border border-gray-300 dark:border-gray-700 dark:bg-gray-800 dark:text-gray-200 rounded-md shadow-sm focus:outline-none focus:ring-blue-500 focus:border-blue-500">
+                <label for="nama_pengurus" class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">Nama Pengurus <span class="text-red-500">*</span></label>
+                <input type="text" name="nama_pengurus" id="nama_pengurus" class="w-full px-3 py-2 border border-gray-300 dark:border-gray-700 dark:bg-gray-800 dark:text-gray-200 rounded-md shadow-sm focus:outline-none focus:ring-orange-500 focus:border-orange-500">
                 <p class="text-red-500 text-xs mt-1 hidden" id="nama_pengurus_error"></p>
             </div>
 
             <div class="flex justify-end gap-3">
-                <a href="{{ route('admin.struktur.index') }}" class="px-4 py-2 bg-gray-200 dark:bg-gray-700 rounded-md text-gray-700 dark:text-gray-200 hover:bg-gray-300 dark:hover:bg-gray-600 transition duration-300">
-                    Batal
-                </a>
-                <button type="submit" class="px-4 py-2 bg-blue-600 text-white rounded-md hover:bg-blue-700 transition duration-300">
-                    Simpan
-                </button>
+                <a href="{{ route('admin.struktur.index') }}" class="px-4 py-2 border border-orange-500 text-orange-500 rounded-md hover:bg-orange-500 hover:text-white transition-colors">Batal</a>
+                <button type="submit" class="px-4 py-2 bg-orange-500 text-white rounded-md hover:bg-orange-600 transition-colors">Simpan</button>
             </div>
         </form>
     </div>
@@ -67,6 +99,9 @@ document.addEventListener('DOMContentLoaded', function() {
     
     // Fetch available jabatan
     fetchJabatan();
+    
+    // Fetch available periode
+    fetchPeriode();
     
     // Handle form submission
     document.getElementById('createForm').addEventListener('submit', function(e) {
@@ -106,6 +141,33 @@ document.addEventListener('DOMContentLoaded', function() {
         });
     }
     
+    function fetchPeriode() {
+        fetch('/api/admin/periode', {
+            method: 'GET',
+            headers: {
+                'Content-Type': 'application/json',
+                'Authorization': `Bearer ${token}`
+            }
+        })
+        .then(response => {
+            if (!response.ok) {
+                throw new Error('Network response was not ok');
+            }
+            return response.json();
+        })
+        .then(data => {
+            if (data.success) {
+                populatePeriodeDropdown(data.data);
+            } else {
+                showError(['Tidak dapat memuat data periode.']);
+            }
+        })
+        .catch(error => {
+            console.error('Error fetching periode:', error);
+            showError(['Tidak dapat memuat data periode. Silakan coba lagi nanti.']);
+        });
+    }
+    
     function populateJabatanDropdown(jabatan) {
         const selectElement = document.getElementById('id_jabatan');
         
@@ -127,6 +189,44 @@ document.addEventListener('DOMContentLoaded', function() {
         });
     }
     
+    function populatePeriodeDropdown(periodes) {
+        const selectElement = document.getElementById('id_periode');
+        
+        // Keep the default option
+        selectElement.innerHTML = '<option value="">-- Pilih Periode --</option>';
+        
+        // Sort periodes: active first, then by start date (newest first)
+        periodes.sort((a, b) => {
+            if (a.status === 'aktif' && b.status !== 'aktif') return -1;
+            if (a.status !== 'aktif' && b.status === 'aktif') return 1;
+            return new Date(b.tanggal_mulai) - new Date(a.tanggal_mulai);
+        });
+        
+        // Add all periodes with active one selected
+        periodes.forEach(periode => {
+            const option = document.createElement('option');
+            option.value = periode.id_periode;
+            option.textContent = periode.status === 'aktif' ? 
+                `${periode.nama_periode} (Aktif)` : 
+                `${periode.nama_periode} (${formatDate(periode.tanggal_mulai)} - ${formatDate(periode.tanggal_selesai)})`;
+                
+            if (periode.status === 'aktif') {
+                option.selected = true;
+            }
+            
+            selectElement.appendChild(option);
+        });
+    }
+    
+    // Helper function to format dates
+    function formatDate(dateString) {
+        const date = new Date(dateString);
+        return date.toLocaleDateString('id-ID', {
+            year: 'numeric',
+            month: 'short',
+        });
+    }
+    
     function submitForm() {
         // Clear previous errors
         clearErrors();
@@ -134,6 +234,7 @@ document.addEventListener('DOMContentLoaded', function() {
         
         // Get form data
         const id_jabatan = document.getElementById('id_jabatan').value;
+        const id_periode = document.getElementById('id_periode').value;
         const nama_pengurus = document.getElementById('nama_pengurus').value;
         
         // Simple validation
@@ -143,6 +244,12 @@ document.addEventListener('DOMContentLoaded', function() {
             errors.push('Jabatan harus dipilih.');
             document.getElementById('id_jabatan_error').textContent = 'Jabatan harus dipilih.';
             document.getElementById('id_jabatan_error').classList.remove('hidden');
+        }
+        
+        if (!id_periode) {
+            errors.push('Periode harus dipilih.');
+            document.getElementById('id_periode_error').textContent = 'Periode harus dipilih.';
+            document.getElementById('id_periode_error').classList.remove('hidden');
         }
         
         if (!nama_pengurus) {
@@ -167,6 +274,7 @@ document.addEventListener('DOMContentLoaded', function() {
             },
             body: JSON.stringify({
                 id_jabatan: id_jabatan,
+                id_periode: id_periode,
                 nama_pengurus: nama_pengurus
             })
         })
@@ -195,68 +303,89 @@ document.addEventListener('DOMContentLoaded', function() {
                         errorMessages.push(data.errors.id_jabatan[0]);
                     }
                     
+                    if (data.errors.id_periode) {
+                        document.getElementById('id_periode_error').textContent = data.errors.id_periode[0];
+                        document.getElementById('id_periode_error').classList.remove('hidden');
+                        errorMessages.push(data.errors.id_periode[0]);
+                    }
+                    
                     if (data.errors.nama_pengurus) {
                         document.getElementById('nama_pengurus_error').textContent = data.errors.nama_pengurus[0];
                         document.getElementById('nama_pengurus_error').classList.remove('hidden');
                         errorMessages.push(data.errors.nama_pengurus[0]);
                     }
                     
+                    if (errorMessages.length > 0) {
                     showError(errorMessages);
+                    } else {
+                        showError(['Terjadi kesalahan saat menyimpan data.']);
+                    }
                 } else {
-                    showError(['Gagal menyimpan data. Silakan coba lagi.']);
+                    showError(['Terjadi kesalahan saat menyimpan data.']);
                 }
             }
         })
         .catch(error => {
             console.error('Error saving data:', error);
             showLoading(false);
-            showError(['Terjadi kesalahan saat menyimpan data. Silakan coba lagi nanti.']);
+            showError(['Tidak dapat menyimpan data. Silakan coba lagi nanti.']);
         });
     }
     
     function showLoading(isLoading) {
-        const form = document.getElementById('createForm');
-        const loadingState = document.getElementById('loading-state');
+        const loadingElement = document.getElementById('loading-state');
+        const formElement = document.getElementById('createForm');
         
         if (isLoading) {
-            form.classList.add('hidden');
-            loadingState.classList.remove('hidden');
+            loadingElement.classList.remove('hidden');
+            formElement.classList.add('opacity-50', 'pointer-events-none');
         } else {
-            form.classList.remove('hidden');
-            loadingState.classList.add('hidden');
+            loadingElement.classList.add('hidden');
+            formElement.classList.remove('opacity-50', 'pointer-events-none');
         }
-    }
-    
-    function clearErrors() {
-        document.getElementById('error-container').classList.add('hidden');
-        document.getElementById('error-list').innerHTML = '';
-        
-        document.getElementById('id_jabatan_error').textContent = '';
-        document.getElementById('id_jabatan_error').classList.add('hidden');
-        
-        document.getElementById('nama_pengurus_error').textContent = '';
-        document.getElementById('nama_pengurus_error').classList.add('hidden');
     }
     
     function showError(messages) {
         const errorContainer = document.getElementById('error-container');
         const errorList = document.getElementById('error-list');
         
+        // Clear previous errors
         errorList.innerHTML = '';
         
+        // Add each error message
         messages.forEach(message => {
-            const li = document.createElement('li');
-            li.textContent = message;
-            errorList.appendChild(li);
+            const listItem = document.createElement('li');
+            listItem.textContent = message;
+            errorList.appendChild(listItem);
         });
         
+        // Show the error container
         errorContainer.classList.remove('hidden');
+        
+        // Scroll to the error container
+        errorContainer.scrollIntoView({ behavior: 'smooth', block: 'start' });
+    }
+    
+    function clearErrors() {
+        document.getElementById('error-container').classList.add('hidden');
+        document.getElementById('error-list').innerHTML = '';
+        
+        // Hide all field-specific error messages
+        document.querySelectorAll('.text-red-500.text-xs').forEach(element => {
+            element.classList.add('hidden');
+            element.textContent = '';
+        });
     }
     
     function showSuccess(message) {
         const successContainer = document.getElementById('success-container');
-        document.getElementById('success-message').textContent = message;
+        const successMessage = document.getElementById('success-message');
+        
+        successMessage.textContent = message;
         successContainer.classList.remove('hidden');
+        
+        // Scroll to the success container
+        successContainer.scrollIntoView({ behavior: 'smooth', block: 'start' });
     }
     
     function hideSuccess() {

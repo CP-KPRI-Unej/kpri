@@ -13,12 +13,12 @@
         cursor: pointer;
     }
     .dropzone:hover {
-        border-color: #4f46e5;
+        border-color: #f97316;
         background-color: #f8fafc;
     }
     .dropzone.dragover {
-        border-color: #4f46e5;
-        background-color: rgba(79, 70, 229, 0.05);
+        border-color: #f97316;
+        background-color: rgba(249, 115, 22, 0.05);
     }
     .upload-icon {
         color: #6b7280;
@@ -34,19 +34,40 @@
         cursor: pointer;
     }
     .file-info {
+        display: none;
         margin-top: 1rem;
     }
+    .file-info.active {
+        display: block;
+    }
     .current-image {
+        background-color: #f9fafb;
         border-radius: 0.375rem;
-        margin-bottom: 1rem;
-        max-height: 150px;
-        width: auto;
+        padding: 0.75rem;
+        border: 1px solid #e5e7eb;
+    }
+    .dark .current-image {
+        background-color: #374151;
+        border-color: #4b5563;
     }
 </style>
 @endsection
 
 @section('content')
-<div class="container max-w-2xl mx-auto py-6 px-4 sm:px-6 lg:px-8">
+<div class="container mx-auto px-4 py-6">
+    <div class="flex items-center justify-between mb-6">
+        <div>
+            <h1 class="text-2xl font-semibold text-gray-800 dark:text-gray-200">Edit Produk: <span id="product-title">Memuat...</span></h1>
+            <p class="text-sm text-gray-500 dark:text-gray-400">Perbarui informasi produk</p>
+        </div>
+        <a href="{{ route('admin.produk.index') }}" class="px-4 py-2 bg-orange-500 text-white rounded-md hover:bg-orange-600 transition-colors flex items-center">
+            <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 mr-1" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 19l-7-7m0 0l7-7m-7 7h18" />
+            </svg>
+            Kembali
+        </a>
+    </div>
+
     <div id="alert-success" class="bg-green-100 border border-green-400 text-green-700 px-4 py-3 rounded relative mb-4 hidden" role="alert">
         <span class="block sm:inline" id="success-message"></span>
         <button type="button" class="absolute top-0 bottom-0 right-0 px-4 py-3" onclick="hideAlert('alert-success')" aria-label="Close">
@@ -67,35 +88,38 @@
         </button>
     </div>
 
-    <div class="bg-white dark:bg-gray-800 shadow rounded-lg overflow-hidden">
-        <div class="px-6 py-4 border-b border-gray-200 dark:border-gray-700">
-            <div class="flex items-center justify-between">
-                <h2 class="text-xl font-semibold text-gray-800 dark:text-gray-200">Edit Produk</h2>
-                <a href="{{ route('admin.produk.index') }}" class="text-indigo-600 dark:text-indigo-400 hover:text-indigo-800 dark:hover:text-indigo-300 text-sm">
-                    Kembali ke daftar
-                </a>
-            </div>
-        </div>
-        
-        <div id="loading-spinner" class="p-6 flex justify-center">
-            <svg class="animate-spin h-8 w-8 text-indigo-500" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
+    <div id="loading-spinner" class="flex justify-center items-center py-10">
+        <svg class="animate-spin h-10 w-10 text-orange-500" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
                 <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
                 <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
                         </svg>
             </div>
 
-        <form id="productForm" enctype="multipart/form-data" class="hidden">
-            <div class="p-6">
-                <div class="mb-6">
-                    <label for="nama_produk" class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Nama Produk</label>
-                    <input type="text" class="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-md shadow-sm focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 dark:bg-gray-700 dark:text-white" 
+    <div id="content-area" class="bg-white dark:bg-gray-800 rounded-lg shadow-md overflow-hidden p-6" style="display: none;">
+        <form id="productForm" enctype="multipart/form-data">
+            <input type="hidden" id="product_id" value="{{ $id }}">
+            
+            <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
+                <div class="md:col-span-2 space-y-6">
+                    <div>
+                        <label for="nama_produk" class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Nama Produk <span class="text-red-500">*</span></label>
+                        <input type="text" class="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-md shadow-sm focus:outline-none focus:ring-2 focus:ring-orange-500 dark:bg-gray-700 dark:text-white" 
                            id="nama_produk" name="nama_produk" required>
                     <p class="mt-1 text-sm text-red-600 dark:text-red-400 hidden" id="nama_produk_error"></p>
             </div>
 
-                <div class="mb-6">
-                    <label for="id_kategori" class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Kategori</label>
-                    <select class="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-md shadow-sm focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 dark:bg-gray-700 dark:text-white" 
+                    <div>
+                        <label for="deskripsi_produk" class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Deskripsi</label>
+                        <textarea rows="4" class="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-md shadow-sm focus:outline-none focus:ring-2 focus:ring-orange-500 dark:bg-gray-700 dark:text-white" 
+                                 id="deskripsi_produk" name="deskripsi_produk"></textarea>
+                        <p class="mt-1 text-sm text-red-600 dark:text-red-400 hidden" id="deskripsi_produk_error"></p>
+                    </div>
+                </div>
+                
+                <div class="space-y-6">
+                    <div>
+                        <label for="id_kategori" class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Kategori <span class="text-red-500">*</span></label>
+                        <select class="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-md shadow-sm focus:outline-none focus:ring-2 focus:ring-orange-500 dark:bg-gray-700 dark:text-white" 
                             id="id_kategori" name="id_kategori" required>
                         <option value="">Pilih Kategori</option>
                         <!-- Categories will be loaded here via API -->
@@ -103,43 +127,38 @@
                     <p class="mt-1 text-sm text-red-600 dark:text-red-400 hidden" id="id_kategori_error"></p>
                 </div>
 
-                <div class="mb-6">
-                    <label for="harga_produk" class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Harga (Rp)</label>
-                    <input type="number" class="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-md shadow-sm focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 dark:bg-gray-700 dark:text-white" 
+                    <div>
+                        <label for="harga_produk" class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Harga (Rp) <span class="text-red-500">*</span></label>
+                        <input type="number" class="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-md shadow-sm focus:outline-none focus:ring-2 focus:ring-orange-500 dark:bg-gray-700 dark:text-white" 
                            id="harga_produk" name="harga_produk" min="0" required>
                     <p class="mt-1 text-sm text-red-600 dark:text-red-400 hidden" id="harga_produk_error"></p>
                 </div>
 
-                <div class="mb-6">
-                    <label for="stok_produk" class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Stok</label>
-                    <input type="number" class="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-md shadow-sm focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 dark:bg-gray-700 dark:text-white" 
+                    <div>
+                        <label for="stok_produk" class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Stok <span class="text-red-500">*</span></label>
+                        <input type="number" class="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-md shadow-sm focus:outline-none focus:ring-2 focus:ring-orange-500 dark:bg-gray-700 dark:text-white" 
                            id="stok_produk" name="stok_produk" min="0" required>
                     <p class="mt-1 text-sm text-red-600 dark:text-red-400 hidden" id="stok_produk_error"></p>
                 </div>
                 
-                <div class="mb-6">
-                    <label for="deskripsi_produk" class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Deskripsi</label>
-                    <textarea rows="4" class="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-md shadow-sm focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 dark:bg-gray-700 dark:text-white" 
-                           id="deskripsi_produk" name="deskripsi_produk"></textarea>
-                    <p class="mt-1 text-sm text-red-600 dark:text-red-400 hidden" id="deskripsi_produk_error"></p>
+                    <div>
+                        <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Gambar Saat Ini</label>
+                        <div class="current-image mt-2">
+                            <img id="currentImage" src="" alt="Gambar produk saat ini" class="max-h-48 max-w-full rounded mx-auto">
                 </div>
-
-                <div class="mb-6">
-                    <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-3">Gambar Produk</label>
-                    
-                    <div id="current-image-container" class="mb-4 hidden">
-                        <img id="current-image" class="current-image" src="" alt="Current product image">
-                        <p class="text-sm text-gray-500 dark:text-gray-400 mb-2">Gambar saat ini</p>
             </div>
 
+                    <div>
+                        <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Ganti Gambar (Opsional)</label>
                     <div class="relative dropzone" id="dropzoneArea">
                         <input type="file" class="file-input" id="gambar_produk" name="gambar_produk" accept="image/*">
                         <div class="dropzone-content">
                             <i class="bi bi-cloud-arrow-up upload-icon text-3xl"></i>
                             <p class="text-gray-600 dark:text-gray-400">Upload Gambar / Drop gambar disini</p>
                             <p class="text-xs text-gray-500 dark:text-gray-500 mt-2">Format: JPG, PNG, GIF (Maks. 2MB)</p>
+                                <p class="text-xs text-gray-500 dark:text-gray-500 mt-1">Kosongkan jika tidak ingin mengubah gambar</p>
                         </div>
-                        <div class="file-info bg-gray-50 dark:bg-gray-700 p-3 rounded-md hidden" id="file-info">
+                            <div class="file-info bg-gray-50 dark:bg-gray-700 p-3 rounded-md">
                             <div class="flex items-center">
                                 <img id="imagePreview" class="w-10 h-10 object-cover rounded mr-2" />
             <div>
@@ -153,16 +172,13 @@
                         </div>
                     </div>
                     <p class="mt-1 text-sm text-red-600 dark:text-red-400 hidden" id="gambar_produk_error"></p>
+                    </div>
                 </div>
             </div>
 
-            <div class="px-6 py-4 bg-gray-50 dark:bg-gray-700 text-right flex justify-end space-x-3">
-                <a href="{{ route('admin.produk.index') }}" class="inline-flex justify-center py-2 px-4 border border-gray-300 dark:border-gray-600 shadow-sm text-sm font-medium rounded-md text-gray-700 dark:text-gray-300 bg-white dark:bg-gray-800 hover:bg-gray-50 dark:hover:bg-gray-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500">
-                Cancel
-            </a>
-                <button type="submit" id="submitButton" class="inline-flex justify-center py-2 px-4 border border-transparent shadow-sm text-sm font-medium rounded-md text-white bg-indigo-800 hover:bg-indigo-900 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500">
-                    Update
-            </button>
+            <div class="mt-6 flex justify-end space-x-3">
+                <a href="{{ route('admin.produk.index') }}" class="px-4 py-2 border border-orange-500 text-orange-500 rounded-md hover:bg-orange-500 hover:text-white transition-colors">Batal</a>
+                <button type="button" id="submitBtn" class="px-4 py-2 bg-orange-500 text-white rounded-md hover:bg-orange-600 transition-colors">Update Produk</button>
         </div>
     </form>
     </div>
@@ -198,24 +214,30 @@
         const fileInput = document.getElementById('gambar_produk');
         const fileName = document.getElementById('fileName');
         const fileSize = document.getElementById('fileSize');
-        const fileInfo = document.getElementById('file-info');
+        const fileInfo = document.querySelector('.file-info');
         const removeFileBtn = document.getElementById('removeFile');
         const imagePreview = document.getElementById('imagePreview');
         const productForm = document.getElementById('productForm');
         const loadingSpinner = document.getElementById('loading-spinner');
-        const currentImageContainer = document.getElementById('current-image-container');
-        const currentImage = document.getElementById('current-image');
+        const contentArea = document.getElementById('content-area');
+        const currentImage = document.getElementById('currentImage');
+        const submitBtn = document.getElementById('submitBtn');
+
+        // Set up event listener for submit button
+        submitBtn.addEventListener('click', function() {
+            updateProduct(productId);
+        });
 
         // Initialize
         Promise.all([
             fetchCategories(),
             fetchProduct(productId)
         ]).then(() => {
-            loadingSpinner.classList.add('hidden');
-            productForm.classList.remove('hidden');
+            loadingSpinner.style.display = 'none';
+            contentArea.style.display = 'block';
         }).catch(error => {
             showAlert('error', 'Gagal memuat data produk: ' + (error.response?.data?.message || error.message));
-            loadingSpinner.classList.add('hidden');
+            loadingSpinner.style.display = 'none';
         });
         
         // Prevent default drag behaviors
@@ -244,7 +266,7 @@
         removeFileBtn.addEventListener('click', function(e) {
             e.preventDefault();
             fileInput.value = '';
-            fileInfo.classList.add('hidden');
+            fileInfo.style.display = 'none';
             imagePreview.src = '';
         });
         
@@ -279,12 +301,20 @@
                 .then(response => {
                     if (response.data.status === 'success') {
                         populateCategoryDropdown(response.data.data);
+                        return response.data.data; // Return the categories for Promise.all
                     }
+                    return [];
                 });
         }
 
         function populateCategoryDropdown(categories) {
                     const categorySelect = document.getElementById('id_kategori');
+            // Clear existing options except the first placeholder
+            while (categorySelect.options.length > 1) {
+                categorySelect.remove(1);
+            }
+            
+            // Add category options
                     categories.forEach(category => {
                         const option = document.createElement('option');
                         option.value = category.id_kategori;
@@ -303,6 +333,9 @@
         }
         
         function populateProductForm(product) {
+            // Update product title in the heading
+            document.getElementById('product-title').textContent = product.nama_produk;
+            
             // Populate form fields
             document.getElementById('nama_produk').value = product.nama_produk;
             document.getElementById('id_kategori').value = product.id_kategori;
@@ -313,7 +346,8 @@
             // Show current image if available
             if (product.gambar_produk) {
                 currentImage.src = `/storage/${product.gambar_produk}`;
-                currentImageContainer.classList.remove('hidden');
+            } else {
+                currentImage.src = '/images/no-image.png';
             }
         }
 
@@ -362,7 +396,7 @@
         }
 
         function showFileInfo() {
-            fileInfo.classList.remove('hidden');
+            fileInfo.style.display = 'block';
         }
 
         function formatFileSize(bytes) {
@@ -385,7 +419,7 @@
             }
             
             // Disable submit button and show loading state
-            const submitButton = document.getElementById('submitButton');
+            const submitButton = document.getElementById('submitBtn');
             const originalText = submitButton.innerHTML;
             submitButton.disabled = true;
             submitButton.innerHTML = `
@@ -398,6 +432,7 @@
             
             // Create FormData and append form values
             const formData = new FormData();
+            formData.append('_method', 'PUT'); // Add method spoofing for Laravel
             formData.append('nama_produk', document.getElementById('nama_produk').value);
             formData.append('id_kategori', document.getElementById('id_kategori').value);
             formData.append('harga_produk', document.getElementById('harga_produk').value);
@@ -419,15 +454,14 @@
                 if (response.data.status === 'success') {
                     showAlert('success', 'Produk berhasil diperbarui!');
                     
-                    // Refresh product data
-                    fetchProduct(id);
-                    
-                    // Reset file input
-                    fileInput.value = '';
-                    fileInfo.classList.add('hidden');
+                    // Redirect to product list page after successful update
+                    setTimeout(() => {
+                        window.location.href = "{{ route('admin.produk.index') }}";
+                    }, 1000);
                 }
             })
             .catch(error => {
+                console.error('Error updating product:', error);
                 if (error.response && error.response.data && error.response.data.errors) {
                     // Display validation errors
                     const errors = error.response.data.errors;

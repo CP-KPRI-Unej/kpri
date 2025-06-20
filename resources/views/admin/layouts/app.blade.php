@@ -10,6 +10,14 @@
     <link rel="stylesheet" href="https://cdn.datatables.net/1.11.5/css/dataTables.bootstrap5.min.css">
     <style>
         [x-cloak] { display: none !important; }
+        .main-content-wrapper {
+            padding-top: 4rem; /* Tambahan padding-top untuk memberikan ruang di atas konten */
+        }
+        @media (min-width: 1024px) {
+            .main-content-wrapper {
+                padding-top: 1rem; /* Padding lebih kecil untuk layar besar karena sidebar selalu terlihat */
+            }
+        }
     </style>
     <script>
         // On page load or when changing themes, best to add inline in `head` to avoid FOUC
@@ -31,9 +39,9 @@
             @include('admin.layouts.header')
 
             <!-- Main content -->
-            <main class="flex-1 overflow-x-hidden overflow-y-auto bg-gray-100 dark:bg-gray-900">
+            <main class="flex-1 overflow-x-hidden overflow-y-auto bg-gray-100 dark:bg-gray-900 main-content-wrapper">
                 @if (session('success'))
-                    <div class="mb-4 bg-green-100 dark:bg-green-800 border border-green-400 dark:border-green-700 text-green-700 dark:text-green-100 px-4 py-3 rounded relative" role="alert">
+                    <div class="mb-4 mt-4 bg-green-100 dark:bg-green-800 border border-green-400 dark:border-green-700 text-green-700 dark:text-green-100 px-4 py-3 rounded relative" role="alert">
                         <span class="block sm:inline">{{ session('success') }}</span>
                         <button type="button" class="absolute top-0 bottom-0 right-0 px-4 py-3" onclick="this.parentElement.style.display='none'">
                             <i class="bi bi-x-lg"></i>
@@ -42,7 +50,7 @@
                 @endif
 
                 @if (session('error'))
-                    <div class="mb-4 bg-red-100 dark:bg-red-800 border border-red-400 dark:border-red-700 text-red-700 dark:text-red-100 px-4 py-3 rounded relative" role="alert">
+                    <div class="mb-4 mt-4 bg-red-100 dark:bg-red-800 border border-red-400 dark:border-red-700 text-red-700 dark:text-red-100 px-4 py-3 rounded relative" role="alert">
                         <span class="block sm:inline">{{ session('error') }}</span>
                         <button type="button" class="absolute top-0 bottom-0 right-0 px-4 py-3" onclick="this.parentElement.style.display='none'">
                             <i class="bi bi-x-lg"></i>

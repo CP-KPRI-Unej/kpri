@@ -39,8 +39,8 @@
     }
     
     .tagify {
-        --tag-bg: #4f46e5;
-        --tag-hover: #4338ca;
+        --tag-bg: #f97316;
+        --tag-hover: #ea580c;
         --tag-text-color: #fff;
         --tags-border-color: #d1d5db;
         --tags-hover-border-color: #9ca3af;
@@ -90,7 +90,7 @@
             <h1 class="text-2xl font-semibold text-gray-800 dark:text-gray-200">Edit Artikel</h1>
             <p class="text-sm text-gray-500 dark:text-gray-400">Edit artikel yang sudah ada</p>
         </div>
-        <a href="/admin/artikel" class="px-4 py-2 bg-gray-100 dark:bg-gray-700 text-gray-700 dark:text-gray-200 rounded-md hover:bg-gray-200 dark:hover:bg-gray-600 transition flex items-center">
+        <a href="/admin/artikel" class="px-4 py-2 bg-orange-500 text-white rounded-md hover:bg-orange-600 transition-colors flex items-center">
             <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 mr-1" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 19l-7-7m0 0l7-7m-7 7h18" />
             </svg>
@@ -107,7 +107,7 @@
                     <!-- Judul Artikel -->
                     <div>
                         <label for="nama_artikel" class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Judul Artikel <span class="text-red-500">*</span></label>
-                        <input type="text" name="nama_artikel" id="nama_artikel" class="w-full border border-gray-300 dark:border-gray-600 rounded-md px-3 py-2 focus:outline-none focus:ring-2 focus:ring-indigo-500 dark:bg-gray-700 dark:text-white" required>
+                        <input type="text" name="nama_artikel" id="nama_artikel" class="w-full border border-gray-300 dark:border-gray-600 rounded-md px-3 py-2 focus:outline-none focus:ring-2 focus:ring-orange-500 dark:bg-gray-700 dark:text-white" required>
                         <p class="text-red-500 text-xs mt-1 error-message" id="nama_artikel_error"></p>
                     </div>
                     
@@ -121,7 +121,7 @@
                     <!-- Tags -->
                     <div>
                         <label for="tags_artikel" class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Tags</label>
-                        <input id="tags_artikel" name="tags_artikel" class="w-full border border-gray-300 dark:border-gray-600 rounded-md px-3 py-2 focus:outline-none focus:ring-2 focus:ring-indigo-500 dark:bg-gray-700 dark:text-white">
+                        <input id="tags_artikel" name="tags_artikel" class="w-full border border-gray-300 dark:border-gray-600 rounded-md px-3 py-2 focus:outline-none focus:ring-2 focus:ring-orange-500 dark:bg-gray-700 dark:text-white">
                         <p class="text-red-500 text-xs mt-1 error-message" id="tags_artikel_error"></p>
                         <p class="text-xs text-gray-500 dark:text-gray-400 mt-1">Pisahkan tag dengan koma</p>
                     </div>
@@ -130,18 +130,18 @@
                 <div class="space-y-6">
                     <!-- Status -->
                     <div>
-                        <label for="id_status" class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Status <span class="text-red-500">*</span></label>
-                        <select name="id_status" id="id_status" class="w-full border border-gray-300 dark:border-gray-600 rounded-md px-3 py-2 focus:outline-none focus:ring-2 focus:ring-indigo-500 dark:bg-gray-700 dark:text-white" required>
+                        <label for="status" class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Status <span class="text-red-500">*</span></label>
+                        <select name="status" id="id_status" class="w-full border border-gray-300 dark:border-gray-600 rounded-md px-3 py-2 focus:outline-none focus:ring-2 focus:ring-orange-500 dark:bg-gray-700 dark:text-white" required>
                             <option value="">Pilih Status</option>
                             <!-- Statuses will be loaded dynamically -->
                         </select>
-                        <p class="text-red-500 text-xs mt-1 error-message" id="id_status_error"></p>
+                        <p class="text-red-500 text-xs mt-1 error-message" id="status_error"></p>
                     </div>
                     
                     <!-- Tanggal Rilis -->
                     <div>
                         <label for="tgl_rilis" class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Tanggal Rilis <span class="text-red-500">*</span></label>
-                        <input type="date" name="tgl_rilis" id="tgl_rilis" class="w-full border border-gray-300 dark:border-gray-600 rounded-md px-3 py-2 focus:outline-none focus:ring-2 focus:ring-indigo-500 dark:bg-gray-700 dark:text-white" required>
+                        <input type="date" name="tgl_rilis" id="tgl_rilis" class="w-full border border-gray-300 dark:border-gray-600 rounded-md px-3 py-2 focus:outline-none focus:ring-2 focus:ring-orange-500 dark:bg-gray-700 dark:text-white" required>
                         <p class="text-red-500 text-xs mt-1 error-message" id="tgl_rilis_error"></p>
                     </div>
                     
@@ -169,7 +169,7 @@
                                     <path d="M28 8H12a4 4 0 00-4 4v20m32-12v8m0 0v8a4 4 0 01-4 4H12a4 4 0 01-4-4v-4m32-4l-3.172-3.172a4 4 0 00-5.656 0L28 28M8 32l9.172-9.172a4 4 0 015.656 0L28 28m0 0l4 4m4-24h8m-4-4v8m-12 4h.02" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" />
                                 </svg>
                                 <div class="flex text-sm text-gray-600 dark:text-gray-400">
-                                    <label for="file-upload" class="relative cursor-pointer bg-white dark:bg-gray-700 rounded-md font-medium text-indigo-600 dark:text-indigo-400 hover:text-indigo-500 focus-within:outline-none">
+                                    <label for="file-upload" class="relative cursor-pointer bg-white dark:bg-gray-700 rounded-md font-medium text-orange-600 dark:text-orange-400 hover:text-orange-500 focus-within:outline-none">
                                         <span>Upload gambar</span>
                                         <input id="file-upload" name="gambar[]" type="file" class="sr-only" accept="image/*" multiple onchange="previewImages(event)">
                                     </label>
@@ -191,8 +191,8 @@
             </div>
             
             <div class="mt-6 flex justify-end space-x-3">
-                <a href="/admin/artikel" class="px-4 py-2 bg-gray-100 dark:bg-gray-700 text-gray-700 dark:text-gray-200 rounded-md hover:bg-gray-200 dark:hover:bg-gray-600 transition">Batal</a>
-                <button type="button" id="submitBtn" class="px-4 py-2 bg-indigo-600 text-white rounded-md hover:bg-indigo-700 transition">Perbarui Artikel</button>
+                <a href="/admin/artikel" class="px-4 py-2 border border-orange-500 text-orange-500 rounded-md hover:bg-orange-500 hover:text-white transition-colors">Batal</a>
+                <button type="button" id="submitBtn" class="px-4 py-2 bg-orange-500 text-white rounded-md hover:bg-orange-600 transition-colors">Perbarui Artikel</button>
             </div>
         </form>
     </div>
@@ -328,8 +328,8 @@
             });
             
             // Set selected status if article data is available
-            if (artikel && artikel.id_status) {
-                statusSelect.value = artikel.id_status;
+            if (artikel && artikel.status) {
+                statusSelect.value = artikel.status;
             }
             
             return statuses;
@@ -339,7 +339,7 @@
     function populateForm(article) {
         // Set form values
         document.getElementById('nama_artikel').value = article.nama_artikel;
-        document.getElementById('id_status').value = article.id_status;
+        document.getElementById('id_status').value = article.status;
         document.getElementById('tgl_rilis').value = formatDateForInput(article.tgl_rilis);
         
         // Initialize Tagify after setting value
