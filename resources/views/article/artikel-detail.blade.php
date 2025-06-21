@@ -65,10 +65,10 @@
     </section>
 
     <script>
-        const API_URL = 'https://b631-180-245-74-56.ngrok-free.app/api/articles/1';
+        const API_URL = 'https://92b0-2001-448a-5122-4227-613a-c69c-d8bf-3a6a.ngrok-free.app/api/articles/1';
 
         async function fetchArticle() {
-            const res = await fetch('https://b631-180-245-74-56.ngrok-free.app/api/articles/{{ $id }}');
+            const res = await fetch('https://92b0-2001-448a-5122-4227-613a-c69c-d8bf-3a6a.ngrok-free.app/api/articles/{{ $id }}');
             const {
                 data
             } = await res.json();
