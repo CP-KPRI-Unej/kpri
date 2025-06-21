@@ -7,6 +7,7 @@ use App\Models\Layanan;
 use App\Models\JenisLayanan;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Log;
+use Illuminate\Support\Facades\Storage;
 
 /**
  * @OA\Tag(
@@ -114,7 +115,7 @@ class LayananController extends Controller
      */
     public function getJenisLayananById($id)
     {
-        $jenisLayanan = JenisLayanan::with('layanans')->find($id);
+        $jenisLayanan = JenisLayanan::with('layanan')->find($id);
         
         if (!$jenisLayanan) {
             return response()->json([
@@ -123,11 +124,17 @@ class LayananController extends Controller
             ], 404);
         }
         
-        $layananData = $jenisLayanan->layanans->map(function ($layanan) {
+        $layananData = $jenisLayanan->layanan->map(function ($layanan) {
+            $gambarUrl = null;
+            if ($layanan->gambar) {
+                $gambarUrl = url(Storage::url($layanan->gambar));
+            }
+            
             return [
                 'id' => $layanan->id_layanan,
                 'judul' => $layanan->judul_layanan,
-                'deskripsi' => $layanan->deskripsi_layanan
+                'deskripsi' => $layanan->deskripsi_layanan,
+                'gambar' => $gambarUrl
             ];
         });
         
@@ -173,6 +180,7 @@ class LayananController extends Controller
      *                 @OA\Property(property="id", type="integer", example=1),
      *                 @OA\Property(property="judul", type="string", example="Pinjaman Reguler"),
      *                 @OA\Property(property="deskripsi", type="string", example="Layanan pinjaman dengan bunga rendah untuk anggota koperasi"),
+     *                 @OA\Property(property="gambar", type="string", example="https://example.com/storage/images/layanan1.jpg"),
      *                 @OA\Property(
      *                     property="jenis_layanan",
      *                     type="object",
@@ -203,10 +211,16 @@ class LayananController extends Controller
             ], 404);
         }
         
+        $gambarUrl = null;
+        if ($layanan->gambar) {
+            $gambarUrl = url(Storage::url($layanan->gambar));
+        }
+        
         $data = [
             'id' => $layanan->id_layanan,
             'judul' => $layanan->judul_layanan,
             'deskripsi' => $layanan->deskripsi_layanan,
+            'gambar' => $gambarUrl,
             'jenis_layanan' => [
                 'id' => $layanan->jenisLayanan->id_jenis_layanan,
                 'nama' => $layanan->jenisLayanan->nama_layanan

@@ -53,7 +53,7 @@ class DownloadItemController extends Controller
     public function index()
     {
         $downloadItems = DownloadItem::orderBy('urutan', 'asc')
-            ->where('status', 'Active')
+            ->where('id_status', 1)
             ->get([
                 'id_download_item',
                 'nama_item',
@@ -126,7 +126,7 @@ class DownloadItemController extends Controller
     public function show($id)
     {
         $item = DownloadItem::where('id_download_item', $id)
-            ->where('status', 'Active')
+            ->where('id_status', 1)
             ->firstOrFail();
             
         $fileUrl = url('storage/' . $item->path_file);
@@ -143,5 +143,62 @@ class DownloadItemController extends Controller
                 'order' => $item->urutan
             ]
         ]);
+    }
+    
+    /**
+     * Download the specified file.
+     *
+     * @param  int  $id
+     * @return \Illuminate\Http\Response
+     * 
+     * @OA\Get(
+     *     path="/downloads/{id}/file",
+     *     summary="Download a file",
+     *     description="Download the actual file for a download item",
+     *     operationId="downloadFile",
+     *     tags={"Downloads"},
+     *     @OA\Parameter(
+     *         name="id",
+     *         in="path",
+     *         description="Download Item ID",
+     *         required=true,
+     *         @OA\Schema(type="integer")
+     *     ),
+     *     @OA\Response(
+     *         response=200,
+     *         description="File download",
+     *         @OA\Header(
+     *             header="Content-Type",
+     *             description="The MIME type of the file",
+     *             @OA\Schema(type="string")
+     *         ),
+     *         @OA\Header(
+     *             header="Content-Disposition",
+     *             description="Attachment with filename",
+     *             @OA\Schema(type="string")
+     *         )
+     *     ),
+     *     @OA\Response(response=404, description="Download item not found"),
+     *     @OA\Response(response=500, description="Server error")
+     * )
+     */
+    public function download($id)
+    {
+        $item = DownloadItem::where('id_download_item', $id)
+            ->where('id_status', 1)
+            ->firstOrFail();
+            
+        $filePath = storage_path('app/public/' . $item->path_file);
+        
+        if (!file_exists($filePath)) {
+            return response()->json([
+                'success' => false,
+                'message' => 'File not found on server'
+            ], 404);
+        }
+        
+        $fileName = basename($item->path_file);
+        
+        return response()->download($filePath, $fileName);
     }
 } 
