@@ -32,6 +32,7 @@ use App\Http\Controllers\Api\AdminStatusController;
 use App\Http\Controllers\Api\AdminStrukturController;
 use App\Http\Controllers\Api\AdminLinktreeController;
 use App\Http\Controllers\Api\AdminKategoriProdukController;
+use App\Http\Controllers\Api\HeroBerandaController;
 
 /*
 |--------------------------------------------------------------------------
@@ -242,6 +243,10 @@ Route::get('/gallery/{id}', [GaleriController::class, 'show']);
 // FAQ API Routes
 Route::get('/faqs', [FAQController::class, 'index']);
 Route::get('/faqs/{id}', [FAQController::class, 'show']);
+
+// Hero Banner API Routes
+Route::get('/hero-banners', [HeroBerandaController::class, 'index']);
+Route::get('/hero-banners/{id}', [HeroBerandaController::class, 'show']);
 
 Route::get('/linktree/{id?}', [PublicLinktreeController::class, 'getLinktree']);
 

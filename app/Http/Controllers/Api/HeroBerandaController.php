@@ -4,6 +4,7 @@ namespace App\Http\Controllers\Api;
 use App\Http\Controllers\Controller;
 use App\Models\HeroBeranda;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Storage;
 
 /**
  * @OA\Tag(
@@ -20,8 +21,8 @@ class HeroBerandaController extends Controller
      * 
      * @OA\Get(
      *     path="/hero-banners",
-     *     summary="Get all hero banners",
-     *     description="Returns a list of all hero banners for the front page",
+     *     summary="Get all active hero banners",
+     *     description="Returns a list of all active hero banners for the front page",
      *     operationId="getHeroBanners",
      *     tags={"Hero Banners"},
      *     @OA\Response(
@@ -31,14 +32,11 @@ class HeroBerandaController extends Controller
      *             @OA\Property(property="status", type="string", example="success"),
      *             @OA\Property(property="data", type="array",
      *                 @OA\Items(
-     *                     @OA\Property(property="id_hero", type="integer", example=1),
-     *                     @OA\Property(property="judul_hero", type="string", example="Welcome to KPRI"),
-     *                     @OA\Property(property="deskripsi_hero", type="string", example="Find our best products and services"),
-     *                     @OA\Property(property="gambar_hero", type="string", example="uploads/hero/hero_123456.jpg"),
-     *                     @OA\Property(property="link_hero", type="string", example="https://example.com/promo"),
-     *                     @OA\Property(property="status_hero", type="string", example="aktif"),
-     *                     @OA\Property(property="created_at", type="string", format="date-time"),
-     *                     @OA\Property(property="updated_at", type="string", format="date-time")
+     *                     @OA\Property(property="id", type="integer", example=1),
+     *                     @OA\Property(property="title", type="string", example="Welcome to KPRI"),
+     *                     @OA\Property(property="description", type="string", example="Find our best products and services"),
+     *                     @OA\Property(property="image_url", type="string", example="https://example.com/storage/hero/hero_123456.jpg"),
+     *                     @OA\Property(property="url", type="string", example="https://example.com/promo")
      *                 )
      *             ),
      *             @OA\Property(property="message", type="string", example="Hero banners retrieved successfully")
@@ -50,11 +48,30 @@ class HeroBerandaController extends Controller
     public function index()
     {
         try {
-            $heroes = HeroBeranda::orderBy('id_hero', 'desc')->get();
+            // Get only active hero banners (id_status = 1)
+            $heroes = HeroBeranda::with('status')
+                ->where('id_status', 1)
+                ->orderBy('id_hero', 'desc')
+                ->get();
+
+            $formattedHeroes = $heroes->map(function ($hero) {
+                $imageUrl = null;
+                if ($hero->gambar) {
+                    $imageUrl = url(Storage::url($hero->gambar));
+                }
+                
+                return [
+                    'id' => $hero->id_hero,
+                    'title' => $hero->judul,
+                    'description' => $hero->deskripsi,
+                    'image_url' => $imageUrl,
+                    'url' => $hero->url
+                ];
+            });
 
             return response()->json([
                 'status' => 'success',
-                'data' => $heroes,
+                'data' => $formattedHeroes,
                 'message' => 'Hero banners retrieved successfully'
             ]);
         } catch (\Exception $e) {
@@ -90,14 +107,11 @@ class HeroBerandaController extends Controller
      *         @OA\JsonContent(
      *             @OA\Property(property="status", type="string", example="success"),
      *             @OA\Property(property="data", type="object",
-     *                 @OA\Property(property="id_hero", type="integer", example=1),
-     *                 @OA\Property(property="judul_hero", type="string", example="Welcome to KPRI"),
-     *                 @OA\Property(property="deskripsi_hero", type="string", example="Find our best products and services"),
-     *                 @OA\Property(property="gambar_hero", type="string", example="uploads/hero/hero_123456.jpg"),
-     *                 @OA\Property(property="link_hero", type="string", example="https://example.com/promo"),
-     *                 @OA\Property(property="status_hero", type="string", example="aktif"),
-     *                 @OA\Property(property="created_at", type="string", format="date-time"),
-     *                 @OA\Property(property="updated_at", type="string", format="date-time")
+     *                 @OA\Property(property="id", type="integer", example=1),
+     *                 @OA\Property(property="title", type="string", example="Welcome to KPRI"),
+     *                 @OA\Property(property="description", type="string", example="Find our best products and services"),
+     *                 @OA\Property(property="image_url", type="string", example="https://example.com/storage/hero/hero_123456.jpg"),
+     *                 @OA\Property(property="url", type="string", example="https://example.com/promo")
      *             ),
      *             @OA\Property(property="message", type="string", example="Hero banner retrieved successfully")
      *         )
@@ -109,11 +123,24 @@ class HeroBerandaController extends Controller
     public function show($id)
     {
         try {
-            $hero = HeroBeranda::findOrFail($id);
+            $hero = HeroBeranda::where('id_status', 1)->findOrFail($id);
+
+            $imageUrl = null;
+            if ($hero->gambar) {
+                $imageUrl = url(Storage::url($hero->gambar));
+            }
+            
+            $formattedHero = [
+                'id' => $hero->id_hero,
+                'title' => $hero->judul,
+                'description' => $hero->deskripsi,
+                'image_url' => $imageUrl,
+                'url' => $hero->url
+            ];
 
             return response()->json([
                 'status' => 'success',
-                'data' => $hero,
+                'data' => $formattedHero,
                 'message' => 'Hero banner retrieved successfully'
             ]);
         } catch (\Exception $e) {
