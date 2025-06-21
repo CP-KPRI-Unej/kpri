@@ -144,7 +144,7 @@
             let visibleCount = 6;
 
             function fetchArticles() {
-                fetch('https://b631-180-245-74-56.ngrok-free.app/api/articles')
+fetch('https://92b0-2001-448a-5122-4227-613a-c69c-d8bf-3a6a.ngrok-free.app/api/articles')
                     .then(res => res.json())
                     .then(data => {
                         if (data.status === 'success') {
