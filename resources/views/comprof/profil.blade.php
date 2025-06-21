@@ -61,9 +61,9 @@
             class="border border-orange-300 rounded-xl p-8 w-full max-w-4xl mx-auto bg-white dark:text-white dark:bg-gray-900 relative">
             <h2 class="text-2xl md:text-3xl font-bold text-orange-500 text-center mb-10">STRUKTUR ORGANISASI</h2>
 
-            <div class="mb-6 text-center">
+            <div class="mb-6 text-center ">
                 <label class="block mb-2 font-semibold text-sm text-gray-700 dark:text-white">Pilih Periode:</label>
-                <select class="border border-orange-300 rounded-lg px-4 py-2 text-sm" x-model="selectedPeriode"
+                <select class="border dark:bg-gray-900 border-orange-300 rounded-lg px-4 py-2 text-sm" x-model="selectedPeriode"
                     @change="loadStruktur()">
                     <template x-for="periode in periodes" :key="periode.id_periode">
                         <option :value="periode.id_periode" x-text="periode.nama_periode"></option>
