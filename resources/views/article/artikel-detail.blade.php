@@ -212,8 +212,7 @@
             if (!content || content.length > 1000) return;
 
             try {
-                const response = await fetch(
-                    'https://b631-180-245-74-56.ngrok-free.app/api/articles/{{ $id }}/comments', {
+                const response = await fetch('https://92b0-2001-448a-5122-4227-613a-c69c-d8bf-3a6a.ngrok-free.app/api/articles/{{ $id }}/comments', {
                         method: 'POST',
                         headers: {
                             'Content-Type': 'application/json',
