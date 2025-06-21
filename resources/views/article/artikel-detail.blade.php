@@ -65,10 +65,9 @@
     </section>
 
     <script>
-        const API_URL = 'https://92b0-2001-448a-5122-4227-613a-c69c-d8bf-3a6a.ngrok-free.app/api/articles/1';
-
+        const baseUrl = window.location.origin;
         async function fetchArticle() {
-            const res = await fetch('https://92b0-2001-448a-5122-4227-613a-c69c-d8bf-3a6a.ngrok-free.app/api/articles/{{ $id }}');
+            const res = await fetch(`${baseUrl}/api/articles/{{ $id }}`);
             const {
                 data
             } = await res.json();
@@ -169,8 +168,7 @@
 
         async function fetchRelatedArticles(tags) {
             const tagParams = tags.split(',').map(t => t.trim()).join(',');
-            const res = await fetch(
-                `https://92b0-2001-448a-5122-4227-613a-c69c-d8bf-3a6a.ngrok-free.app/api/articles/relevant?tags=${encodeURIComponent(tagParams)}`);
+            const res = await fetch(`${baseUrl}/api/articles/relevant?tags=${encodeURIComponent(tagParams)}`);
             const {
                 data
             } = await res.json();
@@ -212,17 +210,17 @@
             if (!content || content.length > 1000) return;
 
             try {
-                const response = await fetch('https://92b0-2001-448a-5122-4227-613a-c69c-d8bf-3a6a.ngrok-free.app/api/articles/{{ $id }}/comments', {
-                        method: 'POST',
-                        headers: {
-                            'Content-Type': 'application/json',
-                            'Accept': 'application/json',
-                        },
-                        body: JSON.stringify({
-                            nama_pengomentar: name,
-                            isi_komentar: content
-                        })
-                    });
+                const response = await fetch(`${baseUrl}/api/articles/{{ $id }}/comments`, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'Accept': 'application/json',
+                    },
+                    body: JSON.stringify({
+                        nama_pengomentar: name,
+                        isi_komentar: content
+                    })
+                });
 
                 const result = await response.json();
 

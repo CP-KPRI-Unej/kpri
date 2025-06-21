@@ -30,8 +30,6 @@
 
         <section class="flex flex-col justify-center pt-3 pb-10 text-center px-4 relative" x-data>
             <div class="w-full md:w-3/4 m-auto flex flex-col gap-4 bg-white dark:bg-gray-900 p-5 rounded-lg">
-                <img src="{{ asset('images/simpan-pinjam-3.png') }}" alt="Cooperative Officials"
-                    class="w-3/4 mb-4 object-cover rounded-s-3xl rounded-e-3xl m-auto" />
                 <h1 class="text-4xl font-bold text-orange-500 mb-2">DANA SOSIAL</h1>
                 <div class="text-sm text-justify dark:text-white text-black space-y-2"
                     x-html="$store.unitSimpanPinjam.danaSosial"></div>
@@ -52,10 +50,11 @@
                 pinjaman: '',
                 danaSosial: '',
             });
-
         });
 
-        fetch("https://kpri.fasilkomapp.com/api/service-types/5")
+        const baseUrl = window.location.origin;
+
+        fetch(`${baseUrl}/api/service-types/5`)
             .then(res => res.json())
             .then(result => {
                 if (result.success && result.data && Array.isArray(result.data.layanan)) {
@@ -65,11 +64,13 @@
                         html = html.replace(/<ol>/,
                             '<ol class="list-decimal pl-6 space-y-2 text-justify">');
 
-                        if (item.judul.toLowerCase() === 'pinjaman') {
+                        const title = item.judul.toLowerCase();
+
+                        if (title === 'pinjaman') {
                             Alpine.store('unitSimpanPinjam').pinjaman = html;
-                        } else if (item.judul.toLowerCase() === 'simpanan') {
+                        } else if (title === 'simpanan') {
                             Alpine.store('unitSimpanPinjam').simpanan = html;
-                        } else if (item.judul.toLowerCase() === 'dana sosial') {
+                        } else if (title === 'dana sosial') {
                             Alpine.store('unitSimpanPinjam').danaSosial = html;
                         }
                     });

@@ -39,10 +39,11 @@
                 jasaRental: '',
                 jasaUmum: '',
             });
-
         });
 
-        fetch("https://kpri.fasilkomapp.com/api/service-types/4")
+        const baseUrl = window.location.origin;
+
+        fetch(`${baseUrl}/api/service-types/4`)
             .then(res => res.json())
             .then(result => {
                 if (result.success && result.data && Array.isArray(result.data.layanan)) {
@@ -52,9 +53,11 @@
                         html = html.replace(/<ol>/,
                             '<ol class="list-decimal pl-6 space-y-2 text-justify">');
 
-                        if (item.judul.toLowerCase() === 'jasa umum dan ppob') {
+                        const title = item.judul.toLowerCase();
+
+                        if (title === 'jasa umum dan ppob') {
                             Alpine.store('unitJasa').jasaUmum = html;
-                        } else if (item.judul.toLowerCase() === 'jasa rental kendaraan dan pujasera') {
+                        } else if (title === 'jasa rental kendaraan dan pujasera') {
                             Alpine.store('unitJasa').jasaRental = html;
                         }
                     });

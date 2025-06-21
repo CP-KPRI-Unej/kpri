@@ -184,7 +184,7 @@
             });
         });
 
-        fetch("https://b631-180-245-74-56.ngrok-free.app/api/articles")
+        fetch(`${window.location.origin}/api/articles`)
             .then(res => res.json())
             .then(result => {
                 if (result.status === "success") {
@@ -196,12 +196,8 @@
                             perPage: 3,
                             gap: '1rem',
                             breakpoints: {
-                                1024: {
-                                    perPage: 2
-                                },
-                                640: {
-                                    perPage: 1
-                                },
+                                1024: { perPage: 2 },
+                                640: { perPage: 1 },
                             },
                         }).mount();
                     }, 300);
@@ -216,18 +212,15 @@
                 visi: '',
                 misi: '',
             });
-
         });
 
-        fetch("https://kpri.fasilkomapp.com/api/service-types/1")
+        fetch(`${window.location.origin}/api/service-types/1`)
             .then(res => res.json())
             .then(result => {
                 if (result.success && result.data && Array.isArray(result.data.layanan)) {
                     result.data.layanan.forEach(item => {
                         let html = item.deskripsi;
-
-                        html = html.replace(/<ol>/,
-                            '<ol class="list-decimal pl-3 space-y-2 text-justify">');
+                        html = html.replace(/<ol>/, '<ol class="list-decimal pl-3 space-y-2 text-justify">');
 
                         if (item.judul.toLowerCase() === 'visi') {
                             Alpine.store('beranda').visi = html;
@@ -247,7 +240,7 @@
             });
         });
 
-        fetch("https://kpri.fasilkomapp.com/api/faqs")
+        fetch(`${window.location.origin}/api/faqs`)
             .then(res => res.json())
             .then(result => {
                 if (result.status === "success") {
@@ -264,7 +257,7 @@
             });
         });
 
-        fetch("https://kpri.fasilkomapp.com/api/downloads")
+        fetch(`${window.location.origin}/api/downloads`)
             .then(res => res.json())
             .then(result => {
                 if (result.success) {

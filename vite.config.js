@@ -6,7 +6,7 @@ export default defineConfig({
         host: '0.0.0.0',
         cors: true,// Allows external access (via phone/other devices)
         hmr: {
-            host: 'https://6264-180-245-74-56.ngrok-free.app', // Use your IP here
+            host: '192.168.1.26', // Use your IP here
         },
     },
     // server: {

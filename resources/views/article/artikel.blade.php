@@ -142,9 +142,11 @@
 
             let allArticles = [];
             let visibleCount = 6;
+            const baseUrl = window.location.origin;
+
 
             function fetchArticles() {
-fetch('https://92b0-2001-448a-5122-4227-613a-c69c-d8bf-3a6a.ngrok-free.app/api/articles')
+                fetch(`${baseUrl}/api/articles`)
                     .then(res => res.json())
                     .then(data => {
                         if (data.status === 'success') {

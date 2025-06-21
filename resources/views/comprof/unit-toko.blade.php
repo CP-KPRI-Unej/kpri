@@ -33,10 +33,11 @@
             Alpine.store('unitToko', {
                 produk: '',
             });
-
         });
 
-        fetch("https://kpri.fasilkomapp.com/api/service-types/6")
+        const baseUrl = window.location.origin;
+
+        fetch(`${baseUrl}/api/service-types/6`)
             .then(res => res.json())
             .then(result => {
                 if (result.success && result.data && Array.isArray(result.data.layanan)) {

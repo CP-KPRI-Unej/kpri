@@ -56,7 +56,9 @@
                 perwakilanHtml: '',
             });
 
-            fetch("https://kpri.fasilkomapp.com/api/service-types/3")
+            const baseUrl = window.location.origin;
+
+            fetch(`${baseUrl}/api/service-types/3`)
                 .then(res => res.json())
                 .then(result => {
                     if (result.success && result.data && Array.isArray(result.data.layanan)) {
