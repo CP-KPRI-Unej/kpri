@@ -204,7 +204,11 @@ Route::middleware('auth:sanctum')->get('/user', function (Request $request) {
 
 // Artikel API Routes
 Route::get('/articles', [ArtikelController::class, 'index']);
+Route::get('/articles/tags', [ArtikelController::class, 'getAllTags']);
+Route::get('/articles/tag/{tag}', [ArtikelController::class, 'getByTag']);
 Route::get('/articles/{id}', [ArtikelDetailController::class, 'show']);
+Route::get('/articles/{id}/comments', [ArtikelDetailController::class, 'getComments']);
+Route::get('/articles/{id}/comments/{commentId}', [ArtikelDetailController::class, 'getComment']);
 Route::post('/articles/{id}/comments', [ArtikelDetailController::class, 'storeComment']);
 
 // Struktur Kepengurusan API Routes
