@@ -170,7 +170,7 @@
         async function fetchRelatedArticles(tags) {
             const tagParams = tags.split(',').map(t => t.trim()).join(',');
             const res = await fetch(
-                `https://b631-180-245-74-56.ngrok-free.app/api/articles/relevant?tags=${encodeURIComponent(tagParams)}`);
+                `https://92b0-2001-448a-5122-4227-613a-c69c-d8bf-3a6a.ngrok-free.app/api/articles/relevant?tags=${encodeURIComponent(tagParams)}`);
             const {
                 data
             } = await res.json();
